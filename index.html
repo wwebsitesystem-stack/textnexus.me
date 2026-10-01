@@ -2,15 +2,13 @@
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus OS — Home</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexus — Premium Workspace</title>
+    
     <!-- Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -18,599 +16,333 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { 
-                        sans: ['"Outfit"', 'sans-serif'], 
-                        display: ['"Space Grotesk"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace']
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['"Playfair Display"', 'serif'] },
                     colors: {
-                        appBg: 'transparent',
-                        accent: '#10b981'
-                    }
+                        appBg: '#050505', surface: 'rgba(20, 20, 20, 0.6)', 
+                        borderSubtle: 'rgba(255,255,255,0.06)', brand: '#10b981'
+                    },
+                    animation: { 'spin-slow': 'spin 8s linear infinite' }
                 }
             }
         }
     </script>
 
     <style>
-        :root {
-            --accent: #10b981;
-            --accent-glow: rgba(16, 185, 129, 0.25);
-            --border-glass: rgba(255, 255, 255, 0.07);
+        body { background-color: #050505; color: #f4f4f5; font-family: 'Inter', sans-serif; overflow: hidden; }
+        
+        /* Ambient Background Glow */
+        .ambient-bg {
+            position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+        }
+        .ambient-glow {
+            position: absolute; width: 60vw; height: 60vw; border-radius: 50%;
+            background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, rgba(0,0,0,0) 70%);
+            top: -20%; left: -10%; filter: blur(60px);
+        }
+        .ambient-glow-2 {
+            position: absolute; width: 50vw; height: 50vw; border-radius: 50%;
+            background: radial-gradient(circle, rgba(99,102,241,0.05) 0%, rgba(0,0,0,0) 70%);
+            bottom: -20%; right: -10%; filter: blur(60px);
         }
 
-        body { 
-            background-color: #05050a; /* Subtle background fallback for standalone view */
-            color: #f4f4f5; 
-            font-family: 'Outfit', sans-serif; 
-            overflow-x: hidden;
-            user-select: none;
+        /* Premium Glass Utilities */
+        .glass { background: rgba(20, 20, 22, 0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.05); }
+        .glass-panel { background: rgba(10, 10, 10, 0.65); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-bottom: 1px solid rgba(255,255,255,0.04); }
+        
+        /* Smooth Intro Screen */
+        #intro-screen {
+            position: fixed; inset: 0; background-color: #050505; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
+        }
+        .intro-logo {
+            font-family: 'Playfair Display', serif; font-size: 4rem; color: #fff;
+            opacity: 0; transform: translateY(20px) scale(0.95);
+            animation: floatUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes floatUp {
+            0% { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(10px); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); text-shadow: 0 10px 40px rgba(16, 185, 129, 0.25); }
         }
 
-        /* Glassmorphism Cards */
-        .glass-card {
-            background: rgba(13, 14, 22, 0.55);
-            backdrop-filter: blur(24px) saturate(160%);
-            -webkit-backdrop-filter: blur(24px) saturate(160%);
-            border: 1px solid var(--border-glass);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), 
-                        border-color 0.35s ease, 
-                        box-shadow 0.35s ease;
+        /* Sidebar Item Animations */
+        .nav-btn { position: relative; overflow: hidden; }
+        .nav-btn::before {
+            content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(16,185,129,0.1), transparent);
+            opacity: 0; transition: opacity 0.3s ease; border-radius: inherit; pointer-events: none;
         }
-
-        .glass-card:hover {
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5), 0 0 25px var(--accent-glow);
-            transform: translateY(-2px);
-        }
-
-        /* Hover Sheen Animation */
-        .sheen {
-            position: relative;
-            overflow: hidden;
-        }
-        .sheen::after {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(60deg, transparent 30%, rgba(255, 255, 255, 0.04) 50%, transparent 70%);
-            transform: rotate(30deg) translateY(-100%);
-            transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
-            pointer-events: none;
-        }
-        .sheen:hover::after {
-            transform: rotate(30deg) translateY(100%);
-        }
-
-        /* Staggered Entry Animation */
-        .intro-stagger {
-            opacity: 0;
-            transform: translateY(16px);
-            animation: staggerIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
-        @keyframes staggerIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .nav-btn:hover::before, .nav-btn.active::before { opacity: 1; }
+        .nav-btn.active { color: #fff; border-color: rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+        .nav-btn.active i { color: #10b981; }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
-        /* Toast Popup */
-        #toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            pointer-events: none;
-        }
-        .toast {
-            pointer-events: auto;
-            animation: toastIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateY(10px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
     </style>
 </head>
-<body class="p-4 sm:p-6 md:p-8 min-h-screen relative">
+<body class="h-screen w-screen flex antialiased selection:bg-brand/30 selection:text-white">
 
-    <!-- Sub-boot overlay -->
-    <div id="frame-boot" class="fixed inset-0 z-50 bg-[#020204] flex items-center justify-center transition-opacity duration-500 ease-out">
-        <div class="flex flex-col items-center gap-3">
-            <i class="ph ph-circle-notch text-3xl text-emerald-400 animate-spin"></i>
-            <div class="text-[10px] font-mono text-zinc-500 tracking-widest uppercase">Initializing Dashboard</div>
+    <!-- Ambient Background -->
+    <div class="ambient-bg">
+        <div class="ambient-glow"></div>
+        <div class="ambient-glow-2"></div>
+    </div>
+
+    <!-- Intro Screen -->
+    <div id="intro-screen">
+        <div class="intro-logo">Nexus</div>
+        <div class="mt-8 flex items-center gap-3 text-xs text-zinc-500 tracking-[0.3em] uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse shadow-[0_0_10px_#10b981]"></span>
+            Synchronizing
         </div>
     </div>
 
-    <!-- Toast Notification Container -->
-    <div id="toast-container"></div>
-
-    <div class="max-w-7xl mx-auto space-y-6 pb-12">
-        
-        <!-- Header Section -->
-        <header class="intro-stagger flex flex-col md:flex-row md:items-center justify-between gap-4" style="animation-delay: 0.05s;">
-            <div>
-                <div class="flex items-center gap-2 mb-1.5">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                    <span class="text-[10px] font-mono text-emerald-400 tracking-widest uppercase font-semibold">System Active</span>
-                </div>
-                <h1 class="font-display text-3xl md:text-4xl font-bold text-white tracking-tight">
-                    Welcome back.
-                </h1>
+    <!-- Raycast-Style Command Palette (Ctrl+K) -->
+    <div id="command-palette" class="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-md flex items-start justify-center pt-[15vh] px-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass rounded-2xl w-full max-w-2xl shadow-2xl shadow-black/80 overflow-hidden transform scale-95 transition-transform duration-300" id="palette-box">
+            <div class="flex items-center px-5 py-4 border-b border-white/5 gap-4">
+                <i class="ph ph-magnifying-glass text-zinc-400 text-xl"></i>
+                <input id="palette-input" type="text" placeholder="What do you want to do?" class="w-full bg-transparent border-none text-white text-lg font-light focus:outline-none placeholder:text-zinc-600">
+                <kbd class="text-[10px] font-mono px-2 py-1 rounded bg-white/5 border border-white/10 text-zinc-400">ESC</kbd>
             </div>
-
-            <!-- Header Stats & Clock -->
-            <div class="flex items-center gap-3 flex-wrap">
-                <!-- Live Clock -->
-                <div class="glass-card px-4 py-2 rounded-xl flex items-center gap-3">
-                    <i class="ph ph-clock text-xl text-zinc-400"></i>
-                    <div>
-                        <div class="text-[9px] text-zinc-500 uppercase font-mono tracking-widest" id="clock-date">OCT 01</div>
-                        <div class="text-xs font-bold font-mono text-white" id="clock-time">00:00:00</div>
-                    </div>
-                </div>
-
-                <!-- Telemetry Pills -->
-                <div class="glass-card px-4 py-2 rounded-xl flex items-center gap-3">
-                    <i class="ph ph-cpu text-xl text-emerald-400"></i>
-                    <div>
-                        <div class="text-[9px] text-zinc-500 uppercase font-mono tracking-widest">CPU</div>
-                        <div class="text-xs font-bold font-mono text-white" id="cpu-stat">12%</div>
-                    </div>
-                </div>
-                
-                <div class="glass-card px-4 py-2 rounded-xl flex items-center gap-3">
-                    <i class="ph ph-memory text-xl text-purple-400"></i>
-                    <div>
-                        <div class="text-[9px] text-zinc-500 uppercase font-mono tracking-widest">RAM</div>
-                        <div class="text-xs font-bold font-mono text-white" id="ram-stat">4.2 GB</div>
-                    </div>
-                </div>
+            <div class="p-2 max-h-[350px] overflow-y-auto flex flex-col gap-1" id="palette-results">
+                <div class="px-4 py-2 mt-2 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Workspace Apps</div>
+                <button onclick="paletteSelect('home.html', 'Dashboard')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left text-sm cursor-pointer group">
+                    <div class="flex items-center gap-3"><i class="ph ph-squares-four text-xl group-hover:text-brand transition-colors"></i><span>Dashboard</span></div>
+                    <i class="ph ph-arrow-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </button>
+                <button onclick="paletteSelect('youtube.html', 'Media Hub')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left text-sm cursor-pointer group">
+                    <div class="flex items-center gap-3"><i class="ph ph-youtube-logo text-xl group-hover:text-red-500 transition-colors"></i><span>Media Hub</span></div>
+                    <i class="ph ph-arrow-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </button>
             </div>
-        </header>
-
-        <!-- Main Hero Grid -->
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Welcome / Command Banner -->
-            <div class="intro-stagger lg:col-span-2 glass-card p-6 sm:p-8 rounded-3xl relative overflow-hidden sheen flex flex-col justify-between min-h-[260px]" style="animation-delay: 0.15s;">
-                <div class="absolute -right-10 -top-10 opacity-5 pointer-events-none transform rotate-12">
-                    <i class="ph ph-hexagon text-[260px] text-emerald-400"></i>
-                </div>
-
-                <div class="max-w-xl relative z-10 space-y-3">
-                    <span class="px-2.5 py-1 rounded-md text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">Node #04 Online</span>
-                    <h2 class="font-display text-2xl sm:text-3xl font-bold text-white">Quantum Data Streams</h2>
-                    <p class="text-sm text-zinc-400 leading-relaxed">
-                        Workspace optimized. Execute real-time network queries, deploy sandboxed containers, or switch to the secure node to encrypt traffic.
-                    </p>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-3 mt-8 relative z-10">
-                    <button onclick="safeParentCall('switchTab', 'ghostlink.html')" class="px-5 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-medium text-sm transition-all flex items-center gap-2 group cursor-pointer">
-                        <i class="ph ph-ghost text-lg group-hover:scale-110 transition-transform"></i> Launch Ghostlink
-                    </button>
-                    <button onclick="safeParentCall('switchTab', 'terminal.html')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-sm transition-all flex items-center gap-2 group cursor-pointer">
-                        <i class="ph ph-terminal-window text-lg group-hover:scale-110 transition-transform"></i> Open Console
-                    </button>
-                </div>
-            </div>
-
-            <!-- Live Telemetry Graph -->
-            <div class="intro-stagger glass-card p-6 rounded-3xl flex flex-col justify-between" style="animation-delay: 0.25s;">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                        <i class="ph ph-activity text-emerald-400"></i> Network Traffic
-                    </h3>
-                    <span class="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md tracking-wider">LIVE</span>
-                </div>
-
-                <div class="w-full h-28 relative flex items-end my-2">
-                    <canvas id="telemetry-chart" class="w-full h-full block"></canvas>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/5 text-xs font-mono">
-                    <div>
-                        <div class="text-zinc-500 text-[9px] tracking-widest uppercase">Download</div>
-                        <div class="text-emerald-400 font-bold mt-1 text-sm" id="net-down">142.8 MB/s</div>
-                    </div>
-                    <div>
-                        <div class="text-zinc-500 text-[9px] tracking-widest uppercase">Upload</div>
-                        <div class="text-purple-400 font-bold mt-1 text-sm" id="net-up">48.2 MB/s</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Applications & Tasks -->
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            <!-- Quick Apps Subsystem -->
-            <div class="intro-stagger md:col-span-2 space-y-4" style="animation-delay: 0.35s;">
-                <h3 class="text-sm font-bold text-white flex items-center gap-2 ml-1">
-                    <i class="ph ph-squares-four text-zinc-400"></i> Core Subsystems
-                </h3>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- App 1 -->
-                    <div onclick="safeParentCall('switchTab', 'ghostlink.html')" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-xl group-hover:scale-110 transition-transform shadow-inner flex-shrink-0">
-                            <i class="ph ph-ghost"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-white group-hover:text-purple-400 transition-colors">Ghostlink Proxy</h4>
-                            <p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">Encrypted peer-to-peer connection tunnel.</p>
-                        </div>
-                    </div>
-
-                    <!-- App 2 -->
-                    <div onclick="safeParentCall('switchTab', 'terminal.html')" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-xl group-hover:scale-110 transition-transform shadow-inner flex-shrink-0">
-                            <i class="ph ph-code"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-white group-hover:text-blue-400 transition-colors">Terminal Shell</h4>
-                            <p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">High-speed system CLI interfaces.</p>
-                        </div>
-                    </div>
-
-                    <!-- App 3 -->
-                    <div onclick="safeParentCall('openPalette')" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl group-hover:scale-110 transition-transform shadow-inner flex-shrink-0">
-                            <i class="ph ph-magnifying-glass"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-white group-hover:text-emerald-400 transition-colors">Command Center</h4>
-                            <p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">Global search and action execution.</p>
-                        </div>
-                    </div>
-
-                    <!-- App 4 -->
-                    <div onclick="safeParentCall('openSettingsModal')" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-xl group-hover:scale-110 transition-transform shadow-inner flex-shrink-0">
-                            <i class="ph ph-sliders"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm text-white group-hover:text-rose-400 transition-colors">System Vault</h4>
-                            <p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">Manage themes and security policies.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tasks Widget -->
-            <div class="intro-stagger glass-card p-5 rounded-3xl flex flex-col justify-between" style="animation-delay: 0.45s;">
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                            <i class="ph ph-check-square-offset text-emerald-400"></i> Active Tasks
-                        </h3>
-                        <span id="task-counter" class="text-[10px] font-mono bg-white/5 border border-white/10 px-2 py-0.5 rounded text-zinc-400">0 Pending</span>
-                    </div>
-
-                    <!-- Task Input -->
-                    <form onsubmit="event.preventDefault(); addTask();" class="flex gap-2 mb-3">
-                        <input id="new-task-input" type="text" placeholder="Add new task..." aria-label="New task title" class="flex-1 bg-black/30 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/60 transition-all placeholder:text-zinc-600">
-                        <button type="submit" aria-label="Add task" class="px-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-400 transition-all cursor-pointer">
-                            <i class="ph ph-plus"></i>
-                        </button>
-                    </form>
-
-                    <!-- Filter Tabs -->
-                    <div class="flex items-center justify-between border-b border-white/5 pb-2 mb-2 text-[10px] font-mono text-zinc-500">
-                        <div class="flex gap-2">
-                            <button onclick="setTaskFilter('all')" id="filter-all" class="text-emerald-400 font-bold hover:text-white transition-colors">ALL</button>
-                            <button onclick="setTaskFilter('active')" id="filter-active" class="hover:text-white transition-colors">ACTIVE</button>
-                            <button onclick="setTaskFilter('completed')" id="filter-completed" class="hover:text-white transition-colors">DONE</button>
-                        </div>
-                        <button onclick="clearCompletedTasks()" class="hover:text-rose-400 transition-colors">CLEAR DONE</button>
-                    </div>
-
-                    <!-- Task Item Container -->
-                    <div id="task-list" class="space-y-2 max-h-[170px] overflow-y-auto pr-1">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
     </div>
 
-    <!-- Script Logic -->
-    <script>
-        // -------------------------------------------------------------
-        // Safe Parent Integration & Standalone Toast Fallback
-        // -------------------------------------------------------------
-        function safeParentCall(fnName, ...args) {
-            let handled = false;
-            try {
-                if (window.parent && typeof window.parent[fnName] === 'function') {
-                    window.parent[fnName](...args);
-                    handled = true;
-                }
-            } catch (e) {
-                console.warn('Parent frame restricted or unavailable:', e);
-            }
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-8 right-8 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
 
-            if (!handled) {
-                showToast(`Triggered: ${fnName}(${args.map(a => `'${a}'`).join(', ')})`);
-            }
-        }
+    <!-- Main App UI -->
+    <div class="w-full h-full flex relative z-10 transition-all duration-1000 opacity-0 scale-[0.98]" id="app-container">
+        
+        <!-- Sidebar -->
+        <aside class="w-[280px] h-full flex flex-col glass border-r border-borderSubtle shrink-0 select-none z-20 m-2 rounded-2xl overflow-hidden shadow-2xl">
+            <div class="h-[80px] flex items-center px-6 border-b border-borderSubtle">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center text-white shadow-lg relative overflow-hidden">
+                        <div class="absolute inset-0 bg-brand/20 blur-xl"></div>
+                        <i class="ph ph-hexagon text-2xl text-white relative z-10"></i>
+                    </div>
+                    <span class="font-serif text-2xl tracking-wide text-white">Nexus</span>
+                </div>
+            </div>
 
-        function showToast(message) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast glass-card px-4 py-2.5 rounded-xl border border-white/10 text-xs text-white flex items-center gap-2 shadow-2xl';
-            toast.innerHTML = `<i class="ph ph-info text-emerald-400 text-base"></i> <span>${message}</span>`;
-            container.appendChild(toast);
+            <nav class="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
+                <div class="px-3 mb-2 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Navigation</div>
+                
+                <button onclick="switchTab('home.html', this)" class="nav-btn active flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                    <div class="flex items-center gap-3"><i class="ph ph-squares-four text-lg"></i> Dashboard</div>
+                </button>
+                <button onclick="switchTab('youtube.html', this)" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                    <div class="flex items-center gap-3"><i class="ph ph-play-circle text-lg"></i> Media Hub</div>
+                </button>
+                <button onclick="switchTab('ghostlink.html', this)" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                    <div class="flex items-center gap-3"><i class="ph ph-ghost text-lg"></i> Ghostlink</div>
+                </button>
+                <button onclick="switchTab('updates.html', this)" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                    <div class="flex items-center gap-3"><i class="ph ph-sparkle text-lg"></i> Updates</div>
+                </button>
+            </nav>
 
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(10px)';
-                toast.style.transition = 'all 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 2500);
-        }
+            <div class="p-4 bg-black/40 border-t border-borderSubtle">
+                <div class="flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 border border-white/5 backdrop-blur-md">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex h-2.5 w-2.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand"></span>
+                        </div>
+                        <span class="text-xs text-zinc-300 font-medium tracking-wide">Network Synced</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
 
-        // Boot Overlay Fadeout
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col h-full relative z-10 py-2 pr-2">
+            
+            <!-- Top Header -->
+            <header class="h-[80px] shrink-0 flex items-center justify-between px-8 glass-panel rounded-2xl mb-2 relative z-30 shadow-lg border border-borderSubtle">
+                <div class="flex items-center gap-3 text-sm font-medium text-zinc-400">
+                    <span id="current-page-title" class="text-white text-lg font-semibold tracking-tight">Dashboard</span>
+                </div>
+
+                <div class="flex items-center gap-5">
+                    <!-- Live Clock -->
+                    <div id="live-clock" class="hidden md:block text-xs font-mono text-zinc-500 tracking-wider">00:00 AM</div>
+                    
+                    <div class="w-px h-5 bg-white/10 hidden md:block"></div>
+
+                    <button onclick="openPalette()" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-black/40 hover:bg-black/60 border border-borderSubtle text-zinc-400 text-xs transition-all shadow-inner group">
+                        <i class="ph ph-magnifying-glass text-sm group-hover:text-white transition-colors"></i>
+                        <span class="hidden sm:block">Command Menu</span>
+                        <kbd class="px-1.5 py-0.5 rounded bg-white/10 font-mono text-[10px] text-zinc-300">⌘K</kbd>
+                    </button>
+
+                    <!-- Auth Button -->
+                    <button id="settings-trigger" class="flex items-center gap-2.5 px-2 py-2 rounded-xl bg-transparent hover:bg-white/5 border border-transparent hover:border-white/10 transition-all text-zinc-300">
+                        <div class="w-8 h-8 rounded-lg bg-zinc-800 border border-white/10 flex items-center justify-center overflow-hidden">
+                            <i id="user-avatar-icon" class="ph ph-user text-lg"></i>
+                            <img id="user-avatar-img" src="" class="w-full h-full object-cover hidden">
+                        </div>
+                        <span id="user-name-label" class="text-xs font-semibold pr-2 hidden sm:block">Sign In</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Iframe Container -->
+            <div class="flex-1 w-full h-full relative rounded-2xl overflow-hidden glass border border-borderSubtle shadow-2xl">
+                <iframe id="content-frame" class="w-full h-full border-none bg-transparent" src="home.html"></iframe>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Firebase Config
+        const app = initializeApp({
+            apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
+            authDomain: "nexus-web-development-official.firebaseapp.com",
+            projectId: "nexus-web-development-official",
+        });
+        const auth = getAuth(app);
+
+        // Intro Animation
         window.addEventListener('load', () => {
             setTimeout(() => {
-                const boot = document.getElementById('frame-boot');
-                boot.style.opacity = '0';
-                setTimeout(() => boot.style.display = 'none', 500);
-            }, 250);
+                const intro = document.getElementById('intro-screen');
+                const appCont = document.getElementById('app-container');
+                intro.style.opacity = '0';
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    appCont.style.opacity = '1';
+                    appCont.style.transform = 'scale(1)';
+                }, 800);
+            }, 2000);
         });
 
-        // -------------------------------------------------------------
         // Live Clock
-        // -------------------------------------------------------------
-        function updateClock() {
+        setInterval(() => {
             const now = new Date();
-            const timeStr = now.toTimeString().split(' ')[0];
-            const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase();
+            document.getElementById('live-clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }, 1000);
+
+        // Toast Notifications
+        window.showToast = (msg) => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'glass px-5 py-3.5 rounded-xl text-white text-sm shadow-2xl flex items-center gap-3 transform translate-y-8 opacity-0 transition-all duration-300';
+            toast.innerHTML = `<i class="ph ph-check-circle text-brand text-xl"></i> <span class="font-medium">${msg}</span>`;
+            container.appendChild(toast);
             
-            document.getElementById('clock-time').textContent = timeStr;
-            document.getElementById('clock-date').textContent = dateStr;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+            requestAnimationFrame(() => toast.classList.remove('translate-y-8', 'opacity-0'));
+            setTimeout(() => {
+                toast.classList.add('translate-y-8', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        };
 
-        // -------------------------------------------------------------
-        // Telemetry Canvas Chart (Smooth Bezier Curve + Animation Loop)
-        // -------------------------------------------------------------
-        const canvas = document.getElementById('telemetry-chart');
-        const ctx = canvas.getContext('2d');
-        let points = Array(20).fill(15);
-        let targetPoints = Array(20).fill(15);
-        let lastUpdateTime = 0;
-
-        function resizeCanvas() {
-            const rect = canvas.parentElement.getBoundingClientRect();
-            canvas.width = rect.width * window.devicePixelRatio;
-            canvas.height = rect.height * window.devicePixelRatio;
-            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        function generateNewPoints() {
-            for (let i = 0; i < targetPoints.length; i++) {
-                targetPoints[i] = Math.random() * (canvas.height / window.devicePixelRatio * 0.65) + 10;
-            }
-        }
-
-        function drawTelemetry(timestamp) {
-            const displayWidth = canvas.width / window.devicePixelRatio;
-            const displayHeight = canvas.height / window.devicePixelRatio;
-
-            ctx.clearRect(0, 0, displayWidth, displayHeight);
-
-            // Interpolate points smoothly
-            for (let i = 0; i < points.length; i++) {
-                points[i] += (targetPoints[i] - points[i]) * 0.05;
-            }
-
-            // Periodically refresh target telemetry
-            if (timestamp - lastUpdateTime > 1200) {
-                generateNewPoints();
-                lastUpdateTime = timestamp;
-
-                // Update simulated stats
-                document.getElementById('cpu-stat').textContent = `${Math.floor(Math.random() * 12 + 8)}%`;
-                document.getElementById('ram-stat').textContent = `${(Math.random() * 0.4 + 4.1).toFixed(1)} GB`;
-                document.getElementById('net-down').textContent = `${(Math.random() * 25 + 130).toFixed(1)} MB/s`;
-                document.getElementById('net-up').textContent = `${(Math.random() * 10 + 42).toFixed(1)} MB/s`;
-            }
-
-            // Accent Color extraction
-            let accentHex = '#10b981';
-            try { 
-                const parentAccent = window.parent.document.documentElement.style.getPropertyValue('--accent'); 
-                if (parentAccent) accentHex = parentAccent.trim();
-            } catch(e){}
-
-            // Draw Background Gridlines
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(0, displayHeight * 0.33); ctx.lineTo(displayWidth, displayHeight * 0.33);
-            ctx.moveTo(0, displayHeight * 0.66); ctx.lineTo(displayWidth, displayHeight * 0.66);
-            ctx.stroke();
-
-            // Draw Smooth Cubic Curve
-            const step = displayWidth / (points.length - 1);
-            ctx.beginPath();
-            ctx.moveTo(0, displayHeight - points[0]);
-
-            for (let i = 0; i < points.length - 1; i++) {
-                const x1 = i * step;
-                const y1 = displayHeight - points[i];
-                const x2 = (i + 1) * step;
-                const y2 = displayHeight - points[i + 1];
-                const cx = (x1 + x2) / 2;
-
-                ctx.bezierCurveTo(cx, y1, cx, y2, x2, y2);
-            }
-
-            // Fill Gradient Below Path
-            const gradient = ctx.createLinearGradient(0, 0, 0, displayHeight);
-            gradient.addColorStop(0, `${accentHex}35`);
-            gradient.addColorStop(1, `${accentHex}00`);
-
-            ctx.lineTo(displayWidth, displayHeight);
-            ctx.lineTo(0, displayHeight);
-            ctx.closePath();
-            ctx.fillStyle = gradient;
-            ctx.fill();
-
-            // Stroke Path Line
-            ctx.beginPath();
-            ctx.moveTo(0, displayHeight - points[0]);
-            for (let i = 0; i < points.length - 1; i++) {
-                const x1 = i * step;
-                const y1 = displayHeight - points[i];
-                const x2 = (i + 1) * step;
-                const y2 = displayHeight - points[i + 1];
-                const cx = (x1 + x2) / 2;
-
-                ctx.bezierCurveTo(cx, y1, cx, y2, x2, y2);
-            }
-            ctx.strokeStyle = accentHex;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            requestAnimationFrame(drawTelemetry);
-        }
-        requestAnimationFrame(drawTelemetry);
-
-        // -------------------------------------------------------------
-        // Task Management System with Persistence & Filtering
-        // -------------------------------------------------------------
-        const STORAGE_KEY = 'nexus_os_tasks_data';
-        let tasks = [
-            { id: '1', title: 'Run security diagnostic', completed: false },
-            { id: '2', title: 'Rotate proxy keys', completed: false }
-        ];
-        let currentFilter = 'all';
-
-        function loadTasks() {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved) tasks = JSON.parse(saved);
-            } catch (e) {
-                console.warn('LocalStorage unavailable:', e);
-            }
-            renderTasks();
-        }
-
-        function saveTasks() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-            } catch (e) {}
-            renderTasks();
-        }
-
-        function addTask() {
-            const input = document.getElementById('new-task-input');
-            const val = input.value.trim();
-            if (!val) return;
-
-            tasks.unshift({
-                id: Date.now().toString(),
-                title: val,
-                completed: false
-            });
-
-            input.value = '';
-            saveTasks();
-        }
-
-        function toggleTask(id) {
-            const task = tasks.find(t => t.id === id);
-            if (task) {
-                task.completed = !task.completed;
-                saveTasks();
-            }
-        }
-
-        function deleteTask(id) {
-            tasks = tasks.filter(t => t.id !== id);
-            saveTasks();
-        }
-
-        function clearCompletedTasks() {
-            tasks = tasks.filter(t => !t.completed);
-            saveTasks();
-        }
-
-        function setTaskFilter(filter) {
-            currentFilter = filter;
-            ['all', 'active', 'completed'].forEach(f => {
-                const el = document.getElementById(`filter-${f}`);
-                if (f === filter) {
-                    el.className = 'text-emerald-400 font-bold hover:text-white transition-colors';
-                } else {
-                    el.className = 'hover:text-white transition-colors';
-                }
-            });
-            renderTasks();
-        }
-
-        function renderTasks() {
-            const taskList = document.getElementById('task-list');
-            taskList.innerHTML = '';
-
-            const filtered = tasks.filter(t => {
-                if (currentFilter === 'active') return !t.completed;
-                if (currentFilter === 'completed') return t.completed;
-                return true;
-            });
-
-            if (filtered.length === 0) {
-                taskList.innerHTML = `
-                    <div class="text-center py-6 text-zinc-600 text-xs font-mono">
-                        <i class="ph ph-check-circle text-2xl mb-1 text-zinc-700 block"></i>
-                        No tasks found
-                    </div>
+        // Tab Switching Logic
+        window.switchTab = (page, btn) => {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            
+            const frame = document.getElementById('content-frame');
+            
+            if (page === 'youtube.html') {
+                frame.srcdoc = `
+                    <html class="dark"><head><script src="https://cdn.tailwindcss.com"><\/script></head>
+                    <body class="bg-transparent text-white p-10 font-sans">
+                        <div class="max-w-5xl mx-auto">
+                            <h1 class="text-4xl font-serif mb-3 tracking-tight">Media Hub</h1>
+                            <p class="text-zinc-400 mb-10 text-sm">Curated platform access.</p>
+                            <div class="grid grid-cols-1 gap-8">
+                                <div class="p-6 rounded-3xl bg-black/40 border border-white/5 backdrop-blur-md shadow-2xl">
+                                    <div class="aspect-video bg-black rounded-2xl overflow-hidden shadow-inner">
+                                        <iframe class="w-full h-full border-none" src="https://www.youtube.com/embed/9qbrOrj30TM" allowfullscreen></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </body></html>
                 `;
             } else {
-                filtered.forEach(task => {
-                    const el = document.createElement('div');
-                    el.className = "p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04] flex items-center justify-between text-xs group hover:bg-white/[0.05] transition-all";
-                    el.innerHTML = `
-                        <div class="flex items-center gap-2.5 overflow-hidden">
-                            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask('${task.id}')" class="w-3.5 h-3.5 rounded bg-black/50 border-white/20 text-emerald-500 focus:ring-0 focus:ring-offset-0 cursor-pointer accent-emerald-500">
-                            <span class="truncate ${task.completed ? 'line-through text-zinc-600' : 'text-zinc-300'}">${escapeHtml(task.title)}</span>
-                        </div>
-                        <button onclick="deleteTask('${task.id}')" aria-label="Delete task" class="text-zinc-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1">
-                            <i class="ph ph-trash"></i>
-                        </button>
-                    `;
-                    taskList.appendChild(el);
-                });
+                frame.removeAttribute('srcdoc');
+                frame.src = page;
             }
 
-            const pendingCount = tasks.filter(t => !t.completed).length;
-            document.getElementById('task-counter').textContent = `${pendingCount} Pending`;
-        }
+            const title = page.replace('.html', '');
+            document.getElementById('current-page-title').textContent = title.charAt(0).toUpperCase() + title.slice(1);
+        };
 
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
+        // Command Palette Logic
+        const palette = document.getElementById('command-palette');
+        const pBox = document.getElementById('palette-box');
+        const pInput = document.getElementById('palette-input');
 
-        // Initialize task manager
-        loadTasks();
+        window.openPalette = () => {
+            palette.classList.remove('opacity-0', 'pointer-events-none');
+            pBox.classList.remove('scale-95');
+            pInput.focus();
+        };
+        window.closePalette = () => {
+            palette.classList.add('opacity-0', 'pointer-events-none');
+            pBox.classList.add('scale-95');
+            pInput.value = '';
+        };
+        window.paletteSelect = (page, name) => {
+            switchTab(page);
+            closePalette();
+            showToast(`Launched ${name}`);
+        };
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openPalette(); }
+            if (e.key === 'Escape') closePalette();
+        });
+
+        // Auth Logic
+        document.getElementById('settings-trigger').addEventListener('click', async () => {
+            if (auth.currentUser) {
+                await signOut(auth);
+                showToast("Logged out successfully");
+            } else {
+                try {
+                    await signInWithPopup(auth, new GoogleAuthProvider());
+                    showToast("Authentication successful");
+                } catch (err) { }
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            const icon = document.getElementById('user-avatar-icon');
+            const img = document.getElementById('user-avatar-img');
+            const label = document.getElementById('user-name-label');
+            
+            if (user) {
+                icon.classList.add('hidden');
+                img.classList.remove('hidden');
+                img.src = user.photoURL || 'https://placehold.co/100';
+                label.textContent = user.displayName?.split(' ')[0] || 'User';
+            } else {
+                icon.classList.remove('hidden');
+                img.classList.add('hidden');
+                label.textContent = 'Sign In';
+            }
+        });
     </script>
 </body>
 </html>
