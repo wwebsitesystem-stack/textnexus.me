@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nexus — Home</title>
     
     <!-- Fonts & Icons -->
@@ -21,7 +21,9 @@
                         serif: ['"Playfair Display"', 'serif'] 
                     },
                     colors: {
+                        sidebar: '#171717',
                         main: '#131313', 
+                        borderSubtle: 'rgba(255,255,255,0.06)',
                         brand: 'var(--brand-color)'
                     }
                 }
@@ -47,40 +49,100 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
         
+        /* Entrance Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-fade-in { 
+            opacity: 0;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+        }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
     </style>
 </head>
-<body class="min-h-screen w-full flex flex-col items-center justify-center p-8 antialiased selection:bg-brand/30 selection:text-white">
+<body class="w-full h-full p-8 md:p-12 antialiased selection:bg-brand/30 selection:text-white overflow-y-auto">
 
-    <div class="max-w-2xl w-full flex flex-col items-center text-center gap-6 fade-in">
-        
-        <!-- Animated Icon Container -->
-        <div class="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-2 border border-white/10 shadow-[0_0_40px_-10px_var(--brand-color)] transition-all duration-500">
-            <i class="ph ph-planet text-3xl text-[var(--brand-color)]"></i>
+    <!-- Header Section -->
+    <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 animate-fade-in">
+        <div>
+            <h1 class="font-serif text-3xl md:text-4xl text-white tracking-wide mb-1">Overview</h1>
+            <p class="text-zinc-400 font-light text-sm">Welcome to your Nexus premium workspace.</p>
         </div>
-        
-        <h1 class="font-serif text-4xl md:text-5xl tracking-wide text-white">Welcome to Nexus</h1>
-        
-        <p class="text-zinc-400 text-lg font-light leading-relaxed max-w-xl">
-            Your premium workspace is initialized and ready. Select a module from the sidebar to begin, or start a new conversation.
-        </p>
+        <div class="px-3 py-1.5 rounded-full border border-borderSubtle bg-sidebar text-xs font-medium text-zinc-400 flex items-center gap-2.5 w-max">
+            <span class="w-2 h-2 rounded-full bg-[var(--brand-color)] animate-pulse shadow-[0_0_8px_var(--brand-color)]"></span>
+            System Online
+        </div>
+    </header>
 
-        <!-- Quick Action Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 w-full max-w-lg">
-            <div class="bg-white/5 border border-white/10 p-5 rounded-xl text-left hover:bg-white/10 transition cursor-pointer group">
-                <i class="ph ph-chat-circle text-2xl mb-3 text-[var(--brand-color)] group-hover:scale-110 transition-transform"></i>
-                <h3 class="text-white font-medium mb-1">Check updates</h3>
-                <p class="text-sm text-zinc-500 font-light">Checkout updates coming to nexus!. (Coming soon)</p>
+    <!-- Quick Actions Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10 animate-fade-in delay-100">
+        
+        <!-- Action Card 1 -->
+        <div class="bg-sidebar border border-borderSubtle p-5 rounded-2xl hover:border-white/15 transition-colors cursor-pointer group flex flex-col justify-between h-40 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-[var(--brand-color)] opacity-[0.03] rounded-full blur-2xl group-hover:opacity-10 transition-opacity"></div>
+            <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-[var(--brand-color)]">
+                <i class="ph ph-chat-teardrop-text text-xl"></i>
             </div>
-            
-            <div class="bg-white/5 border border-white/10 p-5 rounded-xl text-left hover:bg-white/10 transition cursor-pointer group">
-                <i class="ph ph-ghost text-2xl mb-3 text-[var(--brand-color)] group-hover:scale-110 transition-transform"></i>
-                <h3 class="text-white font-medium mb-1">Play games with Ghostlink</h3>
-                <p class="text-sm text-zinc-500 font-light">Access your anonymous workspace with Ghostlink.</p>
+            <div>
+                <h3 class="text-white font-medium text-base mb-1">New Conversation</h3>
+                <p class="text-xs text-zinc-500 font-light">Start a fresh AI dialogue module.</p>
+            </div>
+        </div>
+
+        <!-- Action Card 2 -->
+        <div class="bg-sidebar border border-borderSubtle p-5 rounded-2xl hover:border-white/15 transition-colors cursor-pointer group flex flex-col justify-between h-40 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-[var(--brand-color)] opacity-[0.03] rounded-full blur-2xl group-hover:opacity-10 transition-opacity"></div>
+            <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-[var(--brand-color)]">
+                <i class="ph ph-ghost text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-white font-medium text-base mb-1">Ghostlink Protocol</h3>
+                <p class="text-xs text-zinc-500 font-light">Access your untracked workspace.</p>
+            </div>
+        </div>
+
+        <!-- Action Card 3 -->
+        <div class="bg-sidebar border border-borderSubtle p-5 rounded-2xl hover:border-white/15 transition-colors cursor-pointer group flex flex-col justify-between h-40 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-[var(--brand-color)] opacity-[0.03] rounded-full blur-2xl group-hover:opacity-10 transition-opacity"></div>
+            <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-[var(--brand-color)]">
+                <i class="ph ph-files text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-white font-medium text-base mb-1">Knowledge Base</h3>
+                <p class="text-xs text-zinc-500 font-light">Browse uploaded files and data.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="animate-fade-in delay-200">
+        <h2 class="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-4">Recent Activity</h2>
+        
+        <div class="flex flex-col gap-2">
+            <!-- Empty State / Placeholder Item -->
+            <div class="flex items-center gap-4 px-4 py-3.5 rounded-xl border border-transparent bg-sidebar hover:border-borderSubtle transition-colors cursor-pointer group">
+                <div class="w-8 h-8 rounded-lg bg-main border border-borderSubtle flex items-center justify-center text-zinc-500 group-hover:text-[var(--brand-color)] transition-colors">
+                    <i class="ph ph-sparkle text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm text-zinc-200 font-medium group-hover:text-white transition-colors">System Initialized</h4>
+                    <p class="text-xs text-zinc-500">Workspace is ready for new inputs.</p>
+                </div>
+                <span class="text-xs text-zinc-600 font-mono">Just now</span>
+            </div>
+
+            <!-- Placeholder Item 2 -->
+            <div class="flex items-center gap-4 px-4 py-3.5 rounded-xl border border-transparent bg-sidebar hover:border-borderSubtle transition-colors cursor-pointer group">
+                <div class="w-8 h-8 rounded-lg bg-main border border-borderSubtle flex items-center justify-center text-zinc-500 group-hover:text-[var(--brand-color)] transition-colors">
+                    <i class="ph ph-palette text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm text-zinc-200 font-medium group-hover:text-white transition-colors">Appearance Synced</h4>
+                    <p class="text-xs text-zinc-500">Personalized accent colors loaded successfully.</p>
+                </div>
+                <span class="text-xs text-zinc-600 font-mono">(Reading logs)</span>
             </div>
         </div>
     </div>
