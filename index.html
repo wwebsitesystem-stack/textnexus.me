@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -16,197 +16,260 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['"Playfair Display"', 'serif'] },
-                    colors: {
-                        appBg: '#050505', surface: 'rgba(20, 20, 20, 0.6)', 
-                        borderSubtle: 'rgba(255,255,255,0.06)', brand: '#10b981'
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'], 
+                        serif: ['"Playfair Display"', 'serif'] 
                     },
-                    animation: { 'spin-slow': 'spin 8s linear infinite' }
+                    colors: {
+                        sidebar: '#171717',
+                        main: '#131313', 
+                        borderSubtle: 'rgba(255,255,255,0.06)',
+                        brand: 'var(--brand-color)'
+                    }
                 }
             }
         }
     </script>
 
     <style>
-        body { background-color: #050505; color: #f4f4f5; font-family: 'Inter', sans-serif; overflow: hidden; }
-        
-        /* Ambient Background Glow */
-        .ambient-bg {
-            position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
-        }
-        .ambient-glow {
-            position: absolute; width: 60vw; height: 60vw; border-radius: 50%;
-            background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, rgba(0,0,0,0) 70%);
-            top: -20%; left: -10%; filter: blur(60px);
-        }
-        .ambient-glow-2 {
-            position: absolute; width: 50vw; height: 50vw; border-radius: 50%;
-            background: radial-gradient(circle, rgba(99,102,241,0.05) 0%, rgba(0,0,0,0) 70%);
-            bottom: -20%; right: -10%; filter: blur(60px);
+        :root {
+            /* Default accent color (Off-white to match image) */
+            --brand-color: #e5e5e5;
         }
 
-        /* Premium Glass Utilities */
-        .glass { background: rgba(20, 20, 22, 0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.05); }
-        .glass-panel { background: rgba(10, 10, 10, 0.65); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-bottom: 1px solid rgba(255,255,255,0.04); }
+        body { 
+            background-color: #131313; 
+            color: #ececec; 
+            font-family: 'Inter', sans-serif; 
+            overflow: hidden; 
+        }
         
         /* Smooth Intro Screen */
         #intro-screen {
-            position: fixed; inset: 0; background-color: #050505; z-index: 9999;
+            position: fixed; inset: 0; background-color: #131313; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
         }
         .intro-logo {
-            font-family: 'Playfair Display', serif; font-size: 4rem; color: #fff;
-            opacity: 0; transform: translateY(20px) scale(0.95);
-            animation: floatUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            font-family: 'Playfair Display', serif; font-size: 3rem; color: #fff;
+            opacity: 0; transform: scale(0.98);
+            animation: elegantFadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        @keyframes floatUp {
-            0% { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(10px); }
-            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); text-shadow: 0 10px 40px rgba(16, 185, 129, 0.25); }
+        @keyframes elegantFadeIn {
+            0% { opacity: 0; transform: scale(0.95); letter-spacing: 0px; }
+            100% { opacity: 1; transform: scale(1); letter-spacing: 2px; }
         }
 
         /* Sidebar Item Animations */
-        .nav-btn { position: relative; overflow: hidden; }
-        .nav-btn::before {
-            content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(16,185,129,0.1), transparent);
-            opacity: 0; transition: opacity 0.3s ease; border-radius: inherit; pointer-events: none;
+        .nav-btn.active { 
+            background-color: rgba(255,255,255,0.08); 
+            color: #fff; 
         }
-        .nav-btn:hover::before, .nav-btn.active::before { opacity: 1; }
-        .nav-btn.active { color: #fff; border-color: rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
-        .nav-btn.active i { color: #10b981; }
+        .nav-btn.active i { 
+            color: var(--brand-color); 
+        }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
     </style>
 </head>
 <body class="h-screen w-screen flex antialiased selection:bg-brand/30 selection:text-white">
 
-    <!-- Ambient Background -->
-    <div class="ambient-bg">
-        <div class="ambient-glow"></div>
-        <div class="ambient-glow-2"></div>
-    </div>
-
     <!-- Intro Screen -->
     <div id="intro-screen">
         <div class="intro-logo">Nexus</div>
-        <div class="mt-8 flex items-center gap-3 text-xs text-zinc-500 tracking-[0.3em] uppercase">
-            <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse shadow-[0_0_10px_#10b981]"></span>
-            Synchronizing
+        <div class="mt-6 flex items-center gap-3 text-[10px] text-zinc-500 tracking-[0.2em] uppercase font-medium">
+            <span class="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse"></span>
+            Initializing Workspace
         </div>
     </div>
 
-    <!-- Raycast-Style Command Palette (Ctrl+K) -->
-    <div id="command-palette" class="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-md flex items-start justify-center pt-[15vh] px-4 opacity-0 pointer-events-none transition-all duration-300">
-        <div class="glass rounded-2xl w-full max-w-2xl shadow-2xl shadow-black/80 overflow-hidden transform scale-95 transition-transform duration-300" id="palette-box">
-            <div class="flex items-center px-5 py-4 border-b border-white/5 gap-4">
-                <i class="ph ph-magnifying-glass text-zinc-400 text-xl"></i>
-                <input id="palette-input" type="text" placeholder="What do you want to do?" class="w-full bg-transparent border-none text-white text-lg font-light focus:outline-none placeholder:text-zinc-600">
-                <kbd class="text-[10px] font-mono px-2 py-1 rounded bg-white/5 border border-white/10 text-zinc-400">ESC</kbd>
+    <!-- Main App UI -->
+    <div class="w-full h-full flex relative z-10 transition-all duration-1000 opacity-0 scale-[0.99]" id="app-container">
+        
+        <!-- Sidebar (Matching the flat, clean look of the image) -->
+        <aside class="w-[260px] h-full flex flex-col bg-sidebar border-r border-borderSubtle shrink-0 select-none z-20 transition-all duration-300 relative">
+            
+            <!-- Header Logo -->
+            <div class="h-[60px] flex items-center justify-between px-4 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-4 h-4 bg-white rounded-sm rotate-45 flex items-center justify-center scale-90">
+                        <div class="w-2.5 h-2.5 bg-sidebar rounded-sm"></div>
+                    </div>
+                    <span class="font-serif text-lg tracking-wide text-white">Nexus</span>
+                </div>
+                <button class="text-zinc-500 hover:text-white transition"><i class="ph ph-sidebar-simple text-lg"></i></button>
             </div>
-            <div class="p-2 max-h-[350px] overflow-y-auto flex flex-col gap-1" id="palette-results">
-                <div class="px-4 py-2 mt-2 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Workspace Apps</div>
-                <button onclick="paletteSelect('home.html', 'Dashboard')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left text-sm cursor-pointer group">
-                    <div class="flex items-center gap-3"><i class="ph ph-squares-four text-xl group-hover:text-brand transition-colors"></i><span>Dashboard</span></div>
-                    <i class="ph ph-arrow-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
+
+            <!-- New Action Button -->
+            <div class="px-3 mt-1">
+                <button onclick="switchTab('home', document.getElementById('nav-home'))" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl border border-white/10 hover:bg-white/5 text-zinc-300 text-sm font-medium transition shadow-sm">
+                    <i class="ph ph-pencil-simple text-base"></i> New Chat
                 </button>
-                <button onclick="paletteSelect('youtube.html', 'Media Hub')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left text-sm cursor-pointer group">
-                    <div class="flex items-center gap-3"><i class="ph ph-youtube-logo text-xl group-hover:text-red-500 transition-colors"></i><span>Media Hub</span></div>
-                    <i class="ph ph-arrow-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex-1 px-3 py-6 flex flex-col gap-1 overflow-y-auto">
+                
+                <!-- Search Bar within Sidebar -->
+                <div class="flex items-center gap-2.5 px-3 py-2 rounded-lg border border-white/5 bg-black/20 text-zinc-400 text-sm mb-4 focus-within:border-white/20 focus-within:text-zinc-200 transition">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" placeholder="Search chats..." class="bg-transparent border-none focus:outline-none w-full text-white placeholder:text-zinc-600 font-light">
+                </div>
+
+                <div class="px-2 mb-1 mt-2 text-[10px] font-semibold tracking-widest text-zinc-500 uppercase flex justify-between items-center">
+                    Pages
+                    <button class="hover:text-white transition"><i class="ph ph-plus text-xs"></i></button>
+                </div>
+                
+                <button id="nav-home" onclick="switchTab('home', this)" class="nav-btn active flex items-center gap-3 px-2 py-2.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-all text-sm font-medium text-left">
+                    <i class="ph ph-chat-circle text-lg w-5 text-center"></i> <span class="truncate flex-1">Home Dashboard</span>
                 </button>
+                <button onclick="switchTab('youtube', this)" class="nav-btn flex items-center gap-3 px-2 py-2.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-all text-sm font-medium text-left">
+                    <i class="ph ph-youtube-logo text-lg w-5 text-center"></i> <span class="truncate flex-1">Media Hub</span>
+                </button>
+                <button onclick="switchTab('ghostlink', this)" class="nav-btn flex items-center gap-3 px-2 py-2.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-all text-sm font-medium text-left">
+                    <i class="ph ph-ghost text-lg w-5 text-center"></i> <span class="truncate flex-1">Ghostlink</span>
+                </button>
+            </nav>
+
+            <!-- Bottom Profile & Settings Area -->
+            <div class="p-3 flex flex-col gap-1 border-t border-borderSubtle bg-sidebar">
+                <button id="settings-trigger" class="flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-white/5 transition text-left text-zinc-300 text-sm font-medium w-full">
+                    <div class="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden shrink-0 border border-white/10">
+                        <i id="user-avatar-icon" class="ph ph-user text-xs"></i>
+                        <img id="user-avatar-img" src="" class="w-full h-full object-cover hidden">
+                    </div>
+                    <span id="user-name-label" class="truncate flex-1 text-xs">Sign In / Auth</span>
+                    <i class="ph ph-sign-out text-zinc-500 text-xs"></i>
+                </button>
+
+                <button class="flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-white/5 transition text-left text-zinc-400 hover:text-zinc-200 text-sm font-medium w-full mt-2">
+                    <i class="ph ph-list w-6 text-center text-lg"></i> More
+                </button>
+                <button onclick="openSettings()" class="flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-white/5 transition text-left text-zinc-400 hover:text-zinc-200 text-sm font-medium w-full">
+                    <i class="ph ph-gear w-6 text-center text-lg"></i> Settings
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col h-full relative z-10 bg-main">
+            
+            <!-- Native Home View (Matches Image) -->
+            <div id="home-view" class="flex flex-col h-full w-full">
+                
+                <!-- Top Dropdown Header -->
+                <header class="h-[60px] shrink-0 flex items-center px-4 gap-4 w-full">
+                    <button class="flex items-center gap-2 text-sm text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 transition font-medium">
+                        <i class="ph ph-chat-circle text-lg"></i> Direct <i class="ph ph-caret-down text-xs text-zinc-500"></i>
+                    </button>
+                    
+                    <div class="h-4 w-px bg-borderSubtle"></div>
+                    
+                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-sm text-zinc-300 cursor-pointer hover:bg-white/10 transition">
+                        <i class="ph ph-cpu text-[var(--brand-color)]"></i> 
+                        Model 
+                        <span class="text-xs font-semibold px-1.5 py-0.5 rounded ml-1 bg-white/10 text-zinc-300 flex items-center gap-1">
+                            <i class="ph ph-eye text-[var(--brand-color)]"></i> Vision
+                        </span> 
+                        <i class="ph ph-caret-down text-xs ml-1 text-zinc-500"></i>
+                    </div>
+                </header>
+
+                <!-- Center Prompt Grid -->
+                <div class="flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto w-full px-6 py-10 overflow-y-auto">
+                    <h1 class="text-4xl md:text-5xl font-serif text-white mb-10 text-center tracking-tight font-light">What would you like to do?</h1>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                        <!-- Cards -->
+                        <button class="flex flex-col text-left p-4 rounded-xl border border-borderSubtle bg-transparent hover:bg-white/5 transition-colors gap-1.5 group">
+                           <div class="flex items-center gap-2 text-zinc-200">
+                               <i class="ph ph-layout text-lg text-zinc-400 group-hover:text-[var(--brand-color)] transition-colors"></i> 
+                               <span class="font-medium text-sm">Create a landing page</span>
+                           </div>
+                           <span class="text-xs text-zinc-500 ml-7">Sleek, modern landing page copy</span>
+                        </button>
+                        
+                        <button class="flex flex-col text-left p-4 rounded-xl border border-borderSubtle bg-transparent hover:bg-white/5 transition-colors gap-1.5 group">
+                           <div class="flex items-center gap-2 text-zinc-200">
+                               <i class="ph ph-chart-bar text-lg text-zinc-400 group-hover:text-[var(--brand-color)] transition-colors"></i> 
+                               <span class="font-medium text-sm">Build a dashboard</span>
+                           </div>
+                           <span class="text-xs text-zinc-500 ml-7">Turn data into a plan</span>
+                        </button>
+                        
+                        <button class="flex flex-col text-left p-4 rounded-xl border border-borderSubtle bg-transparent hover:bg-white/5 transition-colors gap-1.5 group">
+                           <div class="flex items-center gap-2 text-zinc-200">
+                               <i class="ph ph-game-controller text-lg text-zinc-400 group-hover:text-[var(--brand-color)] transition-colors"></i> 
+                               <span class="font-medium text-sm">Make a game</span>
+                           </div>
+                           <span class="text-xs text-zinc-500 ml-7">Brainstorm a browser game</span>
+                        </button>
+                        
+                        <button class="flex flex-col text-left p-4 rounded-xl border border-borderSubtle bg-transparent hover:bg-white/5 transition-colors gap-1.5 group">
+                           <div class="flex items-center gap-2 text-zinc-200">
+                               <i class="ph ph-code text-lg text-zinc-400 group-hover:text-[var(--brand-color)] transition-colors"></i> 
+                               <span class="font-medium text-sm">Explain some code</span>
+                           </div>
+                           <span class="text-xs text-zinc-500 ml-7">Paste code, get a walkthrough</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bottom Sticky Input -->
+                <div class="p-6 w-full max-w-3xl mx-auto shrink-0 pb-8">
+                    <div class="bg-[#1f1f1f] border border-white/5 rounded-2xl p-3 flex flex-col gap-2 shadow-2xl">
+                        <input type="text" placeholder="Ask anything..." class="bg-transparent border-none text-zinc-200 text-base focus:outline-none w-full p-2 placeholder:text-zinc-600 font-light">
+                        <div class="flex items-center justify-between px-2">
+                            <div class="flex gap-4 text-zinc-400 text-sm font-medium">
+                                <button class="flex items-center gap-1.5 hover:text-white transition"><i class="ph ph-paperclip text-lg"></i> Add files</button>
+                                <button class="flex items-center gap-1.5 hover:text-white transition"><i class="ph ph-code text-lg"></i> Code</button>
+                                <button class="flex items-center gap-1.5 hover:text-white transition"><i class="ph ph-microphone text-lg"></i> Voice</button>
+                            </div>
+                            <button class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition group">
+                                <i class="ph ph-arrow-up group-hover:-translate-y-0.5 transition-transform text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Iframe Container for External Pages -->
+            <iframe id="content-frame" class="w-full h-full border-none bg-transparent hidden" src=""></iframe>
+        </main>
+    </div>
+
+    <!-- Settings Modal (Accent Color) -->
+    <div id="settings-modal" class="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-sidebar border border-borderSubtle rounded-2xl w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300" id="settings-box">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-white/5">
+                <h3 class="text-white font-medium text-lg">Appearance Settings</h3>
+                <button onclick="closeSettings()" class="text-zinc-500 hover:text-white transition"><i class="ph ph-x text-lg"></i></button>
+            </div>
+            <div class="p-5 flex flex-col gap-4">
+                <div>
+                    <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3 block">Accent Color</label>
+                    <div class="flex items-center gap-3">
+                        <button onclick="setThemeColor('#e5e5e5')" class="w-8 h-8 rounded-full bg-[#e5e5e5] border-2 border-transparent focus:border-zinc-500 hover:scale-110 transition-transform"></button>
+                        <button onclick="setThemeColor('#10b981')" class="w-8 h-8 rounded-full bg-emerald-500 border-2 border-transparent focus:border-zinc-500 hover:scale-110 transition-transform"></button>
+                        <button onclick="setThemeColor('#3b82f6')" class="w-8 h-8 rounded-full bg-blue-500 border-2 border-transparent focus:border-zinc-500 hover:scale-110 transition-transform"></button>
+                        <button onclick="setThemeColor('#a855f7')" class="w-8 h-8 rounded-full bg-purple-500 border-2 border-transparent focus:border-zinc-500 hover:scale-110 transition-transform"></button>
+                        <button onclick="setThemeColor('#f43f5e')" class="w-8 h-8 rounded-full bg-rose-500 border-2 border-transparent focus:border-zinc-500 hover:scale-110 transition-transform"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="px-5 py-4 border-t border-white/5 flex justify-end">
+                <button onclick="closeSettings()" class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium transition">Done</button>
             </div>
         </div>
     </div>
 
     <!-- Toast Notifications -->
-    <div id="toast-container" class="fixed bottom-8 right-8 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
-
-    <!-- Main App UI -->
-    <div class="w-full h-full flex relative z-10 transition-all duration-1000 opacity-0 scale-[0.98]" id="app-container">
-        
-        <!-- Sidebar -->
-        <aside class="w-[280px] h-full flex flex-col glass border-r border-borderSubtle shrink-0 select-none z-20 m-2 rounded-2xl overflow-hidden shadow-2xl">
-            <div class="h-[80px] flex items-center px-6 border-b border-borderSubtle">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center text-white shadow-lg relative overflow-hidden">
-                        <div class="absolute inset-0 bg-brand/20 blur-xl"></div>
-                        <i class="ph ph-hexagon text-2xl text-white relative z-10"></i>
-                    </div>
-                    <span class="font-serif text-2xl tracking-wide text-white">Nexus</span>
-                </div>
-            </div>
-
-            <nav class="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
-                <div class="px-3 mb-2 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Navigation</div>
-                
-                <button onclick="switchTab('home.html', this)" class="nav-btn active flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
-                    <div class="flex items-center gap-3"><i class="ph ph-squares-four text-lg"></i> Dashboard</div>
-                </button>
-                <button onclick="switchTab('youtube.html', this)" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
-                    <div class="flex items-center gap-3"><i class="ph ph-play-circle text-lg"></i> Media Hub</div>
-                </button>
-                <button onclick="switchTab('ghostlink.html', this)" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
-                    <div class="flex items-center gap-3"><i class="ph ph-ghost text-lg"></i> Ghostlink</div>
-                </button>
-                <button onclick="switchTab('updates.html', this)" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
-                    <div class="flex items-center gap-3"><i class="ph ph-sparkle text-lg"></i> Updates</div>
-                </button>
-            </nav>
-
-            <div class="p-4 bg-black/40 border-t border-borderSubtle">
-                <div class="flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 border border-white/5 backdrop-blur-md">
-                    <div class="flex items-center gap-3">
-                        <div class="relative flex h-2.5 w-2.5">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand"></span>
-                        </div>
-                        <span class="text-xs text-zinc-300 font-medium tracking-wide">Network Synced</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="flex-1 flex flex-col h-full relative z-10 py-2 pr-2">
-            
-            <!-- Top Header -->
-            <header class="h-[80px] shrink-0 flex items-center justify-between px-8 glass-panel rounded-2xl mb-2 relative z-30 shadow-lg border border-borderSubtle">
-                <div class="flex items-center gap-3 text-sm font-medium text-zinc-400">
-                    <span id="current-page-title" class="text-white text-lg font-semibold tracking-tight">Dashboard</span>
-                </div>
-
-                <div class="flex items-center gap-5">
-                    <!-- Live Clock -->
-                    <div id="live-clock" class="hidden md:block text-xs font-mono text-zinc-500 tracking-wider">00:00 AM</div>
-                    
-                    <div class="w-px h-5 bg-white/10 hidden md:block"></div>
-
-                    <button onclick="openPalette()" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-black/40 hover:bg-black/60 border border-borderSubtle text-zinc-400 text-xs transition-all shadow-inner group">
-                        <i class="ph ph-magnifying-glass text-sm group-hover:text-white transition-colors"></i>
-                        <span class="hidden sm:block">Command Menu</span>
-                        <kbd class="px-1.5 py-0.5 rounded bg-white/10 font-mono text-[10px] text-zinc-300">⌘K</kbd>
-                    </button>
-
-                    <!-- Auth Button -->
-                    <button id="settings-trigger" class="flex items-center gap-2.5 px-2 py-2 rounded-xl bg-transparent hover:bg-white/5 border border-transparent hover:border-white/10 transition-all text-zinc-300">
-                        <div class="w-8 h-8 rounded-lg bg-zinc-800 border border-white/10 flex items-center justify-center overflow-hidden">
-                            <i id="user-avatar-icon" class="ph ph-user text-lg"></i>
-                            <img id="user-avatar-img" src="" class="w-full h-full object-cover hidden">
-                        </div>
-                        <span id="user-name-label" class="text-xs font-semibold pr-2 hidden sm:block">Sign In</span>
-                    </button>
-                </div>
-            </header>
-
-            <!-- Iframe Container -->
-            <div class="flex-1 w-full h-full relative rounded-2xl overflow-hidden glass border border-borderSubtle shadow-2xl">
-                <iframe id="content-frame" class="w-full h-full border-none bg-transparent" src="home.html"></iframe>
-            </div>
-        </main>
-    </div>
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -220,8 +283,13 @@
         });
         const auth = getAuth(app);
 
-        // Intro Animation
+        // Initialization & Theme Load
         window.addEventListener('load', () => {
+            // Load saved accent color
+            const savedColor = localStorage.getItem('nexus-brand-color');
+            if(savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
+
+            // Intro Animation Sequence
             setTimeout(() => {
                 const intro = document.getElementById('intro-screen');
                 const appCont = document.getElementById('app-container');
@@ -231,88 +299,92 @@
                     appCont.style.opacity = '1';
                     appCont.style.transform = 'scale(1)';
                 }, 800);
-            }, 2000);
+            }, 1800);
         });
 
-        // Live Clock
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('live-clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        }, 1000);
+        // Tab Switching Logic (Handles native home view vs iframes)
+        window.switchTab = (page, btn) => {
+            // Update active state in sidebar
+            if(btn) {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            
+            const homeView = document.getElementById('home-view');
+            const iframeView = document.getElementById('content-frame');
+            
+            if (page === 'home') {
+                homeView.style.display = 'flex';
+                iframeView.style.display = 'none';
+                iframeView.src = '';
+            } else {
+                homeView.style.display = 'none';
+                iframeView.style.display = 'block';
+
+                if (page === 'youtube') {
+                    iframeView.removeAttribute('src');
+                    iframeView.srcdoc = `
+                        <html class="dark"><head><script src="https://cdn.tailwindcss.com"><\/script></head>
+                        <body class="bg-[#131313] text-white p-10 font-sans">
+                            <div class="max-w-5xl mx-auto mt-6">
+                                <h1 class="text-4xl font-serif mb-2 tracking-tight">Media Hub</h1>
+                                <p class="text-zinc-500 mb-10 text-sm">Curated platform access.</p>
+                                <div class="grid grid-cols-1 gap-8">
+                                    <div class="p-2 rounded-2xl border border-white/10 bg-[#1a1a1a]">
+                                        <div class="aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
+                                            <iframe class="w-full h-full border-none" src="https://www.youtube.com/embed/9qbrOrj30TM" allowfullscreen></iframe>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </body></html>
+                    `;
+                } else {
+                    iframeView.removeAttribute('srcdoc');
+                    iframeView.src = page + '.html';
+                }
+            }
+        };
+
+        // Theme Settings Logic
+        const settingsModal = document.getElementById('settings-modal');
+        const settingsBox = document.getElementById('settings-box');
+        
+        window.openSettings = () => {
+            settingsModal.classList.remove('opacity-0', 'pointer-events-none');
+            settingsBox.classList.remove('scale-95');
+        };
+        
+        window.closeSettings = () => {
+            settingsModal.classList.add('opacity-0', 'pointer-events-none');
+            settingsBox.classList.add('scale-95');
+        };
+
+        window.setThemeColor = (colorHex) => {
+            document.documentElement.style.setProperty('--brand-color', colorHex);
+            localStorage.setItem('nexus-brand-color', colorHex);
+            showToast('Theme accent updated');
+        };
+
+        // Close modal on outside click
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) closeSettings();
+        });
 
         // Toast Notifications
         window.showToast = (msg) => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = 'glass px-5 py-3.5 rounded-xl text-white text-sm shadow-2xl flex items-center gap-3 transform translate-y-8 opacity-0 transition-all duration-300';
-            toast.innerHTML = `<i class="ph ph-check-circle text-brand text-xl"></i> <span class="font-medium">${msg}</span>`;
+            toast.className = 'bg-[#1e1e1e] border border-white/10 px-4 py-3 rounded-xl text-white text-sm shadow-xl flex items-center gap-3 transform translate-y-8 opacity-0 transition-all duration-300';
+            toast.innerHTML = `<i class="ph ph-check-circle text-[var(--brand-color)] text-lg"></i> <span class="font-medium">${msg}</span>`;
             container.appendChild(toast);
             
             requestAnimationFrame(() => toast.classList.remove('translate-y-8', 'opacity-0'));
             setTimeout(() => {
                 toast.classList.add('translate-y-8', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            }, 3000);
         };
-
-        // Tab Switching Logic
-        window.switchTab = (page, btn) => {
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-            
-            const frame = document.getElementById('content-frame');
-            
-            if (page === 'youtube.html') {
-                frame.srcdoc = `
-                    <html class="dark"><head><script src="https://cdn.tailwindcss.com"><\/script></head>
-                    <body class="bg-transparent text-white p-10 font-sans">
-                        <div class="max-w-5xl mx-auto">
-                            <h1 class="text-4xl font-serif mb-3 tracking-tight">Media Hub</h1>
-                            <p class="text-zinc-400 mb-10 text-sm">Curated platform access.</p>
-                            <div class="grid grid-cols-1 gap-8">
-                                <div class="p-6 rounded-3xl bg-black/40 border border-white/5 backdrop-blur-md shadow-2xl">
-                                    <div class="aspect-video bg-black rounded-2xl overflow-hidden shadow-inner">
-                                        <iframe class="w-full h-full border-none" src="https://www.youtube.com/embed/9qbrOrj30TM" allowfullscreen></iframe>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </body></html>
-                `;
-            } else {
-                frame.removeAttribute('srcdoc');
-                frame.src = page;
-            }
-
-            const title = page.replace('.html', '');
-            document.getElementById('current-page-title').textContent = title.charAt(0).toUpperCase() + title.slice(1);
-        };
-
-        // Command Palette Logic
-        const palette = document.getElementById('command-palette');
-        const pBox = document.getElementById('palette-box');
-        const pInput = document.getElementById('palette-input');
-
-        window.openPalette = () => {
-            palette.classList.remove('opacity-0', 'pointer-events-none');
-            pBox.classList.remove('scale-95');
-            pInput.focus();
-        };
-        window.closePalette = () => {
-            palette.classList.add('opacity-0', 'pointer-events-none');
-            pBox.classList.add('scale-95');
-            pInput.value = '';
-        };
-        window.paletteSelect = (page, name) => {
-            switchTab(page);
-            closePalette();
-            showToast(`Launched ${name}`);
-        };
-
-        document.addEventListener('keydown', (e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openPalette(); }
-            if (e.key === 'Escape') closePalette();
-        });
 
         // Auth Logic
         document.getElementById('settings-trigger').addEventListener('click', async () => {
@@ -340,7 +412,7 @@
             } else {
                 icon.classList.remove('hidden');
                 img.classList.add('hidden');
-                label.textContent = 'Sign In';
+                label.textContent = 'Sign In / Auth';
             }
         });
     </script>
