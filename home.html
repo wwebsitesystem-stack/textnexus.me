@@ -50,99 +50,123 @@
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
         
         /* Entrance Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-in { 
+        .animate-fade-up { 
             opacity: 0;
-            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+            animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
         }
         .delay-100 { animation-delay: 100ms; }
         .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
     </style>
 </head>
-<body class="w-full h-full p-8 md:p-12 antialiased selection:bg-brand/30 selection:text-white overflow-y-auto">
+<body class="w-full h-full p-8 md:p-12 lg:p-16 antialiased selection:bg-brand/30 selection:text-white overflow-y-auto">
 
-    <!-- Header Section -->
-    <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 animate-fade-in">
-        <div>
-            <h1 class="font-serif text-3xl md:text-4xl text-white tracking-wide mb-1">Overview</h1>
-            <p class="text-zinc-400 font-light text-sm">Welcome to your Nexus premium workspace.</p>
-        </div>
-        <div class="px-3 py-1.5 rounded-full border border-borderSubtle bg-sidebar text-xs font-medium text-zinc-400 flex items-center gap-2.5 w-max">
-            <span class="w-2 h-2 rounded-full bg-[var(--brand-color)] animate-pulse shadow-[0_0_8px_var(--brand-color)]"></span>
-            System Online
-        </div>
-    </header>
-
-    <!-- Quick Actions Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10 animate-fade-in delay-100">
-        
-        <!-- Action Card 1 -->
-        <div class="bg-sidebar border border-borderSubtle p-5 rounded-2xl hover:border-white/15 transition-colors cursor-pointer group flex flex-col justify-between h-40 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-[var(--brand-color)] opacity-[0.03] rounded-full blur-2xl group-hover:opacity-10 transition-opacity"></div>
-            <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-[var(--brand-color)]">
-                <i class="ph ph-folder-open text-xl"></i>
-            </div>
-            <div>
-                <h3 class="text-white font-medium text-base mb-1">Project Modules</h3>
-                <p class="text-xs text-zinc-500 font-light">Access and manage active workspaces.</p>
-            </div>
-        </div>
-
-        <!-- Action Card 2 -->
-        <div class="bg-sidebar border border-borderSubtle p-5 rounded-2xl hover:border-white/15 transition-colors cursor-pointer group flex flex-col justify-between h-40 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-[var(--brand-color)] opacity-[0.03] rounded-full blur-2xl group-hover:opacity-10 transition-opacity"></div>
-            <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-[var(--brand-color)]">
-                <i class="ph ph-ghost text-xl"></i>
-            </div>
-            <div>
-                <h3 class="text-white font-medium text-base mb-1">Ghostlink Protocol</h3>
-                <p class="text-xs text-zinc-500 font-light">Access your untracked environment.</p>
-            </div>
-        </div>
-
-        <!-- Action Card 3 -->
-        <div class="bg-sidebar border border-borderSubtle p-5 rounded-2xl hover:border-white/15 transition-colors cursor-pointer group flex flex-col justify-between h-40 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-[var(--brand-color)] opacity-[0.03] rounded-full blur-2xl group-hover:opacity-10 transition-opacity"></div>
-            <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-[var(--brand-color)]">
-                <i class="ph ph-files text-xl"></i>
-            </div>
-            <div>
-                <h3 class="text-white font-medium text-base mb-1">Knowledge Base</h3>
-                <p class="text-xs text-zinc-500 font-light">Browse uploaded files and data.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Activity Section -->
-    <div class="animate-fade-in delay-200">
-        <h2 class="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-4">Recent Activity</h2>
-        
-        <div class="flex flex-col gap-2">
-            <!-- Placeholder Item 1 -->
-            <div class="flex items-center gap-4 px-4 py-3.5 rounded-xl border border-transparent bg-sidebar hover:border-borderSubtle transition-colors cursor-pointer group">
-                <div class="w-8 h-8 rounded-lg bg-main border border-borderSubtle flex items-center justify-center text-zinc-500 group-hover:text-[var(--brand-color)] transition-colors">
-                    <i class="ph ph-sparkle text-sm"></i>
+    <div class="max-w-6xl mx-auto">
+        <!-- Hero & Header Section -->
+        <header class="flex flex-col items-start mb-14 animate-fade-up">
+            
+            <!-- Scaled up Nexus Logo with Glow -->
+            <div class="w-14 h-14 bg-sidebar border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_-5px_var(--brand-color)] mb-6 relative group overflow-hidden">
+                <div class="absolute inset-0 bg-[var(--brand-color)] opacity-[0.08] group-hover:opacity-[0.15] transition-opacity duration-500"></div>
+                
+                <!-- The Geometric Nexus Shape -->
+                <div class="w-5 h-5 bg-white rounded-[3px] rotate-45 flex items-center justify-center transition-transform duration-700 group-hover:rotate-[225deg] relative z-10">
+                    <div class="w-3 h-3 bg-sidebar rounded-[2px]"></div>
                 </div>
-                <div class="flex-1">
-                    <h4 class="text-sm text-zinc-200 font-medium group-hover:text-white transition-colors">System Initialized</h4>
-                    <p class="text-xs text-zinc-500">Workspace successfully booted.</p>
-                </div>
-                <span class="text-xs text-zinc-600 font-mono">Just now</span>
             </div>
 
-            <!-- Placeholder Item 2 -->
-            <div class="flex items-center gap-4 px-4 py-3.5 rounded-xl border border-transparent bg-sidebar hover:border-borderSubtle transition-colors cursor-pointer group">
-                <div class="w-8 h-8 rounded-lg bg-main border border-borderSubtle flex items-center justify-center text-zinc-500 group-hover:text-[var(--brand-color)] transition-colors">
-                    <i class="ph ph-palette text-sm"></i>
+            <h1 class="font-serif text-4xl md:text-5xl text-white tracking-wide mb-3">Workspace Overview</h1>
+            
+            <div class="flex items-center gap-4">
+                <p class="text-zinc-400 font-light text-base">Your premium environment is initialized and ready.</p>
+                <div class="w-1 h-1 rounded-full bg-borderSubtle"></div>
+                <div class="px-3 py-1 rounded-full border border-borderSubtle bg-sidebar text-xs font-medium text-zinc-400 flex items-center gap-2 shadow-sm">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--brand-color)] animate-pulse shadow-[0_0_8px_var(--brand-color)]"></span>
+                    System Online
                 </div>
-                <div class="flex-1">
-                    <h4 class="text-sm text-zinc-200 font-medium group-hover:text-white transition-colors">Appearance Synced</h4>
-                    <p class="text-xs text-zinc-500">Personalized accent colors loaded.</p>
+            </div>
+        </header>
+
+        <!-- Quick Actions Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-14 animate-fade-up delay-100">
+            
+            <!-- Action Card 1 -->
+            <div class="bg-sidebar border border-borderSubtle p-6 rounded-[20px] hover:border-white/20 transition-all duration-300 cursor-pointer group flex flex-col justify-between h-48 relative overflow-hidden hover:-translate-y-1 shadow-lg">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-[var(--brand-color)] opacity-[0.02] rounded-full blur-3xl group-hover:opacity-[0.08] transition-opacity duration-500 transform translate-x-10 -translate-y-10"></div>
+                
+                <div class="w-12 h-12 rounded-2xl bg-main border border-borderSubtle flex items-center justify-center text-[var(--brand-color)] shadow-inner relative z-10 group-hover:scale-105 transition-transform duration-500">
+                    <i class="ph ph-folder-open text-2xl"></i>
                 </div>
-                <span class="text-xs text-zinc-600 font-mono">1m ago</span>
+                <div class="relative z-10">
+                    <h3 class="text-white font-medium text-lg mb-1.5">Project Modules</h3>
+                    <p class="text-sm text-zinc-500 font-light leading-relaxed">Access and manage your active generative workspaces.</p>
+                </div>
+            </div>
+
+            <!-- Action Card 2 -->
+            <div class="bg-sidebar border border-borderSubtle p-6 rounded-[20px] hover:border-white/20 transition-all duration-300 cursor-pointer group flex flex-col justify-between h-48 relative overflow-hidden hover:-translate-y-1 shadow-lg">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-[var(--brand-color)] opacity-[0.02] rounded-full blur-3xl group-hover:opacity-[0.08] transition-opacity duration-500 transform translate-x-10 -translate-y-10"></div>
+                
+                <div class="w-12 h-12 rounded-2xl bg-main border border-borderSubtle flex items-center justify-center text-[var(--brand-color)] shadow-inner relative z-10 group-hover:scale-105 transition-transform duration-500">
+                    <i class="ph ph-ghost text-2xl"></i>
+                </div>
+                <div class="relative z-10">
+                    <h3 class="text-white font-medium text-lg mb-1.5">Ghostlink Protocol</h3>
+                    <p class="text-sm text-zinc-500 font-light leading-relaxed">Enter your secure, untracked testing environment.</p>
+                </div>
+            </div>
+
+            <!-- Action Card 3 -->
+            <div class="bg-sidebar border border-borderSubtle p-6 rounded-[20px] hover:border-white/20 transition-all duration-300 cursor-pointer group flex flex-col justify-between h-48 relative overflow-hidden hover:-translate-y-1 shadow-lg">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-[var(--brand-color)] opacity-[0.02] rounded-full blur-3xl group-hover:opacity-[0.08] transition-opacity duration-500 transform translate-x-10 -translate-y-10"></div>
+                
+                <div class="w-12 h-12 rounded-2xl bg-main border border-borderSubtle flex items-center justify-center text-[var(--brand-color)] shadow-inner relative z-10 group-hover:scale-105 transition-transform duration-500">
+                    <i class="ph ph-database text-2xl"></i>
+                </div>
+                <div class="relative z-10">
+                    <h3 class="text-white font-medium text-lg mb-1.5">Knowledge Base</h3>
+                    <p class="text-sm text-zinc-500 font-light leading-relaxed">Browse your uploaded files, assets, and data parameters.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="animate-fade-up delay-200 bg-sidebar border border-borderSubtle rounded-[24px] p-6 lg:p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Recent Activity Log</h2>
+                <button class="text-xs font-medium text-zinc-500 hover:text-white transition-colors">View All</button>
+            </div>
+            
+            <div class="flex flex-col gap-3">
+                <!-- Activity Item 1 -->
+                <div class="flex items-center gap-5 px-4 py-4 rounded-2xl border border-transparent hover:bg-main hover:border-borderSubtle transition-all duration-300 cursor-pointer group">
+                    <div class="w-10 h-10 rounded-xl bg-main border border-borderSubtle flex items-center justify-center text-zinc-500 group-hover:text-[var(--brand-color)] transition-colors shadow-sm">
+                        <i class="ph ph-sparkle text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-base text-zinc-200 font-medium group-hover:text-white transition-colors">System Initialized</h4>
+                        <p class="text-sm text-zinc-500 font-light mt-0.5">Workspace successfully booted and authenticated.</p>
+                    </div>
+                    <span class="text-xs text-zinc-600 font-mono tracking-wide">Just now</span>
+                </div>
+
+                <div class="w-full h-[1px] bg-borderSubtle/50 ml-16"></div>
+
+                <!-- Activity Item 2 -->
+                <div class="flex items-center gap-5 px-4 py-4 rounded-2xl border border-transparent hover:bg-main hover:border-borderSubtle transition-all duration-300 cursor-pointer group">
+                    <div class="w-10 h-10 rounded-xl bg-main border border-borderSubtle flex items-center justify-center text-zinc-500 group-hover:text-[var(--brand-color)] transition-colors shadow-sm">
+                        <i class="ph ph-palette text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-base text-zinc-200 font-medium group-hover:text-white transition-colors">Appearance Synced</h4>
+                        <p class="text-sm text-zinc-500 font-light mt-0.5">Personalized accent colors and themes applied.</p>
+                    </div>
+                    <span class="text-xs text-zinc-600 font-mono tracking-wide">2m ago</span>
+                </div>
             </div>
         </div>
     </div>
