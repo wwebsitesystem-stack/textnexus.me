@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus — Premium Workspace</title>
+    <title>Nexus — Next-Gen OS Workspace</title>
     
     <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
     <!-- Tailwind CSS -->
@@ -16,284 +18,514 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['"Playfair Display"', 'serif'] },
-                    colors: {
-                        appBg: '#050505', surface: 'rgba(20, 20, 20, 0.6)', 
-                        borderSubtle: 'rgba(255,255,255,0.06)', brand: '#10b981'
+                    fontFamily: { 
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'], 
+                        display: ['Syne', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace']
                     },
-                    animation: { 'spin-slow': 'spin 8s linear infinite' }
+                    colors: {
+                        appBg: '#030305',
+                        surface: 'rgba(15, 15, 20, 0.65)',
+                        surfaceHover: 'rgba(255, 255, 255, 0.06)',
+                        borderSubtle: 'rgba(255, 255, 255, 0.08)'
+                    }
                 }
             }
         }
     </script>
 
     <style>
-        body { background-color: #050505; color: #f4f4f5; font-family: 'Inter', sans-serif; overflow: hidden; }
-        
-        /* Ambient Background Glow */
-        .ambient-bg {
-            position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
-        }
-        .ambient-glow {
-            position: absolute; width: 60vw; height: 60vw; border-radius: 50%;
-            background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, rgba(0,0,0,0) 70%);
-            top: -20%; left: -10%; filter: blur(60px);
-        }
-        .ambient-glow-2 {
-            position: absolute; width: 50vw; height: 50vw; border-radius: 50%;
-            background: radial-gradient(circle, rgba(99,102,241,0.05) 0%, rgba(0,0,0,0) 70%);
-            bottom: -20%; right: -10%; filter: blur(60px);
+        :root {
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.35);
+            --accent-rgb: 16, 185, 129;
         }
 
-        /* Premium Glass Utilities */
-        .glass { background: rgba(20, 20, 22, 0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.05); }
-        .glass-panel { background: rgba(10, 10, 10, 0.65); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-bottom: 1px solid rgba(255,255,255,0.04); }
+        body { 
+            background-color: #030305; 
+            color: #f4f4f5; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            overflow: hidden; 
+            user-select: none;
+        }
+
+        /* Dynamic Canvas & Ambient Background */
+        #bg-canvas {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.8;
+        }
+
+        /* Glassmorphism & Borders */
+        .glass { 
+            background: rgba(12, 12, 18, 0.65); 
+            backdrop-filter: blur(30px); 
+            -webkit-backdrop-filter: blur(30px); 
+            border: 1px solid rgba(255, 255, 255, 0.07); 
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .glass-panel { 
+            background: rgba(8, 8, 12, 0.7); 
+            backdrop-filter: blur(24px); 
+            -webkit-backdrop-filter: blur(24px); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06); 
+        }
+
+        /* Glow Accents */
+        .accent-text { color: var(--accent); }
+        .accent-bg { background-color: var(--accent); }
+        .accent-border { border-color: var(--accent); }
+        .accent-glow-box { box-shadow: 0 0 25px var(--accent-glow); }
         
-        /* Smooth Intro Screen */
+        /* Intro Cinematic Animation */
         #intro-screen {
-            position: fixed; inset: 0; background-color: #050505; z-index: 9999;
+            position: fixed; inset: 0; background-color: #030305; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s ease;
         }
         .intro-logo {
-            font-family: 'Playfair Display', serif; font-size: 4rem; color: #fff;
-            opacity: 0; transform: translateY(20px) scale(0.95);
-            animation: floatUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            font-family: 'Syne', sans-serif; font-size: 4.5rem; font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, var(--accent) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            opacity: 0; transform: scale(0.9) translateY(20px); filter: blur(12px);
+            animation: introReveal 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        @keyframes floatUp {
-            0% { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(10px); }
-            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); text-shadow: 0 10px 40px rgba(16, 185, 129, 0.25); }
+        @keyframes introReveal {
+            0% { opacity: 0; transform: scale(0.9) translateY(20px); filter: blur(12px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
         }
 
-        /* Sidebar Item Animations */
-        .nav-btn { position: relative; overflow: hidden; }
+        /* Sidebar Navigation Effects */
+        .nav-btn {
+            position: relative; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
         .nav-btn::before {
-            content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(16,185,129,0.1), transparent);
-            opacity: 0; transition: opacity 0.3s ease; border-radius: inherit; pointer-events: none;
+            content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px;
+            background: var(--accent); border-radius: 0 4px 4px 0;
+            opacity: 0; transform: scaleY(0); transition: all 0.25s ease;
         }
-        .nav-btn:hover::before, .nav-btn.active::before { opacity: 1; }
-        .nav-btn.active { color: #fff; border-color: rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
-        .nav-btn.active i { color: #10b981; }
+        .nav-btn.active {
+            background: rgba(255, 255, 255, 0.07); color: #fff;
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+        .nav-btn.active::before { opacity: 1; transform: scaleY(1); }
+        .nav-btn.active i { color: var(--accent); }
 
-        /* Custom Scrollbar */
+        /* Loading Skeleton Shimmer for Content Frame */
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Toast Animation */
+        .toast-enter { transform: translateY(20px) scale(0.95); opacity: 0; }
+        .toast-show { transform: translateY(0) scale(1); opacity: 1; }
+
+        /* Custom Scrollbars */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
     </style>
 </head>
-<body class="h-screen w-screen flex antialiased selection:bg-brand/30 selection:text-white">
+<body class="h-screen w-screen flex antialiased selection:bg-emerald-500/30 selection:text-white">
 
-    <!-- Ambient Background -->
-    <div class="ambient-bg">
-        <div class="ambient-glow"></div>
-        <div class="ambient-glow-2"></div>
-    </div>
+    <!-- Interactive Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
 
-    <!-- Intro Screen -->
+    <!-- Cinematic Intro Screen -->
     <div id="intro-screen">
-        <div class="intro-logo">Nexus</div>
-        <div class="mt-8 flex items-center gap-3 text-xs text-zinc-500 tracking-[0.3em] uppercase">
-            <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse shadow-[0_0_10px_#10b981]"></span>
-            Synchronizing
+        <div class="intro-logo tracking-tight">NEXUS</div>
+        <div class="mt-6 flex items-center gap-3 text-xs font-mono text-zinc-400 tracking-[0.3em] uppercase">
+            <span class="w-2 h-2 rounded-full accent-bg animate-ping"></span>
+            Initializing Quantum Workspace
+        </div>
+        <div class="w-48 h-1 bg-white/10 rounded-full mt-6 overflow-hidden">
+            <div class="h-full accent-bg rounded-full animate-[shimmer_1.5s_infinite] w-full"></div>
         </div>
     </div>
 
-    <!-- Raycast-Style Command Palette (Ctrl+K) -->
-    <div id="command-palette" class="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-md flex items-start justify-center pt-[15vh] px-4 opacity-0 pointer-events-none transition-all duration-300">
-        <div class="glass rounded-2xl w-full max-w-2xl shadow-2xl shadow-black/80 overflow-hidden transform scale-95 transition-transform duration-300" id="palette-box">
-            <div class="flex items-center px-5 py-4 border-b border-white/5 gap-4">
+    <!-- Command Palette Modal (Ctrl+K / Cmd+K) -->
+    <div id="command-palette" class="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-md flex items-start justify-center pt-[12vh] px-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300 border border-white/10" id="palette-box">
+            <div class="flex items-center px-5 py-4 border-b border-white/10 gap-3">
                 <i class="ph ph-magnifying-glass text-zinc-400 text-xl"></i>
-                <input id="palette-input" type="text" placeholder="What do you want to do?" class="w-full bg-transparent border-none text-white text-lg font-light focus:outline-none placeholder:text-zinc-600">
-                <kbd class="text-[10px] font-mono px-2 py-1 rounded bg-white/5 border border-white/10 text-zinc-400">ESC</kbd>
+                <input id="palette-input" type="text" placeholder="Type a command or search workspace..." class="w-full bg-transparent border-none text-white text-lg focus:outline-none placeholder:text-zinc-500">
+                <kbd class="text-[10px] font-mono px-2 py-1 rounded bg-white/10 text-zinc-400 border border-white/10">ESC</kbd>
             </div>
-            <div class="p-2 max-h-[350px] overflow-y-auto flex flex-col gap-1" id="palette-results">
-                <div class="px-4 py-2 mt-2 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Workspace Apps</div>
-                <button onclick="paletteSelect('home.html', 'Dashboard')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left text-sm cursor-pointer group">
-                    <div class="flex items-center gap-3"><i class="ph ph-squares-four text-xl group-hover:text-brand transition-colors"></i><span>Dashboard</span></div>
-                    <i class="ph ph-arrow-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
+            <div class="p-3 max-h-[360px] overflow-y-auto flex flex-col gap-1" id="palette-results">
+                <div class="px-3 py-1.5 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Applications</div>
+                <button onclick="paletteSelect('home.html', 'Dashboard')" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
+                    <div class="flex items-center gap-3"><i class="ph ph-squares-four text-lg accent-text"></i><span>Dashboard</span></div>
+                    <span class="text-xs text-zinc-500 font-mono">Jump to Home</span>
                 </button>
-                <button onclick="paletteSelect('youtube.html', 'Media Hub')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left text-sm cursor-pointer group">
-                    <div class="flex items-center gap-3"><i class="ph ph-youtube-logo text-xl group-hover:text-red-500 transition-colors"></i><span>Media Hub</span></div>
-                    <i class="ph ph-arrow-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                <button onclick="paletteSelect('youtube.html', 'Media Hub')" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
+                    <div class="flex items-center gap-3"><i class="ph ph-youtube-logo text-lg text-red-500"></i><span>Media Hub</span></div>
+                    <span class="text-xs text-zinc-500 font-mono">Stream & Watch</span>
+                </button>
+                <button onclick="paletteSelect('ghostlink.html', 'Ghostlink')" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
+                    <div class="flex items-center gap-3"><i class="ph ph-ghost text-lg text-purple-400"></i><span>Ghostlink</span></div>
+                    <span class="text-xs text-zinc-500 font-mono">Secure Node</span>
+                </button>
+                <div class="px-3 py-1.5 mt-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">System Actions</div>
+                <button onclick="toggleSound()" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
+                    <div class="flex items-center gap-3"><i class="ph ph-speaker-high text-lg"></i><span>Toggle UI Audio Feedback</span></div>
+                    <span class="text-xs text-zinc-500 font-mono" id="palette-sound-status">Enabled</span>
+                </button>
+                <button onclick="openShortcutsModal()" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
+                    <div class="flex items-center gap-3"><i class="ph ph-keyboard text-lg"></i><span>Keyboard Shortcuts</span></div>
+                    <kbd class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-zinc-400">?</kbd>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notifications -->
-    <div id="toast-container" class="fixed bottom-8 right-8 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
+    <!-- Keyboard Shortcuts Modal -->
+    <div id="shortcuts-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass rounded-2xl w-full max-w-md p-6 shadow-2xl border border-white/10 relative">
+            <button onclick="closeShortcutsModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="ph ph-x text-xl"></i></button>
+            <h3 class="font-display text-xl font-bold text-white mb-4 flex items-center gap-2"><i class="ph ph-keyboard accent-text"></i> Shortcuts</h3>
+            <div class="space-y-3 text-sm text-zinc-300">
+                <div class="flex justify-between items-center py-1.5 border-b border-white/5"><span>Command Palette</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">⌘ + K</kbd></div>
+                <div class="flex justify-between items-center py-1.5 border-b border-white/5"><span>Dashboard</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">G + H</kbd></div>
+                <div class="flex justify-between items-center py-1.5 border-b border-white/5"><span>Media Hub</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">G + M</kbd></div>
+                <div class="flex justify-between items-center py-1.5 border-b border-white/5"><span>Shortcuts Help</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">?</kbd></div>
+                <div class="flex justify-between items-center py-1.5"><span>Close Windows</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">ESC</kbd></div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Main App UI -->
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- Main Workspace Layout -->
     <div class="w-full h-full flex relative z-10 transition-all duration-1000 opacity-0 scale-[0.98]" id="app-container">
         
         <!-- Sidebar -->
-        <aside class="w-[280px] h-full flex flex-col glass border-r border-borderSubtle shrink-0 select-none z-20 m-2 rounded-2xl overflow-hidden shadow-2xl">
-            <div class="h-[80px] flex items-center px-6 border-b border-borderSubtle">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center text-white shadow-lg relative overflow-hidden">
-                        <div class="absolute inset-0 bg-brand/20 blur-xl"></div>
-                        <i class="ph ph-hexagon text-2xl text-white relative z-10"></i>
+        <aside class="w-[280px] h-full flex flex-col glass border-r border-borderSubtle shrink-0 select-none z-20 m-2 rounded-2xl overflow-hidden shadow-2xl relative">
+            
+            <!-- App Brand Header -->
+            <div class="h-[76px] flex items-center justify-between px-6 border-b border-white/5">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-black border border-white/15 flex items-center justify-center text-white shadow-xl relative overflow-hidden group">
+                        <div class="absolute inset-0 accent-bg opacity-20 blur-md group-hover:opacity-40 transition-opacity"></div>
+                        <i class="ph ph-hexagon text-2xl accent-text relative z-10"></i>
                     </div>
-                    <span class="font-serif text-2xl tracking-wide text-white">Nexus</span>
+                    <div>
+                        <span class="font-display font-bold text-xl tracking-tight text-white block leading-none">NEXUS</span>
+                        <span class="text-[10px] font-mono text-zinc-500 tracking-wider">v4.0 OS</span>
+                    </div>
                 </div>
             </div>
 
-            <nav class="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
-                <div class="px-3 mb-2 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Navigation</div>
+            <!-- Nav Links -->
+            <nav class="flex-1 px-3 py-6 flex flex-col gap-1.5 overflow-y-auto">
+                <div class="px-3 mb-2 text-[10px] font-extrabold tracking-widest text-zinc-500 uppercase">Core Workspace</div>
                 
-                <button onclick="switchTab('home.html', this)" class="nav-btn active flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                <button onclick="switchTab('home.html', this)" class="nav-btn active flex items-center justify-between px-3.5 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium">
                     <div class="flex items-center gap-3"><i class="ph ph-squares-four text-lg"></i> Dashboard</div>
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-500">01</span>
                 </button>
-                <button onclick="switchTab('youtube.html', this)" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                <button onclick="switchTab('youtube.html', this)" class="nav-btn flex items-center justify-between px-3.5 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium">
                     <div class="flex items-center gap-3"><i class="ph ph-play-circle text-lg"></i> Media Hub</div>
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-500">02</span>
                 </button>
-                <button onclick="switchTab('ghostlink.html', this)" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                <button onclick="switchTab('ghostlink.html', this)" class="nav-btn flex items-center justify-between px-3.5 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium">
                     <div class="flex items-center gap-3"><i class="ph ph-ghost text-lg"></i> Ghostlink</div>
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-500">03</span>
                 </button>
-                <button onclick="switchTab('updates.html', this)" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
-                    <div class="flex items-center gap-3"><i class="ph ph-sparkle text-lg"></i> Updates</div>
+                <button onclick="switchTab('updates.html', this)" class="nav-btn flex items-center justify-between px-3.5 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium">
+                    <div class="flex items-center gap-3"><i class="ph ph-sparkle text-lg"></i> System Updates</div>
+                    <span class="w-2 h-2 rounded-full accent-bg"></span>
                 </button>
+
+                <div class="px-3 mt-6 mb-2 text-[10px] font-extrabold tracking-widest text-zinc-500 uppercase">Theme Accent</div>
+                <div class="flex items-center gap-2 px-3">
+                    <button onclick="setTheme('#10b981', 'rgba(16, 185, 129, 0.35)')" class="w-6 h-6 rounded-full bg-emerald-500 ring-2 ring-white/20 hover:scale-110 transition-transform"></button>
+                    <button onclick="setTheme('#8b5cf6', 'rgba(139, 92, 246, 0.35)')" class="w-6 h-6 rounded-full bg-purple-500 hover:scale-110 transition-transform"></button>
+                    <button onclick="setTheme('#06b6d4', 'rgba(6, 182, 212, 0.35)')" class="w-6 h-6 rounded-full bg-cyan-500 hover:scale-110 transition-transform"></button>
+                    <button onclick="setTheme('#f59e0b', 'rgba(245, 158, 11, 0.35)')" class="w-6 h-6 rounded-full bg-amber-500 hover:scale-110 transition-transform"></button>
+                </div>
             </nav>
 
-            <div class="p-4 bg-black/40 border-t border-borderSubtle">
-                <div class="flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 border border-white/5 backdrop-blur-md">
-                    <div class="flex items-center gap-3">
-                        <div class="relative flex h-2.5 w-2.5">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand"></span>
-                        </div>
-                        <span class="text-xs text-zinc-300 font-medium tracking-wide">Network Synced</span>
+            <!-- Bottom System Widget -->
+            <div class="p-3 bg-black/40 border-t border-white/5">
+                <div class="p-3 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-2">
+                    <div class="flex items-center justify-between text-xs text-zinc-400">
+                        <span class="flex items-center gap-1.5"><i class="ph ph-cpu text-sm accent-text"></i> Engine</span>
+                        <span class="font-mono text-[10px] text-zinc-300">99.8% Optimal</span>
+                    </div>
+                    <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                        <div class="h-full accent-bg w-[85%] rounded-full"></div>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
-        <main class="flex-1 flex flex-col h-full relative z-10 py-2 pr-2">
+        <!-- Main Content Column -->
+        <main class="flex-1 flex flex-col h-full relative z-10 my-2 mr-2">
             
-            <!-- Top Header -->
-            <header class="h-[80px] shrink-0 flex items-center justify-between px-8 glass-panel rounded-2xl mb-2 relative z-30 shadow-lg border border-borderSubtle">
-                <div class="flex items-center gap-3 text-sm font-medium text-zinc-400">
-                    <span id="current-page-title" class="text-white text-lg font-semibold tracking-tight">Dashboard</span>
+            <!-- Top Glass Header -->
+            <header class="h-[76px] shrink-0 flex items-center justify-between px-8 glass-panel rounded-2xl mb-2 relative z-30 border border-borderSubtle">
+                <!-- Breadcrumbs -->
+                <div class="flex items-center gap-2 text-sm font-medium text-zinc-400">
+                    <i class="ph ph-house text-lg"></i>
+                    <span>Workspace</span>
+                    <i class="ph ph-caret-right text-xs opacity-40"></i>
+                    <span id="current-page-title" class="text-white font-semibold tracking-wide">Dashboard</span>
                 </div>
 
-                <div class="flex items-center gap-5">
-                    <!-- Live Clock -->
-                    <div id="live-clock" class="hidden md:block text-xs font-mono text-zinc-500 tracking-wider">00:00 AM</div>
-                    
-                    <div class="w-px h-5 bg-white/10 hidden md:block"></div>
+                <!-- Right Header Actions -->
+                <div class="flex items-center gap-4">
+                    <!-- Audio Toggle -->
+                    <button onclick="toggleSound()" title="Toggle UI SFX" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300 transition-colors">
+                        <i id="sound-icon" class="ph ph-speaker-high text-lg"></i>
+                    </button>
 
-                    <button onclick="openPalette()" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-black/40 hover:bg-black/60 border border-borderSubtle text-zinc-400 text-xs transition-all shadow-inner group">
+                    <!-- Shortcuts Button -->
+                    <button onclick="openShortcutsModal()" title="Keyboard Shortcuts" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300 transition-colors">
+                        <i class="ph ph-keyboard text-lg"></i>
+                    </button>
+
+                    <!-- Live Clock & Date -->
+                    <div class="hidden md:flex flex-col items-end text-right border-l border-white/10 pl-4">
+                        <div id="live-clock" class="text-xs font-mono font-bold text-white tracking-wider">00:00:00 AM</div>
+                        <div id="live-date" class="text-[10px] text-zinc-500 font-medium">Oct 01, 2026</div>
+                    </div>
+
+                    <!-- Command Search Trigger -->
+                    <button onclick="openPalette()" class="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-black/50 hover:bg-black/80 border border-white/10 text-zinc-400 text-xs transition-all shadow-inner group">
                         <i class="ph ph-magnifying-glass text-sm group-hover:text-white transition-colors"></i>
-                        <span class="hidden sm:block">Command Menu</span>
+                        <span class="hidden sm:inline">Search...</span>
                         <kbd class="px-1.5 py-0.5 rounded bg-white/10 font-mono text-[10px] text-zinc-300">⌘K</kbd>
                     </button>
 
-                    <!-- Auth Button -->
-                    <button id="settings-trigger" class="flex items-center gap-2.5 px-2 py-2 rounded-xl bg-transparent hover:bg-white/5 border border-transparent hover:border-white/10 transition-all text-zinc-300">
-                        <div class="w-8 h-8 rounded-lg bg-zinc-800 border border-white/10 flex items-center justify-center overflow-hidden">
-                            <i id="user-avatar-icon" class="ph ph-user text-lg"></i>
-                            <img id="user-avatar-img" src="" class="w-full h-full object-cover hidden">
-                        </div>
-                        <span id="user-name-label" class="text-xs font-semibold pr-2 hidden sm:block">Sign In</span>
-                    </button>
+                    <!-- Authentication Avatar Button -->
+                    <div class="relative">
+                        <button id="auth-trigger" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-white shadow-sm">
+                            <div class="w-7 h-7 rounded-lg bg-zinc-800 border border-white/10 flex items-center justify-center overflow-hidden">
+                                <i id="user-avatar-icon" class="ph ph-user text-base"></i>
+                                <img id="user-avatar-img" src="" class="w-full h-full object-cover hidden">
+                            </div>
+                            <span id="user-name-label" class="text-xs font-semibold pr-1">Sign In</span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
-            <!-- Iframe Container -->
+            <!-- Main Content Container with Dynamic Loader -->
             <div class="flex-1 w-full h-full relative rounded-2xl overflow-hidden glass border border-borderSubtle shadow-2xl">
+                <!-- Skeleton Loader Overlay -->
+                <div id="frame-loader" class="absolute inset-0 z-20 flex flex-col p-8 bg-[#030305] transition-opacity duration-300 opacity-0 pointer-events-none">
+                    <div class="w-48 h-8 rounded-xl shimmer mb-4"></div>
+                    <div class="w-96 h-4 rounded-lg shimmer mb-8"></div>
+                    <div class="grid grid-cols-2 gap-6 flex-1">
+                        <div class="rounded-2xl shimmer"></div>
+                        <div class="rounded-2xl shimmer"></div>
+                    </div>
+                </div>
+
+                <!-- Content Iframe -->
                 <iframe id="content-frame" class="w-full h-full border-none bg-transparent" src="home.html"></iframe>
             </div>
         </main>
     </div>
 
+    <!-- Application Script Engine -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // Firebase Config
-        const app = initializeApp({
+        // Firebase Configuration
+        const firebaseConfig = {
             apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
             authDomain: "nexus-web-development-official.firebaseapp.com",
             projectId: "nexus-web-development-official",
-        });
+        };
+        const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Intro Animation
+        // Sound System (Web Audio API Synthesizer - Zero External Assets)
+        let soundEnabled = true;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        window.playSFX = (freq = 440, type = 'sine', duration = 0.04) => {
+            if (!soundEnabled) return;
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        };
+
+        window.toggleSound = () => {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            const status = document.getElementById('palette-sound-status');
+            if (soundEnabled) {
+                icon.className = "ph ph-speaker-high text-lg";
+                if (status) status.textContent = "Enabled";
+                showToast("UI Audio Enabled");
+                playSFX(800, 'sine', 0.1);
+            } else {
+                icon.className = "ph ph-speaker-x text-lg text-zinc-500";
+                if (status) status.textContent = "Disabled";
+                showToast("UI Audio Muted");
+            }
+        };
+
+        // Theme Accent Switcher
+        window.setTheme = (hex, glow) => {
+            document.documentElement.style.setProperty('--accent', hex);
+            document.documentElement.style.setProperty('--accent-glow', glow);
+            playSFX(600, 'triangle', 0.08);
+            showToast(`Accent Updated`);
+        };
+
+        // Interactive Canvas Animation Background
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const particles = Array.from({ length: 35 }, () => ({
+            x: Math.random() * width, y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+            size: Math.random() * 2 + 1
+        }));
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > width) p.vx *= -1;
+                if (p.y < 0 || p.y > height) p.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+
+        // Intro Controller
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const intro = document.getElementById('intro-screen');
                 const appCont = document.getElementById('app-container');
                 intro.style.opacity = '0';
+                intro.style.transform = 'scale(1.05)';
+                playSFX(520, 'sine', 0.15);
                 setTimeout(() => {
                     intro.style.display = 'none';
                     appCont.style.opacity = '1';
                     appCont.style.transform = 'scale(1)';
                 }, 800);
-            }, 2000);
+            }, 1600);
         });
 
-        // Live Clock
+        // Live Clock & Date Update
         setInterval(() => {
             const now = new Date();
-            document.getElementById('live-clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('live-clock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('live-date').textContent = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
         }, 1000);
 
-        // Toast Notifications
+        // Toast Notification System
         window.showToast = (msg) => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = 'glass px-5 py-3.5 rounded-xl text-white text-sm shadow-2xl flex items-center gap-3 transform translate-y-8 opacity-0 transition-all duration-300';
-            toast.innerHTML = `<i class="ph ph-check-circle text-brand text-xl"></i> <span class="font-medium">${msg}</span>`;
+            toast.className = 'glass px-5 py-3.5 rounded-xl text-white text-sm shadow-2xl flex items-center gap-3 border border-white/10 toast-enter transition-all duration-300';
+            toast.innerHTML = `<i class="ph ph-check-circle text-lg accent-text"></i> <span class="font-medium">${msg}</span>`;
             container.appendChild(toast);
             
-            requestAnimationFrame(() => toast.classList.remove('translate-y-8', 'opacity-0'));
+            requestAnimationFrame(() => toast.classList.replace('toast-enter', 'toast-show'));
             setTimeout(() => {
-                toast.classList.add('translate-y-8', 'opacity-0');
+                toast.classList.replace('toast-show', 'toast-enter');
                 setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            }, 3200);
         };
 
-        // Tab Switching Logic
+        // Tab Switching & Frame Handling
         window.switchTab = (page, btn) => {
+            playSFX(400, 'sine', 0.05);
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             if(btn) btn.classList.add('active');
             
+            const loader = document.getElementById('frame-loader');
             const frame = document.getElementById('content-frame');
             
-            if (page === 'youtube.html') {
-                frame.srcdoc = `
-                    <html class="dark"><head><script src="https://cdn.tailwindcss.com"><\/script></head>
-                    <body class="bg-transparent text-white p-10 font-sans">
-                        <div class="max-w-5xl mx-auto">
-                            <h1 class="text-4xl font-serif mb-3 tracking-tight">Media Hub</h1>
-                            <p class="text-zinc-400 mb-10 text-sm">Curated platform access.</p>
-                            <div class="grid grid-cols-1 gap-8">
-                                <div class="p-6 rounded-3xl bg-black/40 border border-white/5 backdrop-blur-md shadow-2xl">
-                                    <div class="aspect-video bg-black rounded-2xl overflow-hidden shadow-inner">
-                                        <iframe class="w-full h-full border-none" src="https://www.youtube.com/embed/9qbrOrj30TM" allowfullscreen></iframe>
+            // Show Loader Shimmer
+            loader.style.opacity = '1';
+            loader.style.pointerEvents = 'auto';
+
+            setTimeout(() => {
+                if (page === 'youtube.html') {
+                    frame.srcdoc = `
+                        <html class="dark"><head><script src="https://cdn.tailwindcss.com"><\/script><script src="https://unpkg.com/@phosphor-icons/web"><\/script></head>
+                        <body class="bg-transparent text-white p-10 font-sans">
+                            <div class="max-w-5xl mx-auto">
+                                <h1 class="text-4xl font-bold mb-2 tracking-tight">Media Hub</h1>
+                                <p class="text-zinc-400 mb-8 text-sm">Curated video channels and streams.</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 shadow-xl">
+                                        <div class="aspect-video bg-black rounded-xl overflow-hidden mb-4">
+                                            <iframe class="w-full h-full border-none" src="https://www.youtube.com/embed/9qbrOrj30TM" allowfullscreen></iframe>
+                                        </div>
+                                        <h3 class="font-semibold text-white text-base">Global Stream Node</h3>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </body></html>
-                `;
-            } else {
-                frame.removeAttribute('srcdoc');
-                frame.src = page;
-            }
+                        </body></html>
+                    `;
+                } else {
+                    frame.removeAttribute('srcdoc');
+                    frame.src = page;
+                }
 
-            const title = page.replace('.html', '');
-            document.getElementById('current-page-title').textContent = title.charAt(0).toUpperCase() + title.slice(1);
+                const title = page.replace('.html', '');
+                document.getElementById('current-page-title').textContent = title.charAt(0).toUpperCase() + title.slice(1);
+                
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    loader.style.pointerEvents = 'none';
+                }, 300);
+            }, 400);
         };
 
-        // Command Palette Logic
+        // Command Palette Input Filtering
+        const pInput = document.getElementById('palette-input');
+        pInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('.palette-item').forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(query) ? 'flex' : 'none';
+            });
+        });
+
+        // Command Palette Toggle
         const palette = document.getElementById('command-palette');
         const pBox = document.getElementById('palette-box');
-        const pInput = document.getElementById('palette-input');
 
         window.openPalette = () => {
+            playSFX(700, 'sine', 0.06);
             palette.classList.remove('opacity-0', 'pointer-events-none');
             pBox.classList.remove('scale-95');
             pInput.focus();
@@ -302,28 +534,63 @@
             palette.classList.add('opacity-0', 'pointer-events-none');
             pBox.classList.add('scale-95');
             pInput.value = '';
+            document.querySelectorAll('.palette-item').forEach(i => i.style.display = 'flex');
         };
         window.paletteSelect = (page, name) => {
             switchTab(page);
             closePalette();
-            showToast(`Launched ${name}`);
+            showToast(`Navigated to ${name}`);
         };
 
+        // Keyboard Shortcuts Modal
+        const shortcutsModal = document.getElementById('shortcuts-modal');
+        window.openShortcutsModal = () => {
+            closePalette();
+            playSFX(650, 'sine', 0.05);
+            shortcutsModal.classList.remove('opacity-0', 'pointer-events-none');
+        };
+        window.closeShortcutsModal = () => {
+            shortcutsModal.classList.add('opacity-0', 'pointer-events-none');
+        };
+
+        // Global Keybindings Listener
+        let keyBuffer = '';
         document.addEventListener('keydown', (e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openPalette(); }
-            if (e.key === 'Escape') closePalette();
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') { 
+                e.preventDefault(); 
+                palette.classList.contains('opacity-0') ? openPalette() : closePalette(); 
+            }
+            if (e.key === 'Escape') {
+                closePalette();
+                closeShortcutsModal();
+            }
+            if (e.key === '?' && document.activeElement.tagName !== 'INPUT') {
+                openShortcutsModal();
+            }
+
+            // Quick Sequential Keys (G + H for Home, G + M for Media)
+            if (document.activeElement.tagName !== 'INPUT') {
+                keyBuffer += e.key.toLowerCase();
+                if (keyBuffer.endsWith('gh')) { switchTab('home.html'); keyBuffer = ''; }
+                if (keyBuffer.endsWith('gm')) { switchTab('youtube.html'); keyBuffer = ''; }
+                setTimeout(() => keyBuffer = '', 1000);
+            }
         });
 
-        // Auth Logic
-        document.getElementById('settings-trigger').addEventListener('click', async () => {
+        // Firebase Google Auth Integration
+        const authBtn = document.getElementById('auth-trigger');
+        authBtn.addEventListener('click', async () => {
+            playSFX(500, 'sine', 0.05);
             if (auth.currentUser) {
                 await signOut(auth);
-                showToast("Logged out successfully");
+                showToast("Signed out successfully");
             } else {
                 try {
                     await signInWithPopup(auth, new GoogleAuthProvider());
-                    showToast("Authentication successful");
-                } catch (err) { }
+                    showToast("Welcome back!");
+                } catch (err) {
+                    showToast("Authentication canceled");
+                }
             }
         });
 
