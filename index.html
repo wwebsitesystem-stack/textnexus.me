@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus OS — Home</title>
-    
+
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -36,11 +36,11 @@
         :root {
             --accent: #10b981;
             --accent-glow: rgba(16, 185, 129, 0.25);
-            --border-glass: rgba(255, 255, 255, 0.05);
+            --border-glass: rgba(255, 255, 255, 0.07);
         }
 
         body { 
-            background-color: transparent; /* Allows parent OS background to show through */
+            background-color: #05050a; /* Subtle background fallback for standalone view */
             color: #f4f4f5; 
             font-family: 'Outfit', sans-serif; 
             overflow-x: hidden;
@@ -49,21 +49,23 @@
 
         /* Glassmorphism Cards */
         .glass-card {
-            background: rgba(10, 10, 15, 0.4);
-            backdrop-filter: blur(20px) saturate(150%);
-            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            background: rgba(13, 14, 22, 0.55);
+            backdrop-filter: blur(24px) saturate(160%);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
             border: 1px solid var(--border-glass);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), 
+                        border-color 0.35s ease, 
+                        box-shadow 0.35s ease;
         }
 
         .glass-card:hover {
-            border-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 20px var(--accent-glow);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5), 0 0 25px var(--accent-glow);
             transform: translateY(-2px);
         }
 
-        /* Hover Sheen */
+        /* Hover Sheen Animation */
         .sheen {
             position: relative;
             overflow: hidden;
@@ -72,9 +74,10 @@
             content: '';
             position: absolute;
             top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(60deg, transparent 30%, rgba(255, 255, 255, 0.03) 50%, transparent 70%);
+            background: linear-gradient(60deg, transparent 30%, rgba(255, 255, 255, 0.04) 50%, transparent 70%);
             transform: rotate(30deg) translateY(-100%);
-            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
         }
         .sheen:hover::after {
             transform: rotate(30deg) translateY(100%);
@@ -83,47 +86,83 @@
         /* Staggered Entry Animation */
         .intro-stagger {
             opacity: 0;
-            transform: translateY(15px);
-            animation: staggerIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            transform: translateY(16px);
+            animation: staggerIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
         @keyframes staggerIn {
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Custom Scrollbar for Iframe Content */
-        ::-webkit-scrollbar { width: 4px; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        /* Toast Popup */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            animation: toastIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
     </style>
 </head>
-<body class="p-6">
+<body class="p-4 sm:p-6 md:p-8 min-h-screen relative">
 
-    <!-- Sub-boot overlay specifically for the iframe load -->
-    <div id="frame-boot" class="fixed inset-0 z-50 bg-[#020203] flex items-center justify-center transition-all duration-700 ease-out">
-        <div class="flex flex-col items-center gap-4">
-            <i class="ph ph-circle-notch text-3xl text-emerald-500 animate-spin"></i>
+    <!-- Sub-boot overlay -->
+    <div id="frame-boot" class="fixed inset-0 z-50 bg-[#020204] flex items-center justify-center transition-opacity duration-500 ease-out">
+        <div class="flex flex-col items-center gap-3">
+            <i class="ph ph-circle-notch text-3xl text-emerald-400 animate-spin"></i>
             <div class="text-[10px] font-mono text-zinc-500 tracking-widest uppercase">Initializing Dashboard</div>
         </div>
     </div>
 
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
     <div class="max-w-7xl mx-auto space-y-6 pb-12">
         
         <!-- Header Section -->
-        <header class="intro-stagger flex flex-col md:flex-row md:items-end justify-between gap-4" style="animation-delay: 0.1s;">
+        <header class="intro-stagger flex flex-col md:flex-row md:items-center justify-between gap-4" style="animation-delay: 0.05s;">
             <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]"></div>
-                    <span class="text-[10px] font-mono text-emerald-500 tracking-widest uppercase">System Active</span>
+                <div class="flex items-center gap-2 mb-1.5">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-[10px] font-mono text-emerald-400 tracking-widest uppercase font-semibold">System Active</span>
                 </div>
                 <h1 class="font-display text-3xl md:text-4xl font-bold text-white tracking-tight">
                     Welcome back.
                 </h1>
             </div>
 
-            <!-- Mini Telemetry -->
-            <div class="flex items-center gap-3">
+            <!-- Header Stats & Clock -->
+            <div class="flex items-center gap-3 flex-wrap">
+                <!-- Live Clock -->
+                <div class="glass-card px-4 py-2 rounded-xl flex items-center gap-3">
+                    <i class="ph ph-clock text-xl text-zinc-400"></i>
+                    <div>
+                        <div class="text-[9px] text-zinc-500 uppercase font-mono tracking-widest" id="clock-date">OCT 01</div>
+                        <div class="text-xs font-bold font-mono text-white" id="clock-time">00:00:00</div>
+                    </div>
+                </div>
+
+                <!-- Telemetry Pills -->
                 <div class="glass-card px-4 py-2 rounded-xl flex items-center gap-3">
                     <i class="ph ph-cpu text-xl text-emerald-400"></i>
                     <div>
@@ -131,11 +170,12 @@
                         <div class="text-xs font-bold font-mono text-white" id="cpu-stat">12%</div>
                     </div>
                 </div>
+                
                 <div class="glass-card px-4 py-2 rounded-xl flex items-center gap-3">
                     <i class="ph ph-memory text-xl text-purple-400"></i>
                     <div>
                         <div class="text-[9px] text-zinc-500 uppercase font-mono tracking-widest">RAM</div>
-                        <div class="text-xs font-bold font-mono text-white" id="ram-stat">4.2GB</div>
+                        <div class="text-xs font-bold font-mono text-white" id="ram-stat">4.2 GB</div>
                     </div>
                 </div>
             </div>
@@ -145,49 +185,50 @@
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <!-- Welcome / Command Banner -->
-            <div class="intro-stagger lg:col-span-2 glass-card p-8 rounded-3xl relative overflow-hidden sheen flex flex-col justify-between min-h-[260px]" style="animation-delay: 0.2s;">
+            <div class="intro-stagger lg:col-span-2 glass-card p-6 sm:p-8 rounded-3xl relative overflow-hidden sheen flex flex-col justify-between min-h-[260px]" style="animation-delay: 0.15s;">
                 <div class="absolute -right-10 -top-10 opacity-5 pointer-events-none transform rotate-12">
-                    <i class="ph ph-hexagon text-[250px] text-emerald-400"></i>
+                    <i class="ph ph-hexagon text-[260px] text-emerald-400"></i>
                 </div>
 
                 <div class="max-w-xl relative z-10 space-y-3">
-                    <h2 class="font-display text-2xl font-bold text-white">Quantum Data Streams</h2>
+                    <span class="px-2.5 py-1 rounded-md text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">Node #04 Online</span>
+                    <h2 class="font-display text-2xl sm:text-3xl font-bold text-white">Quantum Data Streams</h2>
                     <p class="text-sm text-zinc-400 leading-relaxed">
-                        Your workspace is optimized. Execute real-time network queries, deploy sandboxed containers, or switch to the secure node to encrypt traffic.
+                        Workspace optimized. Execute real-time network queries, deploy sandboxed containers, or switch to the secure node to encrypt traffic.
                     </p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3 mt-8 relative z-10">
-                    <button onclick="window.parent.switchTab('ghostlink.html')" class="px-5 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-medium text-sm transition-all flex items-center gap-2 group">
+                    <button onclick="safeParentCall('switchTab', 'ghostlink.html')" class="px-5 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-medium text-sm transition-all flex items-center gap-2 group cursor-pointer">
                         <i class="ph ph-ghost text-lg group-hover:scale-110 transition-transform"></i> Launch Ghostlink
                     </button>
-                    <button onclick="window.parent.switchTab('terminal.html')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-sm transition-all flex items-center gap-2 group">
+                    <button onclick="safeParentCall('switchTab', 'terminal.html')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-sm transition-all flex items-center gap-2 group cursor-pointer">
                         <i class="ph ph-terminal-window text-lg group-hover:scale-110 transition-transform"></i> Open Console
                     </button>
                 </div>
             </div>
 
-            <!-- Network Graph -->
-            <div class="intro-stagger glass-card p-6 rounded-3xl flex flex-col justify-between" style="animation-delay: 0.3s;">
+            <!-- Live Telemetry Graph -->
+            <div class="intro-stagger glass-card p-6 rounded-3xl flex flex-col justify-between" style="animation-delay: 0.25s;">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                        <i class="ph ph-activity text-emerald-400"></i> Network
+                        <i class="ph ph-activity text-emerald-400"></i> Network Traffic
                     </h3>
-                    <span class="text-[9px] font-mono text-zinc-500 bg-white/5 px-2 py-1 rounded-md">LIVE</span>
+                    <span class="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md tracking-wider">LIVE</span>
                 </div>
 
-                <div class="w-full h-24 relative flex items-end">
-                    <canvas id="telemetry-chart" class="w-full h-full"></canvas>
+                <div class="w-full h-28 relative flex items-end my-2">
+                    <canvas id="telemetry-chart" class="w-full h-full block"></canvas>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-white/5 text-xs font-mono">
+                <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/5 text-xs font-mono">
                     <div>
-                        <div class="text-zinc-500 text-[9px] tracking-widest">DOWN</div>
-                        <div class="text-emerald-400 font-bold mt-1" id="net-down">142.8 MB/s</div>
+                        <div class="text-zinc-500 text-[9px] tracking-widest uppercase">Download</div>
+                        <div class="text-emerald-400 font-bold mt-1 text-sm" id="net-down">142.8 MB/s</div>
                     </div>
                     <div>
-                        <div class="text-zinc-500 text-[9px] tracking-widest">UP</div>
-                        <div class="text-purple-400 font-bold mt-1" id="net-up">48.2 MB/s</div>
+                        <div class="text-zinc-500 text-[9px] tracking-widest uppercase">Upload</div>
+                        <div class="text-purple-400 font-bold mt-1 text-sm" id="net-up">48.2 MB/s</div>
                     </div>
                 </div>
             </div>
@@ -196,89 +237,90 @@
         <!-- Applications & Tasks -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            <!-- Quick Apps -->
-            <div class="intro-stagger md:col-span-2 space-y-4" style="animation-delay: 0.4s;">
+            <!-- Quick Apps Subsystem -->
+            <div class="intro-stagger md:col-span-2 space-y-4" style="animation-delay: 0.35s;">
                 <h3 class="text-sm font-bold text-white flex items-center gap-2 ml-1">
                     <i class="ph ph-squares-four text-zinc-400"></i> Core Subsystems
                 </h3>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- App 1 -->
-                    <div onclick="window.parent.switchTab('ghostlink.html')" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-xl group-hover:scale-110 transition-transform shadow-inner">
+                    <div onclick="safeParentCall('switchTab', 'ghostlink.html')" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-xl group-hover:scale-110 transition-transform shadow-inner flex-shrink-0">
                             <i class="ph ph-ghost"></i>
                         </div>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-white group-hover:text-purple-400 transition-colors">Ghostlink Proxy</h4>
-                            <p class="text-[11px] text-zinc-500 mt-0.5 leading-snug">Encrypted peer-to-peer connection tunnel.</p>
+                            <p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">Encrypted peer-to-peer connection tunnel.</p>
                         </div>
                     </div>
 
                     <!-- App 2 -->
-                    <div onclick="window.parent.switchTab('terminal.html')" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-xl group-hover:scale-110 transition-transform shadow-inner">
+                    <div onclick="safeParentCall('switchTab', 'terminal.html')" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-xl group-hover:scale-110 transition-transform shadow-inner flex-shrink-0">
                             <i class="ph ph-code"></i>
                         </div>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-white group-hover:text-blue-400 transition-colors">Terminal Shell</h4>
-                            <p class="text-[11px] text-zinc-500 mt-0.5 leading-snug">High-speed system CLI interfaces.</p>
+                            <p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">High-speed system CLI interfaces.</p>
                         </div>
                     </div>
 
                     <!-- App 3 -->
-                    <div onclick="window.parent.openPalette()" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl group-hover:scale-110 transition-transform shadow-inner">
+                    <div onclick="safeParentCall('openPalette')" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl group-hover:scale-110 transition-transform shadow-inner flex-shrink-0">
                             <i class="ph ph-magnifying-glass"></i>
                         </div>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-white group-hover:text-emerald-400 transition-colors">Command Center</h4>
-                            <p class="text-[11px] text-zinc-500 mt-0.5 leading-snug">Global search and action execution.</p>
+                            <p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">Global search and action execution.</p>
                         </div>
                     </div>
 
                     <!-- App 4 -->
-                    <div onclick="window.parent.openSettingsModal()" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-xl group-hover:scale-110 transition-transform shadow-inner">
+                    <div onclick="safeParentCall('openSettingsModal')" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-xl group-hover:scale-110 transition-transform shadow-inner flex-shrink-0">
                             <i class="ph ph-sliders"></i>
                         </div>
                         <div class="flex-1">
                             <h4 class="font-bold text-sm text-white group-hover:text-rose-400 transition-colors">System Vault</h4>
-                            <p class="text-[11px] text-zinc-500 mt-0.5 leading-snug">Manage themes and security policies.</p>
+                            <p class="text-[11px] text-zinc-400 mt-0.5 leading-snug">Manage themes and security policies.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Tasks Widget -->
-            <div class="intro-stagger glass-card p-5 rounded-3xl flex flex-col" style="animation-delay: 0.5s;">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                        <i class="ph ph-check-square-offset text-emerald-400"></i> Active Tasks
-                    </h3>
-                    <span id="task-counter" class="text-[10px] font-mono bg-white/5 border border-white/10 px-2 py-0.5 rounded text-zinc-400">2 Pending</span>
-                </div>
-
-                <div class="flex gap-2 mb-3">
-                    <input id="new-task-input" type="text" placeholder="Add task..." class="flex-1 bg-black/20 border border-white/5 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/50 transition-colors placeholder:text-zinc-600">
-                    <button onclick="addTask()" class="px-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300 transition-colors">
-                        <i class="ph ph-plus"></i>
-                    </button>
-                </div>
-
-                <div id="task-list" class="space-y-2 flex-1 overflow-y-auto max-h-[160px] pr-1">
-                    <div class="p-2.5 rounded-lg bg-white/[0.01] border border-white/[0.03] flex items-center justify-between text-xs group hover:bg-white/[0.03] transition-colors">
-                        <div class="flex items-center gap-2.5">
-                            <input type="checkbox" onchange="toggleTask(this)" class="w-3.5 h-3.5 rounded bg-black/50 border-white/20 text-emerald-500 focus:ring-0 focus:ring-offset-0 cursor-pointer">
-                            <span class="text-zinc-300">Run security diagnostic</span>
-                        </div>
-                        <button onclick="this.parentElement.remove(); updateTaskCounter();" class="text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"><i class="ph ph-trash"></i></button>
+            <div class="intro-stagger glass-card p-5 rounded-3xl flex flex-col justify-between" style="animation-delay: 0.45s;">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i class="ph ph-check-square-offset text-emerald-400"></i> Active Tasks
+                        </h3>
+                        <span id="task-counter" class="text-[10px] font-mono bg-white/5 border border-white/10 px-2 py-0.5 rounded text-zinc-400">0 Pending</span>
                     </div>
-                    <div class="p-2.5 rounded-lg bg-white/[0.01] border border-white/[0.03] flex items-center justify-between text-xs group hover:bg-white/[0.03] transition-colors">
-                        <div class="flex items-center gap-2.5">
-                            <input type="checkbox" onchange="toggleTask(this)" class="w-3.5 h-3.5 rounded bg-black/50 border-white/20 text-emerald-500 focus:ring-0 focus:ring-offset-0 cursor-pointer">
-                            <span class="text-zinc-300">Rotate proxy keys</span>
+
+                    <!-- Task Input -->
+                    <form onsubmit="event.preventDefault(); addTask();" class="flex gap-2 mb-3">
+                        <input id="new-task-input" type="text" placeholder="Add new task..." aria-label="New task title" class="flex-1 bg-black/30 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/60 transition-all placeholder:text-zinc-600">
+                        <button type="submit" aria-label="Add task" class="px-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-400 transition-all cursor-pointer">
+                            <i class="ph ph-plus"></i>
+                        </button>
+                    </form>
+
+                    <!-- Filter Tabs -->
+                    <div class="flex items-center justify-between border-b border-white/5 pb-2 mb-2 text-[10px] font-mono text-zinc-500">
+                        <div class="flex gap-2">
+                            <button onclick="setTaskFilter('all')" id="filter-all" class="text-emerald-400 font-bold hover:text-white transition-colors">ALL</button>
+                            <button onclick="setTaskFilter('active')" id="filter-active" class="hover:text-white transition-colors">ACTIVE</button>
+                            <button onclick="setTaskFilter('completed')" id="filter-completed" class="hover:text-white transition-colors">DONE</button>
                         </div>
-                        <button onclick="this.parentElement.remove(); updateTaskCounter();" class="text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"><i class="ph ph-trash"></i></button>
+                        <button onclick="clearCompletedTasks()" class="hover:text-rose-400 transition-colors">CLEAR DONE</button>
+                    </div>
+
+                    <!-- Task Item Container -->
+                    <div id="task-list" class="space-y-2 max-h-[170px] overflow-y-auto pr-1">
+                        <!-- Populated by JS -->
                     </div>
                 </div>
             </div>
@@ -287,116 +329,288 @@
 
     <!-- Script Logic -->
     <script>
-        // Remove boot overlay smoothly
+        // -------------------------------------------------------------
+        // Safe Parent Integration & Standalone Toast Fallback
+        // -------------------------------------------------------------
+        function safeParentCall(fnName, ...args) {
+            let handled = false;
+            try {
+                if (window.parent && typeof window.parent[fnName] === 'function') {
+                    window.parent[fnName](...args);
+                    handled = true;
+                }
+            } catch (e) {
+                console.warn('Parent frame restricted or unavailable:', e);
+            }
+
+            if (!handled) {
+                showToast(`Triggered: ${fnName}(${args.map(a => `'${a}'`).join(', ')})`);
+            }
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast glass-card px-4 py-2.5 rounded-xl border border-white/10 text-xs text-white flex items-center gap-2 shadow-2xl';
+            toast.innerHTML = `<i class="ph ph-info text-emerald-400 text-base"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // Boot Overlay Fadeout
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const boot = document.getElementById('frame-boot');
                 boot.style.opacity = '0';
-                setTimeout(() => boot.style.display = 'none', 700);
-            }, 300);
+                setTimeout(() => boot.style.display = 'none', 500);
+            }, 250);
         });
 
-        // Telemetry Graph Simulation
+        // -------------------------------------------------------------
+        // Live Clock
+        // -------------------------------------------------------------
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toTimeString().split(' ')[0];
+            const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).toUpperCase();
+            
+            document.getElementById('clock-time').textContent = timeStr;
+            document.getElementById('clock-date').textContent = dateStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // -------------------------------------------------------------
+        // Telemetry Canvas Chart (Smooth Bezier Curve + Animation Loop)
+        // -------------------------------------------------------------
         const canvas = document.getElementById('telemetry-chart');
         const ctx = canvas.getContext('2d');
-        let points = Array(30).fill(10);
+        let points = Array(20).fill(15);
+        let targetPoints = Array(20).fill(15);
+        let lastUpdateTime = 0;
 
         function resizeCanvas() {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * window.devicePixelRatio;
+            canvas.height = rect.height * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        function drawTelemetry() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            points.shift();
-            points.push(Math.random() * (canvas.height * 0.7) + 5);
+        function generateNewPoints() {
+            for (let i = 0; i < targetPoints.length; i++) {
+                targetPoints[i] = Math.random() * (canvas.height / window.devicePixelRatio * 0.65) + 10;
+            }
+        }
 
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            // Dynamic color based on parent accent if possible, otherwise fallback to emerald
+        function drawTelemetry(timestamp) {
+            const displayWidth = canvas.width / window.devicePixelRatio;
+            const displayHeight = canvas.height / window.devicePixelRatio;
+
+            ctx.clearRect(0, 0, displayWidth, displayHeight);
+
+            // Interpolate points smoothly
+            for (let i = 0; i < points.length; i++) {
+                points[i] += (targetPoints[i] - points[i]) * 0.05;
+            }
+
+            // Periodically refresh target telemetry
+            if (timestamp - lastUpdateTime > 1200) {
+                generateNewPoints();
+                lastUpdateTime = timestamp;
+
+                // Update simulated stats
+                document.getElementById('cpu-stat').textContent = `${Math.floor(Math.random() * 12 + 8)}%`;
+                document.getElementById('ram-stat').textContent = `${(Math.random() * 0.4 + 4.1).toFixed(1)} GB`;
+                document.getElementById('net-down').textContent = `${(Math.random() * 25 + 130).toFixed(1)} MB/s`;
+                document.getElementById('net-up').textContent = `${(Math.random() * 10 + 42).toFixed(1)} MB/s`;
+            }
+
+            // Accent Color extraction
             let accentHex = '#10b981';
-            try { accentHex = window.parent.document.documentElement.style.getPropertyValue('--accent') || '#10b981'; } catch(e){}
-            
-            gradient.addColorStop(0, `${accentHex}40`); // 40 is hex alpha for ~25%
+            try { 
+                const parentAccent = window.parent.document.documentElement.style.getPropertyValue('--accent'); 
+                if (parentAccent) accentHex = parentAccent.trim();
+            } catch(e){}
+
+            // Draw Background Gridlines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, displayHeight * 0.33); ctx.lineTo(displayWidth, displayHeight * 0.33);
+            ctx.moveTo(0, displayHeight * 0.66); ctx.lineTo(displayWidth, displayHeight * 0.66);
+            ctx.stroke();
+
+            // Draw Smooth Cubic Curve
+            const step = displayWidth / (points.length - 1);
+            ctx.beginPath();
+            ctx.moveTo(0, displayHeight - points[0]);
+
+            for (let i = 0; i < points.length - 1; i++) {
+                const x1 = i * step;
+                const y1 = displayHeight - points[i];
+                const x2 = (i + 1) * step;
+                const y2 = displayHeight - points[i + 1];
+                const cx = (x1 + x2) / 2;
+
+                ctx.bezierCurveTo(cx, y1, cx, y2, x2, y2);
+            }
+
+            // Fill Gradient Below Path
+            const gradient = ctx.createLinearGradient(0, 0, 0, displayHeight);
+            gradient.addColorStop(0, `${accentHex}35`);
             gradient.addColorStop(1, `${accentHex}00`);
 
-            ctx.beginPath();
-            const step = canvas.width / (points.length - 1);
-            ctx.moveTo(0, canvas.height);
-
-            points.forEach((pt, i) => {
-                const x = i * step;
-                const y = canvas.height - pt;
-                ctx.lineTo(x, y);
-            });
-
-            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(displayWidth, displayHeight);
+            ctx.lineTo(0, displayHeight);
+            ctx.closePath();
             ctx.fillStyle = gradient;
             ctx.fill();
 
+            // Stroke Path Line
             ctx.beginPath();
-            points.forEach((pt, i) => {
-                const x = i * step;
-                const y = canvas.height - pt;
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
+            ctx.moveTo(0, displayHeight - points[0]);
+            for (let i = 0; i < points.length - 1; i++) {
+                const x1 = i * step;
+                const y1 = displayHeight - points[i];
+                const x2 = (i + 1) * step;
+                const y2 = displayHeight - points[i + 1];
+                const cx = (x1 + x2) / 2;
+
+                ctx.bezierCurveTo(cx, y1, cx, y2, x2, y2);
+            }
             ctx.strokeStyle = accentHex;
-            ctx.lineWidth = 1.5;
+            ctx.lineWidth = 2;
             ctx.stroke();
 
-            document.getElementById('cpu-stat').textContent = `${Math.floor(Math.random() * 8 + 10)}%`;
-            document.getElementById('net-down').textContent = `${(Math.random() * 20 + 130).toFixed(1)} MB/s`;
-
-            setTimeout(drawTelemetry, 1000);
+            requestAnimationFrame(drawTelemetry);
         }
-        drawTelemetry();
+        requestAnimationFrame(drawTelemetry);
 
-        // Tasks Logic
-        window.addTask = function() {
+        // -------------------------------------------------------------
+        // Task Management System with Persistence & Filtering
+        // -------------------------------------------------------------
+        const STORAGE_KEY = 'nexus_os_tasks_data';
+        let tasks = [
+            { id: '1', title: 'Run security diagnostic', completed: false },
+            { id: '2', title: 'Rotate proxy keys', completed: false }
+        ];
+        let currentFilter = 'all';
+
+        function loadTasks() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) tasks = JSON.parse(saved);
+            } catch (e) {
+                console.warn('LocalStorage unavailable:', e);
+            }
+            renderTasks();
+        }
+
+        function saveTasks() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+            } catch (e) {}
+            renderTasks();
+        }
+
+        function addTask() {
             const input = document.getElementById('new-task-input');
             const val = input.value.trim();
             if (!val) return;
 
-            const taskList = document.getElementById('task-list');
-            const taskEl = document.createElement('div');
-            taskEl.className = "p-2.5 rounded-lg bg-white/[0.01] border border-white/[0.03] flex items-center justify-between text-xs group hover:bg-white/[0.03] transition-colors intro-stagger";
-            taskEl.style.animationDelay = '0s';
-            taskEl.innerHTML = `
-                <div class="flex items-center gap-2.5">
-                    <input type="checkbox" onchange="toggleTask(this)" class="w-3.5 h-3.5 rounded bg-black/50 border-white/20 text-emerald-500 focus:ring-0 focus:ring-offset-0 cursor-pointer">
-                    <span class="text-zinc-300">${val}</span>
-                </div>
-                <button onclick="this.parentElement.remove(); updateTaskCounter();" class="text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"><i class="ph ph-trash"></i></button>
-            `;
-            taskList.prepend(taskEl);
+            tasks.unshift({
+                id: Date.now().toString(),
+                title: val,
+                completed: false
+            });
+
             input.value = '';
-            updateTaskCounter();
+            saveTasks();
         }
 
-        window.toggleTask = function(checkbox) {
-            const span = checkbox.nextElementSibling;
-            if (checkbox.checked) {
-                span.classList.add('line-through', 'text-zinc-600');
-                try { window.parent.playSFX(600, 'sine', 0.05); } catch(e){}
-            } else {
-                span.classList.remove('line-through', 'text-zinc-600');
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks();
             }
-            updateTaskCounter();
         }
 
-        window.updateTaskCounter = function() {
-            const total = document.querySelectorAll('#task-list input[type="checkbox"]').length;
-            const checked = document.querySelectorAll('#task-list input[type="checkbox"]:checked').length;
-            document.getElementById('task-counter').textContent = `${total - checked} Pending`;
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasks();
         }
 
-        // Handle Enter key in task input
-        document.getElementById('new-task-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') addTask();
-        });
+        function clearCompletedTasks() {
+            tasks = tasks.filter(t => !t.completed);
+            saveTasks();
+        }
+
+        function setTaskFilter(filter) {
+            currentFilter = filter;
+            ['all', 'active', 'completed'].forEach(f => {
+                const el = document.getElementById(`filter-${f}`);
+                if (f === filter) {
+                    el.className = 'text-emerald-400 font-bold hover:text-white transition-colors';
+                } else {
+                    el.className = 'hover:text-white transition-colors';
+                }
+            });
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('task-list');
+            taskList.innerHTML = '';
+
+            const filtered = tasks.filter(t => {
+                if (currentFilter === 'active') return !t.completed;
+                if (currentFilter === 'completed') return t.completed;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                taskList.innerHTML = `
+                    <div class="text-center py-6 text-zinc-600 text-xs font-mono">
+                        <i class="ph ph-check-circle text-2xl mb-1 text-zinc-700 block"></i>
+                        No tasks found
+                    </div>
+                `;
+            } else {
+                filtered.forEach(task => {
+                    const el = document.createElement('div');
+                    el.className = "p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04] flex items-center justify-between text-xs group hover:bg-white/[0.05] transition-all";
+                    el.innerHTML = `
+                        <div class="flex items-center gap-2.5 overflow-hidden">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask('${task.id}')" class="w-3.5 h-3.5 rounded bg-black/50 border-white/20 text-emerald-500 focus:ring-0 focus:ring-offset-0 cursor-pointer accent-emerald-500">
+                            <span class="truncate ${task.completed ? 'line-through text-zinc-600' : 'text-zinc-300'}">${escapeHtml(task.title)}</span>
+                        </div>
+                        <button onclick="deleteTask('${task.id}')" aria-label="Delete task" class="text-zinc-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all p-1">
+                            <i class="ph ph-trash"></i>
+                        </button>
+                    `;
+                    taskList.appendChild(el);
+                });
+            }
+
+            const pendingCount = tasks.filter(t => !t.completed).length;
+            document.getElementById('task-counter').textContent = `${pendingCount} Pending`;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Initialize task manager
+        loadTasks();
     </script>
 </body>
 </html>
