@@ -1,104 +1,307 @@
-<body class="h-screen w-screen flex antialiased selection:bg-white/25 selection:text-white">
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexus — Workspace</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS (Standard CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['"Playfair Display"', 'serif'] },
+                    colors: {
+                        appBg: '#09090b', surface: '#18181b', surfaceHover: '#27272a',
+                        borderSubtle: '#3f3f46', brand: '#10b981'
+                    }
+                }
+            }
+        }
+    </script>
 
-    <!-- STARTUP ANIMATION SCREEN -->
+    <style>
+        body { background-color: #09090b; color: #f4f4f5; font-family: 'Inter', sans-serif; overflow: hidden; }
+        
+        /* Slicker Intro Screen */
+        #intro-screen {
+            position: fixed; inset: 0; background-color: #09090b; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        .intro-logo {
+            font-family: 'Playfair Display', serif; font-size: 3.5rem; color: #fff;
+            opacity: 0; transform: scale(0.95);
+            animation: floatUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes floatUp {
+            0% { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(10px); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); text-shadow: 0 4px 30px rgba(16, 185, 129, 0.2); }
+        }
+        
+        /* Glassmorphism Utilities */
+        .glass { background: rgba(24, 24, 27, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
+        .glass-panel { background: rgba(9, 9, 11, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+
+        /* Active nav state for scripts to toggle */
+        .nav-btn.active { background: rgba(255,255,255,0.08); color: white; border-color: rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body class="h-screen w-screen flex antialiased selection:bg-brand/30 selection:text-white">
+
+    <!-- Intro Screen -->
     <div id="intro-screen">
         <div class="intro-logo">Nexus</div>
-        <div class="mt-4 flex items-center gap-2.5 text-xs text-textSecondary tracking-widest uppercase">
-            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-            Loading Workspace
+        <div class="mt-6 flex items-center gap-3 text-xs text-zinc-400 tracking-[0.2em] uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand animate-ping"></span>
+            Initializing
         </div>
     </div>
 
-    <!-- COMMAND PALETTE MODAL (Ctrl+K / Cmd+K) -->
-    <div id="command-palette" class="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-md flex items-start justify-center pt-[12vh] px-4 opacity-0 pointer-events-none transition-all duration-200">
-        <div class="bg-sidebarBg border border-borderColor rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden transform scale-95 transition-transform duration-200" id="palette-box">
-            <div class="flex items-center px-4 py-3 border-b border-borderColor gap-3">
-                <i class="ph ph-magnifying-glass text-textSecondary text-lg"></i>
-                <input id="palette-input" type="text" placeholder="Search commands or tabs..." class="w-full bg-transparent border-none text-textPrimary text-sm focus:outline-none placeholder:text-textSecondary/60">
-                <button onclick="closePalette()" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cardBg border border-borderColor text-textSecondary">ESC</button>
+    <!-- Command Palette (Ctrl+K) -->
+    <div id="command-palette" class="fixed inset-0 z-[9998] bg-black/80 backdrop-blur-sm flex items-start justify-center pt-[15vh] px-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="palette-box">
+            <div class="flex items-center px-5 py-4 border-b border-white/10 gap-3">
+                <i class="ph ph-magnifying-glass text-zinc-400 text-xl"></i>
+                <input id="palette-input" type="text" placeholder="Search commands, apps, or settings..." class="w-full bg-transparent border-none text-white text-base focus:outline-none placeholder:text-zinc-500">
+                <button onclick="closePalette()" class="text-[10px] font-mono px-2 py-1 rounded-md bg-surfaceHover border border-borderSubtle text-zinc-300 hover:bg-zinc-700 transition-colors">ESC</button>
             </div>
-            <div class="p-2 max-h-[260px] overflow-y-auto flex flex-col gap-1" id="palette-results">
-                <div class="px-3 py-2 text-[10px] font-semibold text-textSecondary uppercase tracking-wider">Quick Navigation</div>
-                <button onclick="paletteSelect('home.html', 'Home')" class="palette-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-textSecondary hover:text-textPrimary hover:bg-hoverBg transition-all text-left text-xs font-medium cursor-pointer">
-                    <div class="flex items-center gap-2.5"><i class="ph ph-house text-base"></i><span>Go to Home</span></div>
+            <div class="p-3 max-h-[300px] overflow-y-auto flex flex-col gap-1" id="palette-results">
+                <div class="px-3 py-2 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Apps</div>
+                <button onclick="paletteSelect('home.html', 'Home')" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left text-sm cursor-pointer">
+                    <i class="ph ph-house text-lg"></i><span>Dashboard</span>
                 </button>
-                <button onclick="paletteSelect('youtube.html', 'YouTube')" class="palette-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-textSecondary hover:text-textPrimary hover:bg-hoverBg transition-all text-left text-xs font-medium cursor-pointer">
-                    <div class="flex items-center gap-2.5"><i class="ph ph-youtube-logo text-base text-red-500"></i><span>Open YouTube Hub</span></div>
-                </button>
-                <button onclick="paletteSelect('ghostlink.html', 'Ghostlink')" class="palette-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-textSecondary hover:text-textPrimary hover:bg-hoverBg transition-all text-left text-xs font-medium cursor-pointer">
-                    <div class="flex items-center gap-2.5"><i class="ph ph-ghost text-base"></i><span>Go to Ghostlink</span></div>
-                </button>
-                <button onclick="paletteSelect('updates.html', 'Updates')" class="palette-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-textSecondary hover:text-textPrimary hover:bg-hoverBg transition-all text-left text-xs font-medium cursor-pointer">
-                    <div class="flex items-center gap-2.5"><i class="ph ph-megaphone text-base"></i><span>View Updates</span></div>
-                </button>
-                <button onclick="paletteSelect('shoutouts.html', 'Shoutouts')" class="palette-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-textSecondary hover:text-textPrimary hover:bg-hoverBg transition-all text-left text-xs font-medium cursor-pointer">
-                    <div class="flex items-center gap-2.5"><i class="ph ph-star text-base"></i><span>View Shoutouts</span></div>
+                <button onclick="paletteSelect('youtube.html', 'YouTube')" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left text-sm cursor-pointer">
+                    <i class="ph ph-youtube-logo text-lg text-red-500"></i><span>YouTube Hub</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- TOAST NOTIFICATION CONTAINER -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-2 pointer-events-none px-4 sm:px-0"></div>
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- MOBILE SIDEBAR BACKDROP -->
-    <div id="sidebar-backdrop" onclick="toggleMobileSidebar(false)" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden opacity-0 pointer-events-none transition-opacity duration-300"></div>
-
-    <!-- MAIN APP CONTAINER -->
-    <div id="app-container" class="w-full h-full flex relative z-10 app-reveal overflow-hidden">
+    <!-- Main Layout -->
+    <div class="w-full h-full flex relative z-10 transition-opacity duration-1000 opacity-0" id="app-container">
         
-        <!-- SIDEBAR -->
-        <aside id="mobile-sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-[270px] lg:w-[260px] h-full flex flex-col bg-sidebarBg border-r border-borderColor shrink-0 select-none transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
-            
-            <!-- Brand Header -->
-            <div class="h-[72px] flex items-center justify-between px-6 border-b border-borderColor/60">
+        <!-- Sidebar -->
+        <aside class="w-[260px] h-full flex flex-col bg-surface border-r border-borderSubtle shrink-0 select-none z-20">
+            <div class="h-[76px] flex items-center px-6 border-b border-borderSubtle/50">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#2a2a2a] to-[#151515] border border-borderColor flex items-center justify-center text-textPrimary shadow-inner">
-                        <i class="ph ph-cube text-base"></i>
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/10 flex items-center justify-center text-white shadow-lg">
+                        <i class="ph ph-hexagon text-xl text-brand"></i>
                     </div>
-                    <span class="font-serif text-2xl tracking-wide text-textPrimary font-medium">Nexus</span>
+                    <span class="font-serif text-2xl tracking-wide text-white">Nexus</span>
                 </div>
-                <button onclick="toggleMobileSidebar(false)" class="lg:hidden text-textSecondary hover:text-textPrimary p-1">
-                    <i class="ph ph-x text-xl"></i>
-                </button>
             </div>
 
-            <!-- Navigation Links -->
-            <nav class="flex-1 px-3 py-5 flex flex-col gap-1 overflow-y-auto">
-                <div class="px-3 mb-2 text-[10px] font-semibold tracking-wider text-textSecondary/70 uppercase">Workspace</div>
+            <nav class="flex-1 px-4 py-6 flex flex-col gap-1.5 overflow-y-auto">
+                <div class="px-2 mb-3 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Menu</div>
                 
-                <button onclick="switchTab('home.html', this)" data-page="home.html" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 lg:py-2.5 rounded-xl text-textSecondary hover:text-textPrimary hover:bg-hoverBg transition-all text-left font-medium text-[14px] lg:text-[13px] group active bg-activeBg text-textPrimary border border-borderColor/40">
-                    <i class="ph ph-house text-lg group-hover:scale-110 transition-transform"></i>
-                    <span>Home</span>
+                <button onclick="switchTab('home.html', this)" class="nav-btn active flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                    <i class="ph ph-house text-lg"></i> Dashboard
                 </button>
-
-                <button onclick="switchTab('youtube.html', this)" data-page="youtube.html" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 lg:py-2.5 rounded-xl text-textSecondary hover:text-textPrimary hover:bg-hoverBg transition-all text-left font-medium text-[14px] lg:text-[13px] group border border-transparent">
-                    <i class="ph ph-youtube-logo text-lg text-red-500 group-hover:scale-110 transition-transform"></i>
-                    <span>YouTube Hub</span>
+                <button onclick="switchTab('youtube.html', this)" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                    <i class="ph ph-youtube-logo text-lg"></i> Media Hub
                 </button>
-
-                <button onclick="switchTab('ghostlink.html', this)" data-page="ghostlink.html" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 lg:py-2.5 rounded-xl text-textSecondary hover:text-textPrimary hover:bg-hoverBg transition-all text-left font-medium text-[14px] lg:text-[13px] group border border-transparent">
-                    <i class="ph ph-ghost text-lg group-hover:scale-110 transition-transform"></i>
-                    <span>Ghostlink</span>
+                <button onclick="switchTab('ghostlink.html', this)" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                    <i class="ph ph-ghost text-lg"></i> Ghostlink
                 </button>
-
-                <button onclick="switchTab('updates.html', this)" data-page="updates.html" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 lg:py-2.5 rounded-xl text-textSecondary hover:text-textPrimary hover:bg-hoverBg transition-all text-left font-medium text-[14px] lg:text-[13px] group border border-transparent">
-                    <i class="ph ph-megaphone text-lg group-hover:scale-110 transition-transform"></i>
-                    <span>Updates</span>
-                </button>
-
-                <button onclick="switchTab('shoutouts.html', this)" data-page="shoutouts.html" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 lg:py-2.5 rounded-xl text-textSecondary hover:text-textPrimary hover:bg-hoverBg transition-all text-left font-medium text-[14px] lg:text-[13px] group border border-transparent">
-                    <i class="ph ph-star text-lg group-hover:scale-110 transition-transform"></i>
-                    <span>Shoutouts</span>
+                <button onclick="switchTab('updates.html', this)" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                    <i class="ph ph-sparkle text-lg"></i> Updates
                 </button>
             </nav>
 
-            <!-- Sidebar Footer Status -->
-            <div class="p-4 border-t border-borderColor/60 flex items-center justify-between text-xs text-textSecondary">
-                <span class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Nexus + YouTube
-                </span>
-                <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-cardBg border border-borderColor text-red-400">Live</span>
+            <div class="p-5 border-t border-borderSubtle/50">
+                <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-black/20 border border-white/5">
+                    <div class="w-2 h-2 rounded-full bg-brand animate-pulse shadow-[0_0_8px_#10b981]"></div>
+                    <span class="text-xs text-zinc-400 font-medium">System Online</span>
+                </div>
             </div>
         </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col h-full bg-appBg relative">
+            
+            <!-- Top Header (Glassmorphism) -->
+            <header class="h-[76px] shrink-0 flex items-center justify-between px-8 glass-panel absolute top-0 left-0 right-0 z-30">
+                <div class="flex items-center gap-2 text-sm font-medium text-zinc-400">
+                    <i class="ph ph-folder-notch text-lg"></i>
+                    <span>Workspace</span>
+                    <i class="ph ph-caret-right text-xs mx-1 opacity-50"></i>
+                    <span id="current-page-title" class="text-white">Dashboard</span>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <button onclick="openPalette()" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface hover:bg-surfaceHover border border-borderSubtle text-zinc-400 text-xs transition-colors group">
+                        <i class="ph ph-magnifying-glass text-sm group-hover:text-white"></i>
+                        <span>Search</span>
+                        <kbd class="px-1.5 py-0.5 rounded bg-black/30 border border-white/10 font-mono text-[10px]">⌘K</kbd>
+                    </button>
+
+                    <!-- Auth Button -->
+                    <div class="relative">
+                        <button id="settings-trigger" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-brand/10 hover:bg-brand/20 border border-brand/20 transition-all text-brand shadow-sm">
+                            <i id="user-avatar-icon" class="ph ph-user-circle text-lg"></i>
+                            <img id="user-avatar-img" src="" class="w-6 h-6 rounded-full object-cover hidden border border-brand/30">
+                            <span id="user-name-label" class="text-xs font-semibold">Sign In</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Frame -->
+            <div class="flex-1 w-full h-full pt-[76px] relative">
+                <iframe id="content-frame" class="w-full h-full border-none" src="home.html"></iframe>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Firebase Config
+        const app = initializeApp({
+            apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
+            authDomain: "nexus-web-development-official.firebaseapp.com",
+            projectId: "nexus-web-development-official",
+        });
+        const auth = getAuth(app);
+
+        // Intro Animation Logic
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const intro = document.getElementById('intro-screen');
+                intro.style.opacity = '0';
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    document.getElementById('app-container').style.opacity = '1';
+                }, 600);
+            }, 1800);
+        });
+
+        // Toast Notifications
+        window.showToast = (msg) => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'glass px-4 py-3 rounded-xl text-white text-sm shadow-xl flex items-center gap-3 transform translate-y-4 opacity-0 transition-all';
+            toast.innerHTML = `<i class="ph ph-check-circle text-brand text-lg"></i> ${msg}`;
+            container.appendChild(toast);
+            
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            });
+            setTimeout(() => {
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        };
+
+        // Tab Switching Logic
+        window.switchTab = (page, btn) => {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            
+            const frame = document.getElementById('content-frame');
+            
+            // Hardcoded YouTube template to ensure it looks good immediately
+            if (page === 'youtube.html') {
+                frame.srcdoc = `
+                    <html class="dark"><head><script src="https://cdn.tailwindcss.com"><\/script><script src="https://unpkg.com/@phosphor-icons/web"><\/script></head>
+                    <body class="bg-[#09090b] text-white p-8 font-sans">
+                        <div class="max-w-5xl mx-auto">
+                            <h1 class="text-3xl font-serif mb-2 text-white">Media Hub</h1>
+                            <p class="text-zinc-400 mb-8 text-sm">Curated videos and direct platform access.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="p-4 rounded-2xl bg-[#18181b] border border-[#3f3f46]">
+                                    <div class="aspect-video bg-black rounded-xl overflow-hidden mb-4 shadow-lg">
+                                        <iframe class="w-full h-full border-none" src="https://www.youtube.com/embed/9qbrOrj30TM" allowfullscreen></iframe>
+                                    </div>
+                                    <h3 class="font-medium text-white text-sm">Trending Worldwide</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </body></html>
+                `;
+            } else {
+                frame.removeAttribute('srcdoc');
+                frame.src = page;
+            }
+
+            const title = page.replace('.html', '');
+            document.getElementById('current-page-title').textContent = title.charAt(0).toUpperCase() + title.slice(1);
+        };
+
+        // Command Palette Logic
+        const palette = document.getElementById('command-palette');
+        const pBox = document.getElementById('palette-box');
+        const pInput = document.getElementById('palette-input');
+
+        window.openPalette = () => {
+            palette.classList.remove('opacity-0', 'pointer-events-none');
+            pBox.classList.remove('scale-95');
+            pInput.focus();
+        };
+        window.closePalette = () => {
+            palette.classList.add('opacity-0', 'pointer-events-none');
+            pBox.classList.add('scale-95');
+            pInput.value = '';
+        };
+        window.paletteSelect = (page, name) => {
+            switchTab(page);
+            closePalette();
+            showToast(`Launched ${name}`);
+        };
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openPalette(); }
+            if (e.key === 'Escape') closePalette();
+        });
+
+        // Simple Google Auth (Click avatar to login)
+        const authBtn = document.getElementById('settings-trigger');
+        authBtn.addEventListener('click', async () => {
+            if (auth.currentUser) {
+                await signOut(auth);
+                showToast("Signed out");
+            } else {
+                try {
+                    await signInWithPopup(auth, new GoogleAuthProvider());
+                    showToast("Welcome back!");
+                } catch (err) {
+                    showToast("Login closed or failed");
+                }
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            const icon = document.getElementById('user-avatar-icon');
+            const img = document.getElementById('user-avatar-img');
+            const label = document.getElementById('user-name-label');
+            
+            if (user) {
+                icon.classList.add('hidden');
+                img.classList.remove('hidden');
+                img.src = user.photoURL || 'https://placehold.co/100';
+                label.textContent = user.displayName?.split(' ')[0] || 'User';
+            } else {
+                icon.classList.remove('hidden');
+                img.classList.add('hidden');
+                label.textContent = 'Sign In';
+            }
+        });
+    </script>
+</body>
+</html>
