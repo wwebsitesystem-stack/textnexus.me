@@ -104,25 +104,16 @@
                 <button class="text-zinc-500 hover:text-white transition"><i class="ph ph-sidebar-simple text-lg"></i></button>
             </div>
 
-            <!-- New Action Button -->
-            <div class="px-3 mt-1">
-                <button onclick="switchTab('home', document.getElementById('nav-home'))" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl border border-white/10 hover:bg-white/5 text-zinc-300 text-sm font-medium transition shadow-sm">
-                    <i class="ph ph-pencil-simple text-base"></i> New Chat
-                </button>
-            </div>
-
             <!-- Navigation Links -->
-            <nav class="flex-1 px-3 py-6 flex flex-col gap-1 overflow-y-auto">
+            <nav class="flex-1 px-3 py-6 flex flex-col gap-1 overflow-y-auto mt-2">
                 
-                <!-- Search bar was removed from here -->
-
-                <div class="px-2 mb-1 mt-2 text-[10px] font-semibold tracking-widest text-zinc-500 uppercase flex justify-between items-center">
+                <div class="px-2 mb-1 text-[10px] font-semibold tracking-widest text-zinc-500 uppercase flex justify-between items-center">
                     Workspace
                     <button class="hover:text-white transition"><i class="ph ph-plus text-xs"></i></button>
                 </div>
                 
                 <button id="nav-home" onclick="switchTab('home', this)" class="nav-btn active flex items-center gap-3 px-2 py-2.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-all text-sm font-medium text-left">
-                    <i class="ph ph-chat-circle text-lg w-5 text-center"></i> <span class="truncate flex-1">Home</span>
+                    <i class="ph ph-squares-four text-lg w-5 text-center"></i> <span class="truncate flex-1">Home</span>
                 </button>
                 <button onclick="switchTab('ghostlink', this)" class="nav-btn flex items-center gap-3 px-2 py-2.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-all text-sm font-medium text-left">
                     <i class="ph ph-ghost text-lg w-5 text-center"></i> <span class="truncate flex-1">Ghostlink</span>
@@ -210,7 +201,7 @@
             }, 1800);
         });
 
-        // Simplified Tab Switching (Iframe only now)
+        // Tab Switching Logic
         window.switchTab = (page, btn) => {
             if(btn) {
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -220,7 +211,7 @@
             iframeView.src = page + '.html';
         };
 
-        // Theme Settings Logic
+        // Theme Settings Logic - Controls both main file and iframe
         const settingsModal = document.getElementById('settings-modal');
         const settingsBox = document.getElementById('settings-box');
         
@@ -235,11 +226,13 @@
         };
 
         window.setThemeColor = (colorHex) => {
-            // Update local CSS
+            // 1. Update local CSS variable
             document.documentElement.style.setProperty('--brand-color', colorHex);
+            
+            // 2. Save to local storage so home.html can read it on next reload
             localStorage.setItem('nexus-brand-color', colorHex);
             
-            // Send message to update iframe CSS instantly without reloading
+            // 3. Send real-time message to update iframe CSS instantly without reloading
             const iframe = document.getElementById('content-frame');
             if(iframe && iframe.contentWindow) {
                 iframe.contentWindow.postMessage({ type: 'update-theme', color: colorHex }, '*');
