@@ -43,6 +43,15 @@
             overflow: hidden; 
         }
 
+        /* Intro Screen Animations */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .intro-content {
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
         /* Clean active state */
         .nav-btn.active { 
             background-color: #1c1c1c; 
@@ -60,11 +69,21 @@
 </head>
 <body class="h-screen w-screen flex antialiased selection:bg-brand/20 selection:text-white">
 
-    <!-- App Layout -->
-    <div class="w-full h-full flex animate-[fadeIn_0.3s_ease-out]">
+    <!-- Minimalist Intro Screen -->
+    <div id="intro-screen" class="fixed inset-0 z-[100] bg-background flex items-center justify-center transition-opacity duration-700 ease-in-out">
+        <div class="intro-content flex items-center gap-4">
+            <div class="w-7 h-7 rounded-[5px] rotate-45 bg-textMain flex items-center justify-center">
+                <div class="w-3 h-3 bg-background rounded-[2px]"></div>
+            </div>
+            <span class="font-medium text-2xl tracking-wide text-textMain mt-1">Nexus</span>
+        </div>
+    </div>
+
+    <!-- App Layout (Hidden initially) -->
+    <div id="app-container" class="w-full h-full flex opacity-0 transition-opacity duration-700 ease-out">
         
         <!-- Sidebar -->
-        <aside class="w64 lg:w-72 h-full flex flex-col bg-surface border-r border-border shrink-0 select-none">
+        <aside class="w-64 lg:w-72 h-full flex flex-col bg-surface border-r border-border shrink-0 select-none">
             
             <!-- Header -->
             <div class="h-16 flex items-center px-6 shrink-0 border-b border-border">
@@ -136,10 +155,6 @@
         </div>
     </div>
 
-    <style>
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    </style>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -151,9 +166,24 @@
         });
         const auth = getAuth(app);
 
+        // Intro Animation Logic
         window.addEventListener('load', () => {
             const savedColor = localStorage.getItem('nexus-brand-color');
             if(savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
+
+            const introScreen = document.getElementById('intro-screen');
+            const appContainer = document.getElementById('app-container');
+
+            // Hold intro for 1.2 seconds, then fade out and show app
+            setTimeout(() => {
+                introScreen.style.opacity = '0';
+                appContainer.style.opacity = '1';
+                
+                // Remove from DOM after fade completes
+                setTimeout(() => {
+                    introScreen.style.display = 'none';
+                }, 700);
+            }, 1200);
         });
 
         window.switchTab = (page, btn) => {
