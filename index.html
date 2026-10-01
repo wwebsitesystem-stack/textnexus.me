@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus OS — Core Dashboard</title>
+    <title>Nexus OS — Home</title>
     
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,8 +24,7 @@
                         mono: ['"JetBrains Mono"', 'monospace']
                     },
                     colors: {
-                        appBg: '#030305',
-                        panelBg: 'rgba(12, 13, 18, 0.6)',
+                        appBg: 'transparent',
                         accent: '#10b981'
                     }
                 }
@@ -37,34 +36,34 @@
         :root {
             --accent: #10b981;
             --accent-glow: rgba(16, 185, 129, 0.25);
-            --border-glass: rgba(255, 255, 255, 0.07);
+            --border-glass: rgba(255, 255, 255, 0.05);
         }
 
         body { 
-            background-color: #030305; 
+            background-color: transparent; /* Allows parent OS background to show through */
             color: #f4f4f5; 
             font-family: 'Outfit', sans-serif; 
             overflow-x: hidden;
             user-select: none;
         }
 
-        /* Next-Gen Glassmorphism */
+        /* Glassmorphism Cards */
         .glass-card {
-            background: rgba(12, 14, 20, 0.55);
-            backdrop-filter: blur(25px) saturate(160%);
-            -webkit-backdrop-filter: blur(25px) saturate(160%);
+            background: rgba(10, 10, 15, 0.4);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
             border: 1px solid var(--border-glass);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
             transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .glass-card:hover {
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 30px var(--accent-glow);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 20px var(--accent-glow);
             transform: translateY(-2px);
         }
 
-        /* Holographic Sheen Effect */
+        /* Hover Sheen */
         .sheen {
             position: relative;
             overflow: hidden;
@@ -73,338 +72,234 @@
             content: '';
             position: absolute;
             top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(
-                60deg,
-                transparent 30%,
-                rgba(255, 255, 255, 0.05) 50%,
-                transparent 70%
-            );
+            background: linear-gradient(60deg, transparent 30%, rgba(255, 255, 255, 0.03) 50%, transparent 70%);
             transform: rotate(30deg) translateY(-100%);
-            transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .sheen:hover::after {
             transform: rotate(30deg) translateY(100%);
         }
 
-        /* Multi-Stage Cinematic Boot Sequence */
-        #boot-overlay {
-            position: fixed; inset: 0; z-index: 9999;
-            background: #020203;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), filter 0.8s ease;
-        }
-
-        .quantum-ring {
-            width: 140px; height: 140px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            border-top-color: var(--accent);
-            border-right-color: rgba(16, 185, 129, 0.3);
-            animation: spin 1.2s linear infinite;
-        }
-        .quantum-ring-inner {
-            width: 100px; height: 100px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            border-bottom-color: #8b5cf6;
-            border-left-color: rgba(139, 92, 246, 0.3);
-            animation: spin-reverse 0.8s linear infinite;
-        }
-
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
-
-        /* Stagger Intro Entrance */
+        /* Staggered Entry Animation */
         .intro-stagger {
             opacity: 0;
-            transform: translateY(20px) scale(0.98);
+            transform: translateY(15px);
             animation: staggerIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
         @keyframes staggerIn {
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Pulse Grid Background */
-        .grid-pattern {
-            background-size: 32px 32px;
-            background-image: 
-                radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-        }
-
+        /* Custom Scrollbar for Iframe Content */
         ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
     </style>
 </head>
-<body class="p-6 md:p-8 min-h-screen grid-pattern">
+<body class="p-6">
 
-    <!-- Cinematic Boot Animation Overlay -->
-    <div id="boot-overlay">
-        <div class="relative flex items-center justify-center mb-8">
-            <div class="quantum-ring"></div>
-            <div class="quantum-ring-inner absolute"></div>
-            <div class="absolute inset-0 flex items-center justify-center">
-                <i class="ph ph-hexagon-fill text-3xl text-emerald-400 animate-pulse"></i>
-            </div>
-        </div>
-
-        <div class="text-center space-y-3">
-            <h1 class="font-display font-bold text-2xl tracking-wider text-white">NEXUS CORE OS</h1>
-            <div id="boot-status" class="font-mono text-xs text-emerald-400/80 tracking-widest uppercase">
-                [0.02s] Initializing Quantum Neural Engine...
-            </div>
-            <div class="w-72 h-1 bg-zinc-900 rounded-full overflow-hidden mx-auto border border-white/5">
-                <div id="boot-progress" class="h-full bg-gradient-to-r from-emerald-500 to-purple-500 w-0 transition-all duration-200"></div>
-            </div>
+    <!-- Sub-boot overlay specifically for the iframe load -->
+    <div id="frame-boot" class="fixed inset-0 z-50 bg-[#020203] flex items-center justify-center transition-all duration-700 ease-out">
+        <div class="flex flex-col items-center gap-4">
+            <i class="ph ph-circle-notch text-3xl text-emerald-500 animate-spin"></i>
+            <div class="text-[10px] font-mono text-zinc-500 tracking-widest uppercase">Initializing Dashboard</div>
         </div>
     </div>
 
-    <!-- Main Dashboard Container -->
-    <div class="max-w-7xl mx-auto space-y-8">
-
-        <!-- Top Header & Live Status -->
-        <header class="intro-stagger flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/5" style="animation-delay: 0.1s;">
+    <div class="max-w-7xl mx-auto space-y-6 pb-12">
+        
+        <!-- Header Section -->
+        <header class="intro-stagger flex flex-col md:flex-row md:items-end justify-between gap-4" style="animation-delay: 0.1s;">
             <div>
-                <div class="flex items-center gap-3">
-                    <span id="greeting-time" class="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">SYSTEM ONLINE</span>
-                    <span class="text-xs text-zinc-500 font-mono">NODE ID: #8892-ALPHA</span>
+                <div class="flex items-center gap-2 mb-1">
+                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]"></div>
+                    <span class="text-[10px] font-mono text-emerald-500 tracking-widest uppercase">System Active</span>
                 </div>
-                <h1 id="user-greeting" class="font-display text-3xl md:text-4xl font-bold text-white mt-2 tracking-tight">
-                    Welcome back, Architect
+                <h1 class="font-display text-3xl md:text-4xl font-bold text-white tracking-tight">
+                    Welcome back.
                 </h1>
             </div>
 
-            <!-- Quick Metrics -->
+            <!-- Mini Telemetry -->
             <div class="flex items-center gap-3">
-                <div class="glass-card px-4 py-2.5 rounded-2xl flex items-center gap-3">
-                    <i class="ph ph-cpu text-2xl text-emerald-400"></i>
+                <div class="glass-card px-4 py-2 rounded-xl flex items-center gap-3">
+                    <i class="ph ph-cpu text-xl text-emerald-400"></i>
                     <div>
-                        <div class="text-[10px] text-zinc-500 uppercase font-mono tracking-wider">CPU Load</div>
-                        <div class="text-sm font-bold font-mono text-white" id="cpu-stat">12%</div>
+                        <div class="text-[9px] text-zinc-500 uppercase font-mono tracking-widest">CPU</div>
+                        <div class="text-xs font-bold font-mono text-white" id="cpu-stat">12%</div>
                     </div>
                 </div>
-
-                <div class="glass-card px-4 py-2.5 rounded-2xl flex items-center gap-3">
-                    <i class="ph ph-[#00ffc0] ph-pulse text-2xl text-purple-400"></i>
+                <div class="glass-card px-4 py-2 rounded-xl flex items-center gap-3">
+                    <i class="ph ph-memory text-xl text-purple-400"></i>
                     <div>
-                        <div class="text-[10px] text-zinc-500 uppercase font-mono tracking-wider">Memory</div>
-                        <div class="text-sm font-bold font-mono text-white" id="ram-stat">4.2 / 16 GB</div>
+                        <div class="text-[9px] text-zinc-500 uppercase font-mono tracking-widest">RAM</div>
+                        <div class="text-xs font-bold font-mono text-white" id="ram-stat">4.2GB</div>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Dynamic Hero Grid -->
+        <!-- Main Hero Grid -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Main Interactive Terminal Preview Banner -->
-            <div class="intro-stagger lg:col-span-2 glass-card p-6 md:p-8 rounded-3xl relative overflow-hidden sheen flex flex-col justify-between min-h-[280px]" style="animation-delay: 0.2s;">
-                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-                    <i class="ph ph-planet text-9xl text-emerald-400"></i>
+            <!-- Welcome / Command Banner -->
+            <div class="intro-stagger lg:col-span-2 glass-card p-8 rounded-3xl relative overflow-hidden sheen flex flex-col justify-between min-h-[260px]" style="animation-delay: 0.2s;">
+                <div class="absolute -right-10 -top-10 opacity-5 pointer-events-none transform rotate-12">
+                    <i class="ph ph-hexagon text-[250px] text-emerald-400"></i>
                 </div>
 
-                <div class="space-y-4 max-w-xl relative z-10">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-zinc-300">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        Next-Gen Workspace Active
-                    </div>
-                    <h2 class="font-display text-2xl md:text-3xl font-bold text-white">Quantum Data Streams & Decentralized Nodes</h2>
+                <div class="max-w-xl relative z-10 space-y-3">
+                    <h2 class="font-display text-2xl font-bold text-white">Quantum Data Streams</h2>
                     <p class="text-sm text-zinc-400 leading-relaxed">
-                        Execute real-time network queries, deploy sandboxed containers, or switch to the Ghostlink secure node seamlessly.
+                        Your workspace is optimized. Execute real-time network queries, deploy sandboxed containers, or switch to the secure node to encrypt traffic.
                     </p>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-3 mt-6 relative z-10">
-                    <button onclick="window.parent.switchTab('ghostlink.html')" class="px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center gap-2">
-                        <i class="ph ph-ghost text-lg"></i> Launch Ghostlink
+                <div class="flex flex-wrap items-center gap-3 mt-8 relative z-10">
+                    <button onclick="window.parent.switchTab('ghostlink.html')" class="px-5 py-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-medium text-sm transition-all flex items-center gap-2 group">
+                        <i class="ph ph-ghost text-lg group-hover:scale-110 transition-transform"></i> Launch Ghostlink
                     </button>
-                    <button onclick="window.parent.switchTab('terminal.html')" class="px-5 py-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-sm transition-all flex items-center gap-2">
-                        <i class="ph ph-terminal-window text-lg"></i> Open Console
+                    <button onclick="window.parent.switchTab('terminal.html')" class="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium text-sm transition-all flex items-center gap-2 group">
+                        <i class="ph ph-terminal-window text-lg group-hover:scale-110 transition-transform"></i> Open Console
                     </button>
                 </div>
             </div>
 
-            <!-- Real-time Performance Telemetry Widget -->
+            <!-- Network Graph -->
             <div class="intro-stagger glass-card p-6 rounded-3xl flex flex-col justify-between" style="animation-delay: 0.3s;">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-display font-bold text-white text-lg flex items-center gap-2">
-                        <i class="ph ph-activity text-emerald-400"></i> Network Telemetry
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="ph ph-activity text-emerald-400"></i> Network
                     </h3>
-                    <span class="text-[10px] font-mono text-zinc-500">LIVE</span>
+                    <span class="text-[9px] font-mono text-zinc-500 bg-white/5 px-2 py-1 rounded-md">LIVE</span>
                 </div>
 
-                <div class="w-full h-32 relative flex items-end">
+                <div class="w-full h-24 relative flex items-end">
                     <canvas id="telemetry-chart" class="w-full h-full"></canvas>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/5 text-xs font-mono">
-                    <div class="bg-black/30 p-2.5 rounded-xl border border-white/5">
-                        <div class="text-zinc-500 text-[10px]">DOWNSTREAM</div>
-                        <div class="text-emerald-400 font-bold mt-0.5" id="net-down">142.8 MB/s</div>
+                <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-white/5 text-xs font-mono">
+                    <div>
+                        <div class="text-zinc-500 text-[9px] tracking-widest">DOWN</div>
+                        <div class="text-emerald-400 font-bold mt-1" id="net-down">142.8 MB/s</div>
                     </div>
-                    <div class="bg-black/30 p-2.5 rounded-xl border border-white/5">
-                        <div class="text-zinc-500 text-[10px]">UPSTREAM</div>
-                        <div class="text-purple-400 font-bold mt-0.5" id="net-up">48.2 MB/s</div>
+                    <div>
+                        <div class="text-zinc-500 text-[9px] tracking-widest">UP</div>
+                        <div class="text-purple-400 font-bold mt-1" id="net-up">48.2 MB/s</div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Application Launcher & Task Hub -->
+        <!-- Applications & Tasks -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            <!-- Quick Launch Cards -->
+            <!-- Quick Apps -->
             <div class="intro-stagger md:col-span-2 space-y-4" style="animation-delay: 0.4s;">
-                <h3 class="font-display font-bold text-white text-xl flex items-center gap-2">
-                    <i class="ph ph-squares-four text-emerald-400"></i> Core Subsystems
+                <h3 class="text-sm font-bold text-white flex items-center gap-2 ml-1">
+                    <i class="ph ph-squares-four text-zinc-400"></i> Core Subsystems
                 </h3>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- App Card 1 -->
-                    <div onclick="window.parent.switchTab('ghostlink.html')" class="glass-card p-5 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-2xl group-hover:scale-110 transition-transform">
+                    <!-- App 1 -->
+                    <div onclick="window.parent.switchTab('ghostlink.html')" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-xl group-hover:scale-110 transition-transform shadow-inner">
                             <i class="ph ph-ghost"></i>
                         </div>
                         <div class="flex-1">
-                            <div class="flex items-center justify-between">
-                                <h4 class="font-bold text-white group-hover:text-purple-400 transition-colors">Ghostlink Proxy</h4>
-                                <i class="ph ph-arrow-up-right text-zinc-500 group-hover:text-white transition-colors"></i>
-                            </div>
-                            <p class="text-xs text-zinc-400 mt-1">Encrypted peer-to-peer connection proxy and tunnel node.</p>
+                            <h4 class="font-bold text-sm text-white group-hover:text-purple-400 transition-colors">Ghostlink Proxy</h4>
+                            <p class="text-[11px] text-zinc-500 mt-0.5 leading-snug">Encrypted peer-to-peer connection tunnel.</p>
                         </div>
                     </div>
 
-                    <!-- App Card 2 -->
-                    <div onclick="window.parent.switchTab('terminal.html')" class="glass-card p-5 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-2xl group-hover:scale-110 transition-transform">
+                    <!-- App 2 -->
+                    <div onclick="window.parent.switchTab('terminal.html')" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-xl group-hover:scale-110 transition-transform shadow-inner">
                             <i class="ph ph-code"></i>
                         </div>
                         <div class="flex-1">
-                            <div class="flex items-center justify-between">
-                                <h4 class="font-bold text-white group-hover:text-blue-400 transition-colors">Terminal Shell</h4>
-                                <i class="ph ph-arrow-up-right text-zinc-500 group-hover:text-white transition-colors"></i>
-                            </div>
-                            <p class="text-xs text-zinc-400 mt-1">High-speed system CLI with integrated scripting engines.</p>
+                            <h4 class="font-bold text-sm text-white group-hover:text-blue-400 transition-colors">Terminal Shell</h4>
+                            <p class="text-[11px] text-zinc-500 mt-0.5 leading-snug">High-speed system CLI interfaces.</p>
                         </div>
                     </div>
 
-                    <!-- App Card 3 -->
-                    <div onclick="window.parent.openPalette()" class="glass-card p-5 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-2xl group-hover:scale-110 transition-transform">
-                            <i class="ph ph-sparkle"></i>
+                    <!-- App 3 -->
+                    <div onclick="window.parent.openPalette()" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl group-hover:scale-110 transition-transform shadow-inner">
+                            <i class="ph ph-magnifying-glass"></i>
                         </div>
                         <div class="flex-1">
-                            <div class="flex items-center justify-between">
-                                <h4 class="font-bold text-white group-hover:text-emerald-400 transition-colors">AI Neural Assist</h4>
-                                <i class="ph ph-arrow-up-right text-zinc-500 group-hover:text-white transition-colors"></i>
-                            </div>
-                            <p class="text-xs text-zinc-400 mt-1">Intelligent workspace assistant and command runner.</p>
+                            <h4 class="font-bold text-sm text-white group-hover:text-emerald-400 transition-colors">Command Center</h4>
+                            <p class="text-[11px] text-zinc-500 mt-0.5 leading-snug">Global search and action execution.</p>
                         </div>
                     </div>
 
-                    <!-- App Card 4 -->
-                    <div onclick="window.parent.openSettingsModal()" class="glass-card p-5 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-2xl group-hover:scale-110 transition-transform">
+                    <!-- App 4 -->
+                    <div onclick="window.parent.openSettingsModal()" class="glass-card p-4 rounded-2xl cursor-pointer group sheen flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-xl group-hover:scale-110 transition-transform shadow-inner">
                             <i class="ph ph-sliders"></i>
                         </div>
                         <div class="flex-1">
-                            <div class="flex items-center justify-between">
-                                <h4 class="font-bold text-white group-hover:text-rose-400 transition-colors">System Vault</h4>
-                                <i class="ph ph-arrow-up-right text-zinc-500 group-hover:text-white transition-colors"></i>
-                            </div>
-                            <p class="text-xs text-zinc-400 mt-1">Manage global themes, security policies, and node configs.</p>
+                            <h4 class="font-bold text-sm text-white group-hover:text-rose-400 transition-colors">System Vault</h4>
+                            <p class="text-[11px] text-zinc-500 mt-0.5 leading-snug">Manage themes and security policies.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Tasks & Notes Widget -->
-            <div class="intro-stagger glass-card p-6 rounded-3xl flex flex-col" style="animation-delay: 0.5s;">
+            <!-- Tasks Widget -->
+            <div class="intro-stagger glass-card p-5 rounded-3xl flex flex-col" style="animation-delay: 0.5s;">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-display font-bold text-white text-lg flex items-center gap-2">
-                        <i class="ph ph-check-square-offset text-emerald-400"></i> System Tasks
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="ph ph-check-square-offset text-emerald-400"></i> Active Tasks
                     </h3>
-                    <span id="task-counter" class="text-xs font-mono bg-white/10 px-2 py-0.5 rounded-full text-zinc-300">2 Pending</span>
+                    <span id="task-counter" class="text-[10px] font-mono bg-white/5 border border-white/10 px-2 py-0.5 rounded text-zinc-400">2 Pending</span>
                 </div>
 
-                <div class="flex gap-2 mb-4">
-                    <input id="new-task-input" type="text" placeholder="Add rapid task..." class="flex-1 bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500 transition-colors">
-                    <button onclick="addTask()" class="p-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs transition-colors">
-                        <i class="ph ph-plus text-base"></i>
+                <div class="flex gap-2 mb-3">
+                    <input id="new-task-input" type="text" placeholder="Add task..." class="flex-1 bg-black/20 border border-white/5 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/50 transition-colors placeholder:text-zinc-600">
+                    <button onclick="addTask()" class="px-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300 transition-colors">
+                        <i class="ph ph-plus"></i>
                     </button>
                 </div>
 
-                <div id="task-list" class="space-y-2.5 flex-1 overflow-y-auto max-h-[220px] pr-1">
-                    <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs group hover:bg-white/[0.05] transition-colors">
+                <div id="task-list" class="space-y-2 flex-1 overflow-y-auto max-h-[160px] pr-1">
+                    <div class="p-2.5 rounded-lg bg-white/[0.01] border border-white/[0.03] flex items-center justify-between text-xs group hover:bg-white/[0.03] transition-colors">
                         <div class="flex items-center gap-2.5">
-                            <input type="checkbox" onchange="toggleTask(this)" class="rounded bg-zinc-800 border-white/20 text-emerald-500 focus:ring-0 cursor-pointer">
-                            <span class="text-zinc-300">Run quantum diagnostic check</span>
+                            <input type="checkbox" onchange="toggleTask(this)" class="w-3.5 h-3.5 rounded bg-black/50 border-white/20 text-emerald-500 focus:ring-0 focus:ring-offset-0 cursor-pointer">
+                            <span class="text-zinc-300">Run security diagnostic</span>
                         </div>
-                        <i class="ph ph-dots-three text-zinc-600 group-hover:text-zinc-300 cursor-pointer"></i>
+                        <button onclick="this.parentElement.remove(); updateTaskCounter();" class="text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"><i class="ph ph-trash"></i></button>
                     </div>
-
-                    <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs group hover:bg-white/[0.05] transition-colors">
+                    <div class="p-2.5 rounded-lg bg-white/[0.01] border border-white/[0.03] flex items-center justify-between text-xs group hover:bg-white/[0.03] transition-colors">
                         <div class="flex items-center gap-2.5">
-                            <input type="checkbox" onchange="toggleTask(this)" class="rounded bg-zinc-800 border-white/20 text-emerald-500 focus:ring-0 cursor-pointer">
-                            <span class="text-zinc-300">Update encrypted Ghostlink proxy keys</span>
+                            <input type="checkbox" onchange="toggleTask(this)" class="w-3.5 h-3.5 rounded bg-black/50 border-white/20 text-emerald-500 focus:ring-0 focus:ring-offset-0 cursor-pointer">
+                            <span class="text-zinc-300">Rotate proxy keys</span>
                         </div>
-                        <i class="ph ph-dots-three text-zinc-600 group-hover:text-zinc-300 cursor-pointer"></i>
+                        <button onclick="this.parentElement.remove(); updateTaskCounter();" class="text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"><i class="ph ph-trash"></i></button>
                     </div>
                 </div>
             </div>
         </section>
-
     </div>
 
-    <!-- Script Engine -->
+    <!-- Script Logic -->
     <script>
-        // Multi-stage bootloader sequence logic
-        window.addEventListener('DOMContentLoaded', () => {
-            const bootOverlay = document.getElementById('boot-overlay');
-            const bootProgress = document.getElementById('boot-progress');
-            const bootStatus = document.getElementById('boot-status');
-
-            const steps = [
-                { time: '0.12s', text: '[0.12s] Mounting Virtual File System...' },
-                { time: '0.28s', text: '[0.28s] Connecting Encrypted Mesh Relays...' },
-                { time: '0.45s', text: '[0.45s] Synchronizing Neural Telemetry...' },
-                { time: '0.65s', text: '[0.65s] Bootloader Complete. Launching Dashboard...' }
-            ];
-
-            let progress = 0;
-            let stepIdx = 0;
-
-            const interval = setInterval(() => {
-                progress += 10;
-                bootProgress.style.width = `${progress}%`;
-
-                if (progress % 25 === 0 && steps[stepIdx]) {
-                    bootStatus.textContent = steps[stepIdx].text;
-                    stepIdx++;
-                }
-
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        bootOverlay.style.opacity = '0';
-                        bootOverlay.style.filter = 'blur(20px)';
-                        setTimeout(() => bootOverlay.style.display = 'none', 800);
-                    }, 200);
-                }
-            }, 50);
-
-            // Time Greeting Adjustment
-            const hour = new Date().getHours();
-            const timeSpan = document.getElementById('greeting-time');
-            if (hour < 12) timeSpan.textContent = 'GOOD MORNING';
-            else if (hour < 18) timeSpan.textContent = 'GOOD AFTERNOON';
-            else timeSpan.textContent = 'GOOD EVENING';
+        // Remove boot overlay smoothly
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const boot = document.getElementById('frame-boot');
+                boot.style.opacity = '0';
+                setTimeout(() => boot.style.display = 'none', 700);
+            }, 300);
         });
 
-        // Real-time canvas telemetry graph simulation
+        // Telemetry Graph Simulation
         const canvas = document.getElementById('telemetry-chart');
         const ctx = canvas.getContext('2d');
-        let points = Array(30).fill(20);
+        let points = Array(30).fill(10);
 
         function resizeCanvas() {
             canvas.width = canvas.offsetWidth;
@@ -416,14 +311,16 @@
         function drawTelemetry() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Shift points
             points.shift();
-            points.push(Math.random() * (canvas.height * 0.6) + 10);
+            points.push(Math.random() * (canvas.height * 0.7) + 5);
 
-            // Draw area gradient
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
-            gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+            // Dynamic color based on parent accent if possible, otherwise fallback to emerald
+            let accentHex = '#10b981';
+            try { accentHex = window.parent.document.documentElement.style.getPropertyValue('--accent') || '#10b981'; } catch(e){}
+            
+            gradient.addColorStop(0, `${accentHex}40`); // 40 is hex alpha for ~25%
+            gradient.addColorStop(1, `${accentHex}00`);
 
             ctx.beginPath();
             const step = canvas.width / (points.length - 1);
@@ -432,15 +329,13 @@
             points.forEach((pt, i) => {
                 const x = i * step;
                 const y = canvas.height - pt;
-                if (i === 0) ctx.lineTo(x, y);
-                else ctx.lineTo(x, y);
+                ctx.lineTo(x, y);
             });
 
             ctx.lineTo(canvas.width, canvas.height);
             ctx.fillStyle = gradient;
             ctx.fill();
 
-            // Draw line
             ctx.beginPath();
             points.forEach((pt, i) => {
                 const x = i * step;
@@ -448,54 +343,60 @@
                 if (i === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             });
-            ctx.strokeStyle = '#10b981';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = accentHex;
+            ctx.lineWidth = 1.5;
             ctx.stroke();
 
-            // Dynamic number update simulation
             document.getElementById('cpu-stat').textContent = `${Math.floor(Math.random() * 8 + 10)}%`;
             document.getElementById('net-down').textContent = `${(Math.random() * 20 + 130).toFixed(1)} MB/s`;
 
-            setTimeout(drawTelemetry, 800);
+            setTimeout(drawTelemetry, 1000);
         }
         drawTelemetry();
 
-        // Interactive Tasks Widget
-        function addTask() {
+        // Tasks Logic
+        window.addTask = function() {
             const input = document.getElementById('new-task-input');
             const val = input.value.trim();
             if (!val) return;
 
             const taskList = document.getElementById('task-list');
             const taskEl = document.createElement('div');
-            taskEl.className = "p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs group hover:bg-white/[0.05] transition-colors";
+            taskEl.className = "p-2.5 rounded-lg bg-white/[0.01] border border-white/[0.03] flex items-center justify-between text-xs group hover:bg-white/[0.03] transition-colors intro-stagger";
+            taskEl.style.animationDelay = '0s';
             taskEl.innerHTML = `
                 <div class="flex items-center gap-2.5">
-                    <input type="checkbox" onchange="toggleTask(this)" class="rounded bg-zinc-800 border-white/20 text-emerald-500 focus:ring-0 cursor-pointer">
+                    <input type="checkbox" onchange="toggleTask(this)" class="w-3.5 h-3.5 rounded bg-black/50 border-white/20 text-emerald-500 focus:ring-0 focus:ring-offset-0 cursor-pointer">
                     <span class="text-zinc-300">${val}</span>
                 </div>
-                <i class="ph ph-dots-three text-zinc-600 group-hover:text-zinc-300 cursor-pointer" onclick="this.parentElement.remove(); updateTaskCounter();"></i>
+                <button onclick="this.parentElement.remove(); updateTaskCounter();" class="text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"><i class="ph ph-trash"></i></button>
             `;
             taskList.prepend(taskEl);
             input.value = '';
             updateTaskCounter();
         }
 
-        function toggleTask(checkbox) {
+        window.toggleTask = function(checkbox) {
             const span = checkbox.nextElementSibling;
             if (checkbox.checked) {
                 span.classList.add('line-through', 'text-zinc-600');
+                try { window.parent.playSFX(600, 'sine', 0.05); } catch(e){}
             } else {
                 span.classList.remove('line-through', 'text-zinc-600');
             }
             updateTaskCounter();
         }
 
-        function updateTaskCounter() {
+        window.updateTaskCounter = function() {
             const total = document.querySelectorAll('#task-list input[type="checkbox"]').length;
             const checked = document.querySelectorAll('#task-list input[type="checkbox"]:checked').length;
             document.getElementById('task-counter').textContent = `${total - checked} Pending`;
         }
+
+        // Handle Enter key in task input
+        document.getElementById('new-task-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') addTask();
+        });
     </script>
 </body>
 </html>
