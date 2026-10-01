@@ -49,12 +49,10 @@
             user-select: none;
         }
 
-        /* Dynamic Canvas & Ambient Background */
         #bg-canvas {
             position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.8;
         }
 
-        /* Glassmorphism & Borders */
         .glass { 
             background: rgba(12, 12, 18, 0.65); 
             backdrop-filter: blur(30px); 
@@ -69,13 +67,11 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.06); 
         }
 
-        /* Glow Accents */
         .accent-text { color: var(--accent); }
         .accent-bg { background-color: var(--accent); }
         .accent-border { border-color: var(--accent); }
         .accent-glow-box { box-shadow: 0 0 25px var(--accent-glow); }
         
-        /* Intro Cinematic Animation */
         #intro-screen {
             position: fixed; inset: 0; background-color: #030305; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -93,7 +89,6 @@
             100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
         }
 
-        /* Sidebar Navigation Effects */
         .nav-btn {
             position: relative; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -109,7 +104,6 @@
         .nav-btn.active::before { opacity: 1; transform: scaleY(1); }
         .nav-btn.active i { color: var(--accent); }
 
-        /* Loading Skeleton Shimmer for Content Frame */
         .shimmer {
             background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
             background-size: 200% 100%;
@@ -120,11 +114,9 @@
             100% { background-position: 200% 0; }
         }
 
-        /* Toast Animation */
         .toast-enter { transform: translateY(20px) scale(0.95); opacity: 0; }
         .toast-show { transform: translateY(0) scale(1); opacity: 1; }
 
-        /* Custom Scrollbars */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
@@ -133,10 +125,8 @@
 </head>
 <body class="h-screen w-screen flex antialiased selection:bg-emerald-500/30 selection:text-white">
 
-    <!-- Interactive Background Canvas -->
     <canvas id="bg-canvas"></canvas>
 
-    <!-- Cinematic Intro Screen -->
     <div id="intro-screen">
         <div class="intro-logo tracking-tight">NEXUS</div>
         <div class="mt-6 flex items-center gap-3 text-xs font-mono text-zinc-400 tracking-[0.3em] uppercase">
@@ -148,7 +138,7 @@
         </div>
     </div>
 
-    <!-- Command Palette Modal (Ctrl+K / Cmd+K) -->
+    <!-- Command Palette Modal -->
     <div id="command-palette" class="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-md flex items-start justify-center pt-[12vh] px-4 opacity-0 pointer-events-none transition-all duration-300">
         <div class="glass rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300 border border-white/10" id="palette-box">
             <div class="flex items-center px-5 py-4 border-b border-white/10 gap-3">
@@ -162,15 +152,15 @@
                     <div class="flex items-center gap-3"><i class="ph ph-squares-four text-lg accent-text"></i><span>Dashboard</span></div>
                     <span class="text-xs text-zinc-500 font-mono">Jump to Home</span>
                 </button>
-                <button onclick="paletteSelect('youtube.html', 'Media Hub')" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
-                    <div class="flex items-center gap-3"><i class="ph ph-youtube-logo text-lg text-red-500"></i><span>Media Hub</span></div>
-                    <span class="text-xs text-zinc-500 font-mono">Stream & Watch</span>
-                </button>
                 <button onclick="paletteSelect('ghostlink.html', 'Ghostlink')" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
                     <div class="flex items-center gap-3"><i class="ph ph-ghost text-lg text-purple-400"></i><span>Ghostlink</span></div>
                     <span class="text-xs text-zinc-500 font-mono">Secure Node</span>
                 </button>
                 <div class="px-3 py-1.5 mt-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">System Actions</div>
+                <button onclick="openSettingsModal()" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
+                    <div class="flex items-center gap-3"><i class="ph ph-gear text-lg"></i><span>Open Settings</span></div>
+                    <span class="text-xs text-zinc-500 font-mono">Preferences</span>
+                </button>
                 <button onclick="toggleSound()" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
                     <div class="flex items-center gap-3"><i class="ph ph-speaker-high text-lg"></i><span>Toggle UI Audio Feedback</span></div>
                     <span class="text-xs text-zinc-500 font-mono" id="palette-sound-status">Enabled</span>
@@ -183,6 +173,26 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass rounded-2xl w-full max-w-md p-8 shadow-2xl border border-white/10 relative">
+            <button onclick="closeSettingsModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white"><i class="ph ph-x text-xl"></i></button>
+            <h3 class="font-display text-xl font-bold text-white mb-6 flex items-center gap-2"><i class="ph ph-gear accent-text"></i> Settings</h3>
+            
+            <div class="space-y-8">
+                <div>
+                    <h4 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Theme Accent</h4>
+                    <div class="flex items-center gap-4">
+                        <button onclick="setTheme('#10b981', 'rgba(16, 185, 129, 0.35)')" class="w-8 h-8 rounded-full bg-emerald-500 ring-2 ring-white/20 hover:scale-110 transition-transform"></button>
+                        <button onclick="setTheme('#8b5cf6', 'rgba(139, 92, 246, 0.35)')" class="w-8 h-8 rounded-full bg-purple-500 hover:scale-110 transition-transform"></button>
+                        <button onclick="setTheme('#06b6d4', 'rgba(6, 182, 212, 0.35)')" class="w-8 h-8 rounded-full bg-cyan-500 hover:scale-110 transition-transform"></button>
+                        <button onclick="setTheme('#f59e0b', 'rgba(245, 158, 11, 0.35)')" class="w-8 h-8 rounded-full bg-amber-500 hover:scale-110 transition-transform"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Keyboard Shortcuts Modal -->
     <div id="shortcuts-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
         <div class="glass rounded-2xl w-full max-w-md p-6 shadow-2xl border border-white/10 relative">
@@ -191,7 +201,6 @@
             <div class="space-y-3 text-sm text-zinc-300">
                 <div class="flex justify-between items-center py-1.5 border-b border-white/5"><span>Command Palette</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">⌘ + K</kbd></div>
                 <div class="flex justify-between items-center py-1.5 border-b border-white/5"><span>Dashboard</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">G + H</kbd></div>
-                <div class="flex justify-between items-center py-1.5 border-b border-white/5"><span>Media Hub</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">G + M</kbd></div>
                 <div class="flex justify-between items-center py-1.5 border-b border-white/5"><span>Shortcuts Help</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">?</kbd></div>
                 <div class="flex justify-between items-center py-1.5"><span>Close Windows</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">ESC</kbd></div>
             </div>
@@ -206,8 +215,6 @@
         
         <!-- Sidebar -->
         <aside class="w-[280px] h-full flex flex-col glass border-r border-borderSubtle shrink-0 select-none z-20 m-2 rounded-2xl overflow-hidden shadow-2xl relative">
-            
-            <!-- App Brand Header -->
             <div class="h-[76px] flex items-center justify-between px-6 border-b border-white/5">
                 <div class="flex items-center gap-3.5">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-black border border-white/15 flex items-center justify-center text-white shadow-xl relative overflow-hidden group">
@@ -229,26 +236,14 @@
                     <div class="flex items-center gap-3"><i class="ph ph-squares-four text-lg"></i> Dashboard</div>
                     <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-500">01</span>
                 </button>
-                <button onclick="switchTab('youtube.html', this)" class="nav-btn flex items-center justify-between px-3.5 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium">
-                    <div class="flex items-center gap-3"><i class="ph ph-play-circle text-lg"></i> Media Hub</div>
-                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-500">02</span>
-                </button>
                 <button onclick="switchTab('ghostlink.html', this)" class="nav-btn flex items-center justify-between px-3.5 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium">
                     <div class="flex items-center gap-3"><i class="ph ph-ghost text-lg"></i> Ghostlink</div>
-                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-500">03</span>
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-500">02</span>
                 </button>
                 <button onclick="switchTab('updates.html', this)" class="nav-btn flex items-center justify-between px-3.5 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium">
                     <div class="flex items-center gap-3"><i class="ph ph-sparkle text-lg"></i> System Updates</div>
                     <span class="w-2 h-2 rounded-full accent-bg"></span>
                 </button>
-
-                <div class="px-3 mt-6 mb-2 text-[10px] font-extrabold tracking-widest text-zinc-500 uppercase">Theme Accent</div>
-                <div class="flex items-center gap-2 px-3">
-                    <button onclick="setTheme('#10b981', 'rgba(16, 185, 129, 0.35)')" class="w-6 h-6 rounded-full bg-emerald-500 ring-2 ring-white/20 hover:scale-110 transition-transform"></button>
-                    <button onclick="setTheme('#8b5cf6', 'rgba(139, 92, 246, 0.35)')" class="w-6 h-6 rounded-full bg-purple-500 hover:scale-110 transition-transform"></button>
-                    <button onclick="setTheme('#06b6d4', 'rgba(6, 182, 212, 0.35)')" class="w-6 h-6 rounded-full bg-cyan-500 hover:scale-110 transition-transform"></button>
-                    <button onclick="setTheme('#f59e0b', 'rgba(245, 158, 11, 0.35)')" class="w-6 h-6 rounded-full bg-amber-500 hover:scale-110 transition-transform"></button>
-                </div>
             </nav>
 
             <!-- Bottom System Widget -->
@@ -270,7 +265,6 @@
             
             <!-- Top Glass Header -->
             <header class="h-[76px] shrink-0 flex items-center justify-between px-8 glass-panel rounded-2xl mb-2 relative z-30 border border-borderSubtle">
-                <!-- Breadcrumbs -->
                 <div class="flex items-center gap-2 text-sm font-medium text-zinc-400">
                     <i class="ph ph-house text-lg"></i>
                     <span>Workspace</span>
@@ -278,8 +272,12 @@
                     <span id="current-page-title" class="text-white font-semibold tracking-wide">Dashboard</span>
                 </div>
 
-                <!-- Right Header Actions -->
                 <div class="flex items-center gap-4">
+                    <!-- Settings Toggle -->
+                    <button onclick="openSettingsModal()" title="System Settings" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300 transition-colors">
+                        <i class="ph ph-gear text-lg"></i>
+                    </button>
+
                     <!-- Audio Toggle -->
                     <button onclick="toggleSound()" title="Toggle UI SFX" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300 transition-colors">
                         <i id="sound-icon" class="ph ph-speaker-high text-lg"></i>
@@ -290,20 +288,17 @@
                         <i class="ph ph-keyboard text-lg"></i>
                     </button>
 
-                    <!-- Live Clock & Date -->
                     <div class="hidden md:flex flex-col items-end text-right border-l border-white/10 pl-4">
                         <div id="live-clock" class="text-xs font-mono font-bold text-white tracking-wider">00:00:00 AM</div>
                         <div id="live-date" class="text-[10px] text-zinc-500 font-medium">Oct 01, 2026</div>
                     </div>
 
-                    <!-- Command Search Trigger -->
                     <button onclick="openPalette()" class="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-black/50 hover:bg-black/80 border border-white/10 text-zinc-400 text-xs transition-all shadow-inner group">
                         <i class="ph ph-magnifying-glass text-sm group-hover:text-white transition-colors"></i>
                         <span class="hidden sm:inline">Search...</span>
                         <kbd class="px-1.5 py-0.5 rounded bg-white/10 font-mono text-[10px] text-zinc-300">⌘K</kbd>
                     </button>
 
-                    <!-- Authentication Avatar Button -->
                     <div class="relative">
                         <button id="auth-trigger" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-white shadow-sm">
                             <div class="w-7 h-7 rounded-lg bg-zinc-800 border border-white/10 flex items-center justify-center overflow-hidden">
@@ -316,9 +311,7 @@
                 </div>
             </header>
 
-            <!-- Main Content Container with Dynamic Loader -->
             <div class="flex-1 w-full h-full relative rounded-2xl overflow-hidden glass border border-borderSubtle shadow-2xl">
-                <!-- Skeleton Loader Overlay -->
                 <div id="frame-loader" class="absolute inset-0 z-20 flex flex-col p-8 bg-[#030305] transition-opacity duration-300 opacity-0 pointer-events-none">
                     <div class="w-48 h-8 rounded-xl shimmer mb-4"></div>
                     <div class="w-96 h-4 rounded-lg shimmer mb-8"></div>
@@ -328,18 +321,15 @@
                     </div>
                 </div>
 
-                <!-- Content Iframe -->
                 <iframe id="content-frame" class="w-full h-full border-none bg-transparent" src="home.html"></iframe>
             </div>
         </main>
     </div>
 
-    <!-- Application Script Engine -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
             authDomain: "nexus-web-development-official.firebaseapp.com",
@@ -348,7 +338,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Sound System (Web Audio API Synthesizer - Zero External Assets)
         let soundEnabled = true;
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -385,7 +374,6 @@
             }
         };
 
-        // Theme Accent Switcher
         window.setTheme = (hex, glow) => {
             document.documentElement.style.setProperty('--accent', hex);
             document.documentElement.style.setProperty('--accent-glow', glow);
@@ -393,7 +381,6 @@
             showToast(`Accent Updated`);
         };
 
-        // Interactive Canvas Animation Background
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let width = canvas.width = window.innerWidth;
@@ -425,7 +412,6 @@
         }
         animateCanvas();
 
-        // Intro Controller
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const intro = document.getElementById('intro-screen');
@@ -441,14 +427,12 @@
             }, 1600);
         });
 
-        // Live Clock & Date Update
         setInterval(() => {
             const now = new Date();
             document.getElementById('live-clock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             document.getElementById('live-date').textContent = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
         }, 1000);
 
-        // Toast Notification System
         window.showToast = (msg) => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -463,7 +447,6 @@
             }, 3200);
         };
 
-        // Tab Switching & Frame Handling
         window.switchTab = (page, btn) => {
             playSFX(400, 'sine', 0.05);
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -472,34 +455,13 @@
             const loader = document.getElementById('frame-loader');
             const frame = document.getElementById('content-frame');
             
-            // Show Loader Shimmer
             loader.style.opacity = '1';
             loader.style.pointerEvents = 'auto';
 
             setTimeout(() => {
-                if (page === 'youtube.html') {
-                    frame.srcdoc = `
-                        <html class="dark"><head><script src="https://cdn.tailwindcss.com"><\/script><script src="https://unpkg.com/@phosphor-icons/web"><\/script></head>
-                        <body class="bg-transparent text-white p-10 font-sans">
-                            <div class="max-w-5xl mx-auto">
-                                <h1 class="text-4xl font-bold mb-2 tracking-tight">Media Hub</h1>
-                                <p class="text-zinc-400 mb-8 text-sm">Curated video channels and streams.</p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 shadow-xl">
-                                        <div class="aspect-video bg-black rounded-xl overflow-hidden mb-4">
-                                            <iframe class="w-full h-full border-none" src="https://www.youtube.com/embed/9qbrOrj30TM" allowfullscreen></iframe>
-                                        </div>
-                                        <h3 class="font-semibold text-white text-base">Global Stream Node</h3>
-                                    </div>
-                                </div>
-                            </div>
-                        </body></html>
-                    `;
-                } else {
-                    frame.removeAttribute('srcdoc');
-                    frame.src = page;
-                }
-
+                frame.removeAttribute('srcdoc');
+                frame.src = page;
+                
                 const title = page.replace('.html', '');
                 document.getElementById('current-page-title').textContent = title.charAt(0).toUpperCase() + title.slice(1);
                 
@@ -510,7 +472,6 @@
             }, 400);
         };
 
-        // Command Palette Input Filtering
         const pInput = document.getElementById('palette-input');
         pInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
@@ -520,7 +481,6 @@
             });
         });
 
-        // Command Palette Toggle
         const palette = document.getElementById('command-palette');
         const pBox = document.getElementById('palette-box');
 
@@ -542,7 +502,16 @@
             showToast(`Navigated to ${name}`);
         };
 
-        // Keyboard Shortcuts Modal
+        const settingsModal = document.getElementById('settings-modal');
+        window.openSettingsModal = () => {
+            closePalette();
+            playSFX(650, 'sine', 0.05);
+            settingsModal.classList.remove('opacity-0', 'pointer-events-none');
+        };
+        window.closeSettingsModal = () => {
+            settingsModal.classList.add('opacity-0', 'pointer-events-none');
+        };
+
         const shortcutsModal = document.getElementById('shortcuts-modal');
         window.openShortcutsModal = () => {
             closePalette();
@@ -553,7 +522,6 @@
             shortcutsModal.classList.add('opacity-0', 'pointer-events-none');
         };
 
-        // Global Keybindings Listener
         let keyBuffer = '';
         document.addEventListener('keydown', (e) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') { 
@@ -563,21 +531,19 @@
             if (e.key === 'Escape') {
                 closePalette();
                 closeShortcutsModal();
+                closeSettingsModal();
             }
             if (e.key === '?' && document.activeElement.tagName !== 'INPUT') {
                 openShortcutsModal();
             }
 
-            // Quick Sequential Keys (G + H for Home, G + M for Media)
             if (document.activeElement.tagName !== 'INPUT') {
                 keyBuffer += e.key.toLowerCase();
                 if (keyBuffer.endsWith('gh')) { switchTab('home.html'); keyBuffer = ''; }
-                if (keyBuffer.endsWith('gm')) { switchTab('youtube.html'); keyBuffer = ''; }
                 setTimeout(() => keyBuffer = '', 1000);
             }
         });
 
-        // Firebase Google Auth Integration
         const authBtn = document.getElementById('auth-trigger');
         authBtn.addEventListener('click', async () => {
             playSFX(500, 'sine', 0.05);
