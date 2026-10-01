@@ -31,6 +31,9 @@
         }
     </script>
 
+    <!-- Cloudflare Turnstile Script -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
     <style>
         :root {
             --brand-color: #ededed;
@@ -109,7 +112,7 @@
 
             <!-- Footer (Auth & Settings) -->
             <div class="p-3 flex flex-col gap-1 border-t border-border">
-                <button id="settings-trigger" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surfaceHover transition-colors text-left text-textMuted text-sm font-medium w-full group">
+                <button id="auth-trigger" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surfaceHover transition-colors text-left text-textMuted text-sm font-medium w-full group">
                     <div class="w-6 h-6 rounded-full bg-border flex items-center justify-center overflow-hidden shrink-0">
                         <i id="user-avatar-icon" class="ph ph-user text-xs text-textMuted"></i>
                         <img id="user-avatar-img" src="" class="w-full h-full object-cover hidden">
@@ -127,6 +130,22 @@
         <main class="flex-1 h-full relative bg-background">
             <iframe id="content-frame" class="w-full h-full border-none bg-transparent" src="home.html"></iframe>
         </main>
+    </div>
+
+    <!-- Security Check Modal (Turnstile) -->
+    <div id="security-modal" class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="bg-surface border border-border rounded-xl w-full max-w-sm shadow-2xl p-6 flex flex-col items-center justify-center transform scale-95 transition-transform duration-200" id="security-box">
+            <div class="w-12 h-12 rounded-full bg-border flex items-center justify-center text-textMuted mb-4">
+                <i class="ph ph-shield-check text-2xl"></i>
+            </div>
+            <h3 class="text-textMain font-medium text-lg mb-1">Security Verification</h3>
+            <p class="text-sm text-textMuted mb-6 text-center">Please complete the check below to proceed to authentication.</p>
+            
+            <!-- Turnstile Widget Injection Point -->
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAAFLfaHWQlbqdlS_j" data-callback="onTurnstileSuccess" data-theme="dark"></div>
+            
+            <button onclick="closeSecurityModal()" class="mt-6 text-xs text-textMuted hover:text-textMain transition-colors">Cancel</button>
+        </div>
     </div>
 
     <!-- Settings Modal -->
@@ -174,15 +193,10 @@
             const introScreen = document.getElementById('intro-screen');
             const appContainer = document.getElementById('app-container');
 
-            // Hold intro for 1.2 seconds, then fade out and show app
             setTimeout(() => {
                 introScreen.style.opacity = '0';
                 appContainer.style.opacity = '1';
-                
-                // Remove from DOM after fade completes
-                setTimeout(() => {
-                    introScreen.style.display = 'none';
-                }, 700);
+                setTimeout(() => introScreen.style.display = 'none', 700);
             }, 1200);
         });
 
@@ -194,6 +208,7 @@
             document.getElementById('content-frame').src = page + '.html';
         };
 
+        // --- Settings Modal Logic ---
         const settingsModal = document.getElementById('settings-modal');
         const settingsBox = document.getElementById('settings-box');
         
@@ -210,24 +225,51 @@
         window.setThemeColor = (colorHex) => {
             document.documentElement.style.setProperty('--brand-color', colorHex);
             localStorage.setItem('nexus-brand-color', colorHex);
-            
             const iframe = document.getElementById('content-frame');
-            if(iframe && iframe.contentWindow) {
-                iframe.contentWindow.postMessage({ type: 'update-theme', color: colorHex }, '*');
-            }
+            if(iframe && iframe.contentWindow) iframe.contentWindow.postMessage({ type: 'update-theme', color: colorHex }, '*');
         };
 
         settingsModal.addEventListener('click', (e) => {
             if (e.target === settingsModal) closeSettings();
         });
 
-        document.getElementById('settings-trigger').addEventListener('click', async () => {
+        // --- Security Modal & Auth Logic ---
+        const securityModal = document.getElementById('security-modal');
+        const securityBox = document.getElementById('security-box');
+
+        window.closeSecurityModal = () => {
+            securityModal.classList.add('opacity-0', 'pointer-events-none');
+            securityBox.classList.add('scale-95');
+            // Reset the widget if user closes modal without completing it
+            if(typeof turnstile !== 'undefined') turnstile.reset();
+        };
+
+        document.getElementById('auth-trigger').addEventListener('click', async () => {
             if (auth.currentUser) {
+                // If already logged in, just sign out directly
                 await signOut(auth);
             } else {
-                try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch (err) { }
+                // If logging in, open the security check modal first
+                securityModal.classList.remove('opacity-0', 'pointer-events-none');
+                securityBox.classList.remove('scale-95');
             }
         });
+
+        // This function is called automatically by Cloudflare when the human check passes
+        window.onTurnstileSuccess = async function(token) {
+            // Check passed, hide the security modal
+            window.closeSecurityModal();
+            
+            // Trigger Firebase Auth
+            try {
+                await signInWithPopup(auth, new GoogleAuthProvider());
+            } catch (err) {
+                console.error("Authentication failed or was cancelled.");
+            }
+            
+            // Reset the widget so it can be used again later
+            if(typeof turnstile !== 'undefined') turnstile.reset();
+        };
 
         onAuthStateChanged(auth, (user) => {
             const icon = document.getElementById('user-avatar-icon');
