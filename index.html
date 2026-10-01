@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus — Workspace</title>
+    <title>Nexus — Premium Workspace</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
-    <!-- Tailwind CSS (Standard CDN) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -18,152 +18,192 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['"Playfair Display"', 'serif'] },
                     colors: {
-                        appBg: '#09090b', surface: '#18181b', surfaceHover: '#27272a',
-                        borderSubtle: '#3f3f46', brand: '#10b981'
-                    }
+                        appBg: '#050505', surface: 'rgba(20, 20, 20, 0.6)', 
+                        borderSubtle: 'rgba(255,255,255,0.06)', brand: '#10b981'
+                    },
+                    animation: { 'spin-slow': 'spin 8s linear infinite' }
                 }
             }
         }
     </script>
 
     <style>
-        body { background-color: #09090b; color: #f4f4f5; font-family: 'Inter', sans-serif; overflow: hidden; }
+        body { background-color: #050505; color: #f4f4f5; font-family: 'Inter', sans-serif; overflow: hidden; }
         
-        /* Slicker Intro Screen */
+        /* Ambient Background Glow */
+        .ambient-bg {
+            position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+        }
+        .ambient-glow {
+            position: absolute; width: 60vw; height: 60vw; border-radius: 50%;
+            background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, rgba(0,0,0,0) 70%);
+            top: -20%; left: -10%; filter: blur(60px);
+        }
+        .ambient-glow-2 {
+            position: absolute; width: 50vw; height: 50vw; border-radius: 50%;
+            background: radial-gradient(circle, rgba(99,102,241,0.05) 0%, rgba(0,0,0,0) 70%);
+            bottom: -20%; right: -10%; filter: blur(60px);
+        }
+
+        /* Premium Glass Utilities */
+        .glass { background: rgba(20, 20, 22, 0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.05); }
+        .glass-panel { background: rgba(10, 10, 10, 0.65); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-bottom: 1px solid rgba(255,255,255,0.04); }
+        
+        /* Smooth Intro Screen */
         #intro-screen {
-            position: fixed; inset: 0; background-color: #09090b; z-index: 9999;
+            position: fixed; inset: 0; background-color: #050505; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
         }
         .intro-logo {
-            font-family: 'Playfair Display', serif; font-size: 3.5rem; color: #fff;
-            opacity: 0; transform: scale(0.95);
-            animation: floatUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            font-family: 'Playfair Display', serif; font-size: 4rem; color: #fff;
+            opacity: 0; transform: translateY(20px) scale(0.95);
+            animation: floatUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         @keyframes floatUp {
             0% { opacity: 0; transform: translateY(20px) scale(0.95); filter: blur(10px); }
-            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); text-shadow: 0 4px 30px rgba(16, 185, 129, 0.2); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); text-shadow: 0 10px 40px rgba(16, 185, 129, 0.25); }
         }
-        
-        /* Glassmorphism Utilities */
-        .glass { background: rgba(24, 24, 27, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
-        .glass-panel { background: rgba(9, 9, 11, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
 
-        /* Active nav state for scripts to toggle */
-        .nav-btn.active { background: rgba(255,255,255,0.08); color: white; border-color: rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
+        /* Sidebar Item Animations */
+        .nav-btn { position: relative; overflow: hidden; }
+        .nav-btn::before {
+            content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(16,185,129,0.1), transparent);
+            opacity: 0; transition: opacity 0.3s ease; border-radius: inherit; pointer-events: none;
+        }
+        .nav-btn:hover::before, .nav-btn.active::before { opacity: 1; }
+        .nav-btn.active { color: #fff; border-color: rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+        .nav-btn.active i { color: #10b981; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
     </style>
 </head>
 <body class="h-screen w-screen flex antialiased selection:bg-brand/30 selection:text-white">
 
+    <!-- Ambient Background -->
+    <div class="ambient-bg">
+        <div class="ambient-glow"></div>
+        <div class="ambient-glow-2"></div>
+    </div>
+
     <!-- Intro Screen -->
     <div id="intro-screen">
         <div class="intro-logo">Nexus</div>
-        <div class="mt-6 flex items-center gap-3 text-xs text-zinc-400 tracking-[0.2em] uppercase">
-            <span class="w-1.5 h-1.5 rounded-full bg-brand animate-ping"></span>
-            Initializing
+        <div class="mt-8 flex items-center gap-3 text-xs text-zinc-500 tracking-[0.3em] uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse shadow-[0_0_10px_#10b981]"></span>
+            Synchronizing
         </div>
     </div>
 
-    <!-- Command Palette (Ctrl+K) -->
-    <div id="command-palette" class="fixed inset-0 z-[9998] bg-black/80 backdrop-blur-sm flex items-start justify-center pt-[15vh] px-4 opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="glass rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="palette-box">
-            <div class="flex items-center px-5 py-4 border-b border-white/10 gap-3">
+    <!-- Raycast-Style Command Palette (Ctrl+K) -->
+    <div id="command-palette" class="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-md flex items-start justify-center pt-[15vh] px-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass rounded-2xl w-full max-w-2xl shadow-2xl shadow-black/80 overflow-hidden transform scale-95 transition-transform duration-300" id="palette-box">
+            <div class="flex items-center px-5 py-4 border-b border-white/5 gap-4">
                 <i class="ph ph-magnifying-glass text-zinc-400 text-xl"></i>
-                <input id="palette-input" type="text" placeholder="Search commands, apps, or settings..." class="w-full bg-transparent border-none text-white text-base focus:outline-none placeholder:text-zinc-500">
-                <button onclick="closePalette()" class="text-[10px] font-mono px-2 py-1 rounded-md bg-surfaceHover border border-borderSubtle text-zinc-300 hover:bg-zinc-700 transition-colors">ESC</button>
+                <input id="palette-input" type="text" placeholder="What do you want to do?" class="w-full bg-transparent border-none text-white text-lg font-light focus:outline-none placeholder:text-zinc-600">
+                <kbd class="text-[10px] font-mono px-2 py-1 rounded bg-white/5 border border-white/10 text-zinc-400">ESC</kbd>
             </div>
-            <div class="p-3 max-h-[300px] overflow-y-auto flex flex-col gap-1" id="palette-results">
-                <div class="px-3 py-2 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Apps</div>
-                <button onclick="paletteSelect('home.html', 'Home')" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left text-sm cursor-pointer">
-                    <i class="ph ph-house text-lg"></i><span>Dashboard</span>
+            <div class="p-2 max-h-[350px] overflow-y-auto flex flex-col gap-1" id="palette-results">
+                <div class="px-4 py-2 mt-2 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Workspace Apps</div>
+                <button onclick="paletteSelect('home.html', 'Dashboard')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left text-sm cursor-pointer group">
+                    <div class="flex items-center gap-3"><i class="ph ph-squares-four text-xl group-hover:text-brand transition-colors"></i><span>Dashboard</span></div>
+                    <i class="ph ph-arrow-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
                 </button>
-                <button onclick="paletteSelect('youtube.html', 'YouTube')" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left text-sm cursor-pointer">
-                    <i class="ph ph-youtube-logo text-lg text-red-500"></i><span>YouTube Hub</span>
+                <button onclick="paletteSelect('youtube.html', 'Media Hub')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-left text-sm cursor-pointer group">
+                    <div class="flex items-center gap-3"><i class="ph ph-youtube-logo text-xl group-hover:text-red-500 transition-colors"></i><span>Media Hub</span></div>
+                    <i class="ph ph-arrow-right opacity-0 group-hover:opacity-100 transition-opacity"></i>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Toast Notifications -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
+    <div id="toast-container" class="fixed bottom-8 right-8 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- Main Layout -->
-    <div class="w-full h-full flex relative z-10 transition-opacity duration-1000 opacity-0" id="app-container">
+    <!-- Main App UI -->
+    <div class="w-full h-full flex relative z-10 transition-all duration-1000 opacity-0 scale-[0.98]" id="app-container">
         
         <!-- Sidebar -->
-        <aside class="w-[260px] h-full flex flex-col bg-surface border-r border-borderSubtle shrink-0 select-none z-20">
-            <div class="h-[76px] flex items-center px-6 border-b border-borderSubtle/50">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/10 flex items-center justify-center text-white shadow-lg">
-                        <i class="ph ph-hexagon text-xl text-brand"></i>
+        <aside class="w-[280px] h-full flex flex-col glass border-r border-borderSubtle shrink-0 select-none z-20 m-2 rounded-2xl overflow-hidden shadow-2xl">
+            <div class="h-[80px] flex items-center px-6 border-b border-borderSubtle">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center text-white shadow-lg relative overflow-hidden">
+                        <div class="absolute inset-0 bg-brand/20 blur-xl"></div>
+                        <i class="ph ph-hexagon text-2xl text-white relative z-10"></i>
                     </div>
                     <span class="font-serif text-2xl tracking-wide text-white">Nexus</span>
                 </div>
             </div>
 
-            <nav class="flex-1 px-4 py-6 flex flex-col gap-1.5 overflow-y-auto">
-                <div class="px-2 mb-3 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Menu</div>
+            <nav class="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
+                <div class="px-3 mb-2 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">Navigation</div>
                 
-                <button onclick="switchTab('home.html', this)" class="nav-btn active flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
-                    <i class="ph ph-house text-lg"></i> Dashboard
+                <button onclick="switchTab('home.html', this)" class="nav-btn active flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                    <div class="flex items-center gap-3"><i class="ph ph-squares-four text-lg"></i> Dashboard</div>
                 </button>
-                <button onclick="switchTab('youtube.html', this)" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
-                    <i class="ph ph-youtube-logo text-lg"></i> Media Hub
+                <button onclick="switchTab('youtube.html', this)" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                    <div class="flex items-center gap-3"><i class="ph ph-play-circle text-lg"></i> Media Hub</div>
                 </button>
-                <button onclick="switchTab('ghostlink.html', this)" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
-                    <i class="ph ph-ghost text-lg"></i> Ghostlink
+                <button onclick="switchTab('ghostlink.html', this)" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                    <div class="flex items-center gap-3"><i class="ph ph-ghost text-lg"></i> Ghostlink</div>
                 </button>
-                <button onclick="switchTab('updates.html', this)" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
-                    <i class="ph ph-sparkle text-lg"></i> Updates
+                <button onclick="switchTab('updates.html', this)" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium border border-transparent">
+                    <div class="flex items-center gap-3"><i class="ph ph-sparkle text-lg"></i> Updates</div>
                 </button>
             </nav>
 
-            <div class="p-5 border-t border-borderSubtle/50">
-                <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-black/20 border border-white/5">
-                    <div class="w-2 h-2 rounded-full bg-brand animate-pulse shadow-[0_0_8px_#10b981]"></div>
-                    <span class="text-xs text-zinc-400 font-medium">System Online</span>
+            <div class="p-4 bg-black/40 border-t border-borderSubtle">
+                <div class="flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 border border-white/5 backdrop-blur-md">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex h-2.5 w-2.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand"></span>
+                        </div>
+                        <span class="text-xs text-zinc-300 font-medium tracking-wide">Network Synced</span>
+                    </div>
                 </div>
             </div>
         </aside>
 
         <!-- Main Content Area -->
-        <main class="flex-1 flex flex-col h-full bg-appBg relative">
+        <main class="flex-1 flex flex-col h-full relative z-10 py-2 pr-2">
             
-            <!-- Top Header (Glassmorphism) -->
-            <header class="h-[76px] shrink-0 flex items-center justify-between px-8 glass-panel absolute top-0 left-0 right-0 z-30">
-                <div class="flex items-center gap-2 text-sm font-medium text-zinc-400">
-                    <i class="ph ph-folder-notch text-lg"></i>
-                    <span>Workspace</span>
-                    <i class="ph ph-caret-right text-xs mx-1 opacity-50"></i>
-                    <span id="current-page-title" class="text-white">Dashboard</span>
+            <!-- Top Header -->
+            <header class="h-[80px] shrink-0 flex items-center justify-between px-8 glass-panel rounded-2xl mb-2 relative z-30 shadow-lg border border-borderSubtle">
+                <div class="flex items-center gap-3 text-sm font-medium text-zinc-400">
+                    <span id="current-page-title" class="text-white text-lg font-semibold tracking-tight">Dashboard</span>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <button onclick="openPalette()" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface hover:bg-surfaceHover border border-borderSubtle text-zinc-400 text-xs transition-colors group">
-                        <i class="ph ph-magnifying-glass text-sm group-hover:text-white"></i>
-                        <span>Search</span>
-                        <kbd class="px-1.5 py-0.5 rounded bg-black/30 border border-white/10 font-mono text-[10px]">⌘K</kbd>
+                <div class="flex items-center gap-5">
+                    <!-- Live Clock -->
+                    <div id="live-clock" class="hidden md:block text-xs font-mono text-zinc-500 tracking-wider">00:00 AM</div>
+                    
+                    <div class="w-px h-5 bg-white/10 hidden md:block"></div>
+
+                    <button onclick="openPalette()" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-black/40 hover:bg-black/60 border border-borderSubtle text-zinc-400 text-xs transition-all shadow-inner group">
+                        <i class="ph ph-magnifying-glass text-sm group-hover:text-white transition-colors"></i>
+                        <span class="hidden sm:block">Command Menu</span>
+                        <kbd class="px-1.5 py-0.5 rounded bg-white/10 font-mono text-[10px] text-zinc-300">⌘K</kbd>
                     </button>
 
                     <!-- Auth Button -->
-                    <div class="relative">
-                        <button id="settings-trigger" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-brand/10 hover:bg-brand/20 border border-brand/20 transition-all text-brand shadow-sm">
-                            <i id="user-avatar-icon" class="ph ph-user-circle text-lg"></i>
-                            <img id="user-avatar-img" src="" class="w-6 h-6 rounded-full object-cover hidden border border-brand/30">
-                            <span id="user-name-label" class="text-xs font-semibold">Sign In</span>
-                        </button>
-                    </div>
+                    <button id="settings-trigger" class="flex items-center gap-2.5 px-2 py-2 rounded-xl bg-transparent hover:bg-white/5 border border-transparent hover:border-white/10 transition-all text-zinc-300">
+                        <div class="w-8 h-8 rounded-lg bg-zinc-800 border border-white/10 flex items-center justify-center overflow-hidden">
+                            <i id="user-avatar-icon" class="ph ph-user text-lg"></i>
+                            <img id="user-avatar-img" src="" class="w-full h-full object-cover hidden">
+                        </div>
+                        <span id="user-name-label" class="text-xs font-semibold pr-2 hidden sm:block">Sign In</span>
+                    </button>
                 </div>
             </header>
 
-            <!-- Content Frame -->
-            <div class="flex-1 w-full h-full pt-[76px] relative">
-                <iframe id="content-frame" class="w-full h-full border-none" src="home.html"></iframe>
+            <!-- Iframe Container -->
+            <div class="flex-1 w-full h-full relative rounded-2xl overflow-hidden glass border border-borderSubtle shadow-2xl">
+                <iframe id="content-frame" class="w-full h-full border-none bg-transparent" src="home.html"></iframe>
             </div>
         </main>
     </div>
@@ -180,33 +220,39 @@
         });
         const auth = getAuth(app);
 
-        // Intro Animation Logic
+        // Intro Animation
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const intro = document.getElementById('intro-screen');
+                const appCont = document.getElementById('app-container');
                 intro.style.opacity = '0';
                 setTimeout(() => {
                     intro.style.display = 'none';
-                    document.getElementById('app-container').style.opacity = '1';
-                }, 600);
-            }, 1800);
+                    appCont.style.opacity = '1';
+                    appCont.style.transform = 'scale(1)';
+                }, 800);
+            }, 2000);
         });
+
+        // Live Clock
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('live-clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }, 1000);
 
         // Toast Notifications
         window.showToast = (msg) => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = 'glass px-4 py-3 rounded-xl text-white text-sm shadow-xl flex items-center gap-3 transform translate-y-4 opacity-0 transition-all';
-            toast.innerHTML = `<i class="ph ph-check-circle text-brand text-lg"></i> ${msg}`;
+            toast.className = 'glass px-5 py-3.5 rounded-xl text-white text-sm shadow-2xl flex items-center gap-3 transform translate-y-8 opacity-0 transition-all duration-300';
+            toast.innerHTML = `<i class="ph ph-check-circle text-brand text-xl"></i> <span class="font-medium">${msg}</span>`;
             container.appendChild(toast);
             
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-4', 'opacity-0');
-            });
+            requestAnimationFrame(() => toast.classList.remove('translate-y-8', 'opacity-0'));
             setTimeout(() => {
-                toast.classList.add('translate-y-4', 'opacity-0');
+                toast.classList.add('translate-y-8', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            }, 3500);
         };
 
         // Tab Switching Logic
@@ -216,20 +262,18 @@
             
             const frame = document.getElementById('content-frame');
             
-            // Hardcoded YouTube template to ensure it looks good immediately
             if (page === 'youtube.html') {
                 frame.srcdoc = `
-                    <html class="dark"><head><script src="https://cdn.tailwindcss.com"><\/script><script src="https://unpkg.com/@phosphor-icons/web"><\/script></head>
-                    <body class="bg-[#09090b] text-white p-8 font-sans">
+                    <html class="dark"><head><script src="https://cdn.tailwindcss.com"><\/script></head>
+                    <body class="bg-transparent text-white p-10 font-sans">
                         <div class="max-w-5xl mx-auto">
-                            <h1 class="text-3xl font-serif mb-2 text-white">Media Hub</h1>
-                            <p class="text-zinc-400 mb-8 text-sm">Curated videos and direct platform access.</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="p-4 rounded-2xl bg-[#18181b] border border-[#3f3f46]">
-                                    <div class="aspect-video bg-black rounded-xl overflow-hidden mb-4 shadow-lg">
+                            <h1 class="text-4xl font-serif mb-3 tracking-tight">Media Hub</h1>
+                            <p class="text-zinc-400 mb-10 text-sm">Curated platform access.</p>
+                            <div class="grid grid-cols-1 gap-8">
+                                <div class="p-6 rounded-3xl bg-black/40 border border-white/5 backdrop-blur-md shadow-2xl">
+                                    <div class="aspect-video bg-black rounded-2xl overflow-hidden shadow-inner">
                                         <iframe class="w-full h-full border-none" src="https://www.youtube.com/embed/9qbrOrj30TM" allowfullscreen></iframe>
                                     </div>
-                                    <h3 class="font-medium text-white text-sm">Trending Worldwide</h3>
                                 </div>
                             </div>
                         </div>
@@ -270,19 +314,16 @@
             if (e.key === 'Escape') closePalette();
         });
 
-        // Simple Google Auth (Click avatar to login)
-        const authBtn = document.getElementById('settings-trigger');
-        authBtn.addEventListener('click', async () => {
+        // Auth Logic
+        document.getElementById('settings-trigger').addEventListener('click', async () => {
             if (auth.currentUser) {
                 await signOut(auth);
-                showToast("Signed out");
+                showToast("Logged out successfully");
             } else {
                 try {
                     await signInWithPopup(auth, new GoogleAuthProvider());
-                    showToast("Welcome back!");
-                } catch (err) {
-                    showToast("Login closed or failed");
-                }
+                    showToast("Authentication successful");
+                } catch (err) { }
             }
         });
 
