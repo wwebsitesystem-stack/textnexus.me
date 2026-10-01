@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nexus — Home</title>
     
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -18,13 +16,18 @@
                 extend: {
                     fontFamily: { 
                         sans: ['Inter', 'sans-serif'], 
-                        serif: ['"Playfair Display"', 'serif'] 
+                        serif: ['"Playfair Display"', 'serif'],
+                        mono: ['"JetBrains Mono"', 'monospace']
                     },
                     colors: {
-                        sidebar: '#171717',
-                        main: '#131313', 
+                        card: 'rgba(23, 23, 23, 0.4)',
+                        main: '#0a0a0a', 
                         borderSubtle: 'rgba(255,255,255,0.06)',
                         brand: 'var(--brand-color)'
+                    },
+                    boxShadow: {
+                        'glow': '0 0 30px -5px var(--brand-color)',
+                        'card': '0 8px 32px 0 rgba(0, 0, 0, 0.2)'
                     }
                 }
             }
@@ -32,156 +35,189 @@
     </script>
 
     <style>
-        :root {
-            /* Default accent color, overridden by JS if saved */
-            --brand-color: #e5e5e5;
-        }
-
+        :root { --brand-color: #e5e5e5; }
         body { 
-            background-color: #131313; 
+            background-color: transparent; /* Inherits from index.html */
             color: #ececec; 
             font-family: 'Inter', sans-serif; 
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar { width: 3px; height: 3px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
         
-        /* Entrance Animations */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            0% { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(4px); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         }
         .animate-fade-up { 
             opacity: 0;
-            animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
         }
         .delay-100 { animation-delay: 100ms; }
         .delay-200 { animation-delay: 200ms; }
         .delay-300 { animation-delay: 300ms; }
+
+        .glass-card {
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Ambient Glow effect inside cards */
+        .card-glow::before {
+            content: '';
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at center, var(--brand-color) 0%, transparent 40%);
+            opacity: 0; transition: opacity 0.5s; pointer-events: none; mix-blend-mode: screen;
+        }
+        .card-glow:hover::before { opacity: 0.08; }
     </style>
 </head>
-<body class="w-full h-full p-8 md:p-12 lg:p-16 antialiased selection:bg-brand/30 selection:text-white overflow-y-auto">
+<body class="w-full h-full p-8 md:p-12 lg:p-16 antialiased selection:bg-brand/30 selection:text-white overflow-y-auto relative">
 
-    <div class="max-w-6xl mx-auto">
-        <!-- Hero & Header Section -->
-        <header class="flex flex-col items-start mb-14 animate-fade-up">
-            
-            <!-- Scaled up Nexus Logo with Glow -->
-            <div class="w-14 h-14 bg-sidebar border border-white/10 rounded-2xl flex items-center justify-center shadow-[0_0_30px_-5px_var(--brand-color)] mb-6 relative group overflow-hidden">
-                <div class="absolute inset-0 bg-[var(--brand-color)] opacity-[0.08] group-hover:opacity-[0.15] transition-opacity duration-500"></div>
-                
-                <!-- The Geometric Nexus Shape -->
-                <div class="w-5 h-5 bg-white rounded-[3px] rotate-45 flex items-center justify-center transition-transform duration-700 group-hover:rotate-[225deg] relative z-10">
-                    <div class="w-3 h-3 bg-sidebar rounded-[2px]"></div>
+    <!-- Decorative Top Right Glow -->
+    <div class="fixed top-0 right-0 w-[600px] h-[600px] bg-[var(--brand-color)] opacity-[0.02] blur-[120px] rounded-full pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+        <!-- Dashboard Header -->
+        <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 animate-fade-up">
+            <div>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 glass-card rounded-xl flex items-center justify-center shadow-glow relative overflow-hidden group">
+                        <div class="w-4 h-4 bg-transparent border border-white/40 rounded-[3px] rotate-45 group-hover:rotate-[225deg] transition-all duration-700"></div>
+                    </div>
+                    <div class="h-10 w-[1px] bg-white/10"></div>
+                    <div>
+                        <p id="live-date" class="text-xs font-mono text-zinc-500 uppercase tracking-widest"></p>
+                        <p id="live-time" class="text-sm font-medium text-[var(--brand-color)] tracking-wide"></p>
+                    </div>
                 </div>
+                <h1 id="greeting-text" class="font-serif text-5xl md:text-6xl text-white tracking-tight mb-2">Good Evening.</h1>
+                <p class="text-zinc-400 font-light text-lg">System nominal. All protocols are standing by.</p>
             </div>
 
-            <h1 class="font-serif text-4xl md:text-5xl text-white tracking-wide mb-3">Workspace Overview</h1>
-            
-            <div class="flex items-center gap-4">
-                <p class="text-zinc-400 font-light text-base">Your premium environment is initialized and ready.</p>
-                <div class="w-1 h-1 rounded-full bg-borderSubtle"></div>
-                <div class="px-3 py-1 rounded-full border border-borderSubtle bg-sidebar text-xs font-medium text-zinc-400 flex items-center gap-2 shadow-sm">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--brand-color)] animate-pulse shadow-[0_0_8px_var(--brand-color)]"></span>
-                    System Online
-                </div>
+            <div class="glass-card px-5 py-3 rounded-full flex items-center gap-3 shadow-card">
+                <div class="w-2 h-2 rounded-full bg-[var(--brand-color)] animate-pulse shadow-glow"></div>
+                <span class="text-xs font-medium text-zinc-300 uppercase tracking-widest">Network Secure</span>
             </div>
         </header>
 
-        <!-- Quick Actions Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-14 animate-fade-up delay-100">
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 animate-fade-up delay-100">
             
-            <!-- Action Card 1 -->
-            <div class="bg-sidebar border border-borderSubtle p-6 rounded-[20px] hover:border-white/20 transition-all duration-300 cursor-pointer group flex flex-col justify-between h-48 relative overflow-hidden hover:-translate-y-1 shadow-lg">
-                <div class="absolute top-0 right-0 w-40 h-40 bg-[var(--brand-color)] opacity-[0.02] rounded-full blur-3xl group-hover:opacity-[0.08] transition-opacity duration-500 transform translate-x-10 -translate-y-10"></div>
+            <!-- Protocol Card 1 -->
+            <div class="glass-card p-8 rounded-[24px] card-glow relative overflow-hidden group hover:-translate-y-1 transition-all duration-500 shadow-card">
+                <div class="w-14 h-14 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-center text-[var(--brand-color)] mb-6 group-hover:scale-110 transition-transform duration-500">
+                    <i class="ph ph-folder-notch-open text-3xl"></i>
+                </div>
+                <h3 class="text-white font-medium text-xl mb-2">Workspace Alpha</h3>
+                <p class="text-sm text-zinc-500 font-light leading-relaxed mb-6">Manage generative projects and active data streams.</p>
                 
-                <div class="w-12 h-12 rounded-2xl bg-main border border-borderSubtle flex items-center justify-center text-[var(--brand-color)] shadow-inner relative z-10 group-hover:scale-105 transition-transform duration-500">
-                    <i class="ph ph-folder-open text-2xl"></i>
+                <div class="w-full bg-black/50 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-[var(--brand-color)] h-full w-[75%] rounded-full shadow-glow"></div>
                 </div>
-                <div class="relative z-10">
-                    <h3 class="text-white font-medium text-lg mb-1.5">Project Modules</h3>
-                    <p class="text-sm text-zinc-500 font-light leading-relaxed">Access and manage your active generative workspaces.</p>
-                </div>
+                <p class="text-[10px] text-zinc-500 font-mono mt-3 uppercase tracking-widest">Storage: 75% Capacity</p>
             </div>
 
-            <!-- Action Card 2 -->
-            <div class="bg-sidebar border border-borderSubtle p-6 rounded-[20px] hover:border-white/20 transition-all duration-300 cursor-pointer group flex flex-col justify-between h-48 relative overflow-hidden hover:-translate-y-1 shadow-lg">
-                <div class="absolute top-0 right-0 w-40 h-40 bg-[var(--brand-color)] opacity-[0.02] rounded-full blur-3xl group-hover:opacity-[0.08] transition-opacity duration-500 transform translate-x-10 -translate-y-10"></div>
+            <!-- Protocol Card 2 -->
+            <div class="glass-card p-8 rounded-[24px] card-glow relative overflow-hidden group hover:-translate-y-1 transition-all duration-500 shadow-card">
+                <div class="w-14 h-14 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-center text-[var(--brand-color)] mb-6 group-hover:scale-110 transition-transform duration-500">
+                    <i class="ph ph-ghost text-3xl"></i>
+                </div>
+                <h3 class="text-white font-medium text-xl mb-2">Ghostlink Protocol</h3>
+                <p class="text-sm text-zinc-500 font-light leading-relaxed mb-6">Secure, untracked testing environment. No logs kept.</p>
                 
-                <div class="w-12 h-12 rounded-2xl bg-main border border-borderSubtle flex items-center justify-center text-[var(--brand-color)] shadow-inner relative z-10 group-hover:scale-105 transition-transform duration-500">
-                    <i class="ph ph-ghost text-2xl"></i>
-                </div>
-                <div class="relative z-10">
-                    <h3 class="text-white font-medium text-lg mb-1.5">Ghostlink Protocol</h3>
-                    <p class="text-sm text-zinc-500 font-light leading-relaxed">Enter your secure, untracked testing environment.</p>
-                </div>
+                <button class="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold tracking-widest uppercase text-white transition-colors group-hover:border-[var(--brand-color)]">
+                    Initialize
+                </button>
             </div>
 
-            <!-- Action Card 3 -->
-            <div class="bg-sidebar border border-borderSubtle p-6 rounded-[20px] hover:border-white/20 transition-all duration-300 cursor-pointer group flex flex-col justify-between h-48 relative overflow-hidden hover:-translate-y-1 shadow-lg">
-                <div class="absolute top-0 right-0 w-40 h-40 bg-[var(--brand-color)] opacity-[0.02] rounded-full blur-3xl group-hover:opacity-[0.08] transition-opacity duration-500 transform translate-x-10 -translate-y-10"></div>
-                
-                <div class="w-12 h-12 rounded-2xl bg-main border border-borderSubtle flex items-center justify-center text-[var(--brand-color)] shadow-inner relative z-10 group-hover:scale-105 transition-transform duration-500">
-                    <i class="ph ph-database text-2xl"></i>
+            <!-- Protocol Card 3 -->
+            <div class="glass-card p-8 rounded-[24px] card-glow relative overflow-hidden group hover:-translate-y-1 transition-all duration-500 shadow-card">
+                <div class="w-14 h-14 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-center text-[var(--brand-color)] mb-6 group-hover:scale-110 transition-transform duration-500">
+                    <i class="ph ph-cpu text-3xl"></i>
                 </div>
-                <div class="relative z-10">
-                    <h3 class="text-white font-medium text-lg mb-1.5">Knowledge Base</h3>
-                    <p class="text-sm text-zinc-500 font-light leading-relaxed">Browse your uploaded files, assets, and data parameters.</p>
+                <h3 class="text-white font-medium text-xl mb-2">Neural Engine</h3>
+                <p class="text-sm text-zinc-500 font-light leading-relaxed mb-6">Real-time processing parameters and API health.</p>
+                
+                <div class="flex items-center justify-between text-xs font-mono text-zinc-400">
+                    <span>Latency</span>
+                    <span class="text-[var(--brand-color)]">12ms</span>
+                </div>
+                <div class="w-full bg-black/50 h-[1px] my-3"></div>
+                <div class="flex items-center justify-between text-xs font-mono text-zinc-400">
+                    <span>Uptime</span>
+                    <span class="text-[var(--brand-color)]">99.9%</span>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Activity Section -->
-        <div class="animate-fade-up delay-200 bg-sidebar border border-borderSubtle rounded-[24px] p-6 lg:p-8">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Recent Activity Log</h2>
-                <button class="text-xs font-medium text-zinc-500 hover:text-white transition-colors">View All</button>
+        <!-- Terminal / Activity Log -->
+        <div class="animate-fade-up delay-200 glass-card rounded-[24px] p-8 shadow-card">
+            <div class="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
+                <i class="ph ph-terminal-window text-[var(--brand-color)] text-xl"></i>
+                <h2 class="text-sm font-semibold text-zinc-300 uppercase tracking-widest">System Event Log</h2>
             </div>
             
-            <div class="flex flex-col gap-3">
-                <!-- Activity Item 1 -->
-                <div class="flex items-center gap-5 px-4 py-4 rounded-2xl border border-transparent hover:bg-main hover:border-borderSubtle transition-all duration-300 cursor-pointer group">
-                    <div class="w-10 h-10 rounded-xl bg-main border border-borderSubtle flex items-center justify-center text-zinc-500 group-hover:text-[var(--brand-color)] transition-colors shadow-sm">
-                        <i class="ph ph-sparkle text-lg"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="text-base text-zinc-200 font-medium group-hover:text-white transition-colors">System Initialized</h4>
-                        <p class="text-sm text-zinc-500 font-light mt-0.5">Workspace successfully booted and authenticated.</p>
-                    </div>
-                    <span class="text-xs text-zinc-600 font-mono tracking-wide">Just now</span>
+            <div class="flex flex-col gap-1 font-mono text-xs text-zinc-400">
+                <div class="flex gap-4 py-2 hover:bg-white/5 px-3 rounded-lg transition-colors cursor-default">
+                    <span class="text-zinc-600">10:42:01</span>
+                    <span class="text-[var(--brand-color)]">[INFO]</span>
+                    <span class="text-zinc-300">Nexus UI authenticated and loaded successfully.</span>
                 </div>
-
-                <div class="w-full h-[1px] bg-borderSubtle/50 ml-16"></div>
-
-                <!-- Activity Item 2 -->
-                <div class="flex items-center gap-5 px-4 py-4 rounded-2xl border border-transparent hover:bg-main hover:border-borderSubtle transition-all duration-300 cursor-pointer group">
-                    <div class="w-10 h-10 rounded-xl bg-main border border-borderSubtle flex items-center justify-center text-zinc-500 group-hover:text-[var(--brand-color)] transition-colors shadow-sm">
-                        <i class="ph ph-palette text-lg"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="text-base text-zinc-200 font-medium group-hover:text-white transition-colors">Appearance Synced</h4>
-                        <p class="text-sm text-zinc-500 font-light mt-0.5">Personalized accent colors and themes applied.</p>
-                    </div>
-                    <span class="text-xs text-zinc-600 font-mono tracking-wide">2m ago</span>
+                <div class="flex gap-4 py-2 hover:bg-white/5 px-3 rounded-lg transition-colors cursor-default">
+                    <span class="text-zinc-600">10:42:05</span>
+                    <span class="text-[var(--brand-color)]">[THEME]</span>
+                    <span class="text-zinc-300">Synchronizing accent parameters from local storage... Done.</span>
+                </div>
+                <div class="flex gap-4 py-2 hover:bg-white/5 px-3 rounded-lg transition-colors cursor-default">
+                    <span class="text-zinc-600">10:42:18</span>
+                    <span class="text-blue-400">[DATA]</span>
+                    <span class="text-zinc-300">Establishing secure websocket connection to server...</span>
+                </div>
+                <div class="flex gap-4 py-2 hover:bg-white/5 px-3 rounded-lg transition-colors cursor-default">
+                    <span class="text-[var(--brand-color)] animate-pulse">_</span>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Retrieve saved color from localStorage instantly upon loading the iframe
+        // Retrieve saved color from localStorage
         const savedColor = localStorage.getItem('nexus-brand-color');
         if(savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
 
-        // Listen for live updates from the main index.html (Settings panel)
+        // Listen for live updates from settings
         window.addEventListener('message', (event) => {
             if (event.data && event.data.type === 'update-theme') {
                 document.documentElement.style.setProperty('--brand-color', event.data.color);
             }
         });
+
+        // Live Clock & Dynamic Greeting
+        function updateClock() {
+            const now = new Date();
+            
+            // Format Time (HH:MM:SS)
+            const timeString = now.toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('live-time').textContent = timeString;
+
+            // Format Date
+            const options = { weekday: 'long', month: 'short', day: 'numeric' };
+            document.getElementById('live-date').textContent = now.toLocaleDateString('en-US', options);
+
+            // Set Greeting
+            const hour = now.getHours();
+            let greeting = 'Good Evening.';
+            if (hour >= 5 && hour < 12) greeting = 'Good Morning.';
+            else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon.';
+            document.getElementById('greeting-text').textContent = greeting;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
     </script>
 </body>
 </html>
