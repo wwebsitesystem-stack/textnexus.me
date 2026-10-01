@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus — Home</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'], 
+                        serif: ['"Playfair Display"', 'serif'] 
+                    },
+                    colors: {
+                        main: '#131313', 
+                        brand: 'var(--brand-color)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            /* Default accent color, overridden by JS if saved */
+            --brand-color: #e5e5e5;
+        }
+
+        body { 
+            background-color: #131313; 
+            color: #ececec; 
+            font-family: 'Inter', sans-serif; 
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    </style>
+</head>
+<body class="min-h-screen w-full flex flex-col items-center justify-center p-8 antialiased selection:bg-brand/30 selection:text-white">
+
+    <div class="max-w-2xl w-full flex flex-col items-center text-center gap-6 fade-in">
+        
+        <!-- Animated Icon Container -->
+        <div class="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-2 border border-white/10 shadow-[0_0_40px_-10px_var(--brand-color)] transition-all duration-500">
+            <i class="ph ph-planet text-3xl text-[var(--brand-color)]"></i>
+        </div>
+        
+        <h1 class="font-serif text-4xl md:text-5xl tracking-wide text-white">Welcome to Nexus</h1>
+        
+        <p class="text-zinc-400 text-lg font-light leading-relaxed max-w-xl">
+            Your premium workspace is initialized and ready. Select a module from the sidebar to begin, or start a new conversation.
+        </p>
+
+        <!-- Quick Action Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 w-full max-w-lg">
+            <div class="bg-white/5 border border-white/10 p-5 rounded-xl text-left hover:bg-white/10 transition cursor-pointer group">
+                <i class="ph ph-chat-circle text-2xl mb-3 text-[var(--brand-color)] group-hover:scale-110 transition-transform"></i>
+                <h3 class="text-white font-medium mb-1">Check updates</h3>
+                <p class="text-sm text-zinc-500 font-light">Checkout updates coming to nexus!. (Coming soon)</p>
+            </div>
+            
+            <div class="bg-white/5 border border-white/10 p-5 rounded-xl text-left hover:bg-white/10 transition cursor-pointer group">
+                <i class="ph ph-ghost text-2xl mb-3 text-[var(--brand-color)] group-hover:scale-110 transition-transform"></i>
+                <h3 class="text-white font-medium mb-1">Play games with Ghostlink</h3>
+                <p class="text-sm text-zinc-500 font-light">Access your anonymous workspace with Ghostlink.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Retrieve saved color from localStorage instantly upon loading the iframe
+        const savedColor = localStorage.getItem('nexus-brand-color');
+        if(savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
+
+        // Listen for live updates from the main index.html (Settings panel)
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'update-theme') {
+                document.documentElement.style.setProperty('--brand-color', event.data.color);
+            }
+        });
+    </script>
+</body>
+</html>
