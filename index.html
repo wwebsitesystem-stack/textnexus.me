@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus — Premium Workspace</title>
+    <title>Nexus — Workspace</title>
     
     <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
     <!-- Tailwind CSS -->
@@ -21,14 +21,10 @@
                         serif: ['"Playfair Display"', 'serif'] 
                     },
                     colors: {
-                        sidebar: 'rgba(23, 23, 23, 0.6)',
+                        sidebar: 'rgba(18, 18, 18, 0.4)',
                         main: '#0a0a0a', 
-                        borderSubtle: 'rgba(255,255,255,0.08)',
+                        borderSubtle: 'rgba(255,255,255,0.04)',
                         brand: 'var(--brand-color)'
-                    },
-                    boxShadow: {
-                        'glow': '0 0 40px -10px var(--brand-color)',
-                        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.3)'
                     }
                 }
             }
@@ -37,122 +33,110 @@
 
     <style>
         :root {
-            --brand-color: #e5e5e5;
+            --brand-color: #a3a3a3; /* Default chill grey */
         }
 
         body { 
-            background-color: #0a0a0a; 
-            color: #ececec; 
+            background-color: #080808; 
+            color: #d4d4d4; 
             font-family: 'Inter', sans-serif; 
             overflow: hidden; 
-            background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 70%);
+            /* Very soft, chill background gradient */
+            background-image: radial-gradient(circle at 50% -20%, rgba(255,255,255,0.02) 0%, transparent 60%);
         }
         
-        /* Smooth Intro Screen */
+        /* Smooth, Relaxed Intro Screen */
         #intro-screen {
-            position: fixed; inset: 0; background-color: #0a0a0a; z-index: 9999;
+            position: fixed; inset: 0; background-color: #080808; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
+            transition: opacity 1.2s ease-in-out, visibility 1.2s;
         }
         .intro-logo {
-            font-family: 'Playfair Display', serif; font-size: 3.5rem; color: #fff;
-            opacity: 0; transform: translateY(10px);
-            animation: elegantFadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            font-family: 'Playfair Display', serif; font-size: 2.5rem; color: #fff;
+            opacity: 0; font-weight: 400;
+            animation: chillFade 2s ease-out forwards;
         }
         
-        @keyframes elegantFadeIn {
-            0% { opacity: 0; transform: translateY(15px); letter-spacing: -1px; filter: blur(4px); }
-            100% { opacity: 1; transform: translateY(0); letter-spacing: 4px; filter: blur(0); }
+        @keyframes chillFade {
+            0% { opacity: 0; filter: blur(8px); transform: scale(0.98); }
+            100% { opacity: 1; filter: blur(0); transform: scale(1); }
         }
 
-        /* Sidebar Item Animations */
-        .nav-btn {
-            position: relative;
-            overflow: hidden;
-        }
-        .nav-btn::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-            background-color: var(--brand-color);
-            transform: scaleY(0); transition: transform 0.3s ease;
-            border-radius: 0 4px 4px 0;
-        }
+        /* Soft Active States for Nav */
         .nav-btn.active { 
-            background-color: rgba(255,255,255,0.06); 
+            background-color: color-mix(in srgb, var(--brand-color) 8%, transparent);
             color: #fff; 
         }
-        .nav-btn.active::before { transform: scaleY(1); }
-        .nav-btn.active i { color: var(--brand-color); text-shadow: 0 0 15px var(--brand-color); }
+        .nav-btn.active i { 
+            color: var(--brand-color); 
+        }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 3px; height: 3px; }
+        /* Minimal Scrollbar */
+        ::-webkit-scrollbar { width: 2px; height: 2px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.1); }
 
-        .glass-panel {
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+        /* Soft Glass */
+        .chill-glass {
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
         }
     </style>
 </head>
-<body class="h-screen w-screen flex antialiased selection:bg-brand/30 selection:text-white relative">
+<body class="h-screen w-screen flex antialiased selection:bg-brand/20 selection:text-white relative">
 
-    <!-- Ambient Background Glow -->
-    <div class="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[var(--brand-color)] rounded-full blur-[150px] opacity-[0.03] pointer-events-none transition-colors duration-700"></div>
+    <!-- Subtle Ambient Backdrop -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-[40%] bg-[var(--brand-color)] rounded-full blur-[200px] opacity-[0.015] pointer-events-none transition-colors duration-1000"></div>
 
     <!-- Intro Screen -->
     <div id="intro-screen">
-        <div class="intro-logo">Nexus</div>
-        <div class="mt-8 flex items-center gap-3 text-[10px] text-zinc-500 tracking-[0.25em] uppercase font-medium">
-            <span class="w-1.5 h-1.5 rounded-full bg-[var(--brand-color)] animate-pulse shadow-glow"></span>
-            Initializing Protocol
-        </div>
+        <div class="intro-logo tracking-widest text-white/90">NEXUS</div>
     </div>
 
     <!-- Main App UI -->
-    <div class="w-full h-full flex relative z-10 transition-all duration-1000 opacity-0 scale-[0.98]" id="app-container">
+    <div class="w-full h-full flex relative z-10 transition-all duration-[1.5s] ease-out opacity-0" id="app-container">
         
         <!-- Sidebar -->
-        <aside class="w-[280px] h-full flex flex-col glass-panel bg-sidebar border-r border-borderSubtle shrink-0 select-none z-20 transition-all duration-300 relative shadow-glass">
+        <aside class="w-[260px] h-full flex flex-col chill-glass bg-sidebar border-r border-borderSubtle shrink-0 select-none z-20">
             
             <!-- Header Logo -->
-            <div class="h-[72px] flex items-center justify-between px-6 shrink-0 border-b border-borderSubtle/50">
-                <div class="flex items-center gap-3.5 group cursor-pointer">
-                    <div class="w-5 h-5 bg-transparent border border-white/20 rounded-[4px] rotate-45 flex items-center justify-center shadow-glow group-hover:rotate-[225deg] transition-all duration-700">
-                        <div class="w-2.5 h-2.5 bg-[var(--brand-color)] rounded-[2px]"></div>
-                    </div>
-                    <span class="font-serif text-xl tracking-widest text-white mt-0.5">NEXUS</span>
+            <div class="h-[80px] flex items-center justify-between px-7 shrink-0">
+                <div class="flex items-center gap-4 group cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-500">
+                    <div class="w-2 h-2 bg-[var(--brand-color)] rounded-full shadow-[0_0_12px_var(--brand-color)] opacity-70 group-hover:opacity-100 transition-all duration-700"></div>
+                    <span class="font-serif text-lg tracking-[0.2em] text-white/90 mt-0.5">NEXUS</span>
                 </div>
             </div>
 
             <!-- Navigation Links -->
-            <nav class="flex-1 px-4 py-8 flex flex-col gap-1.5 overflow-y-auto">
+            <nav class="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto">
                 
-                <div class="px-2 mb-2 text-[10px] font-semibold tracking-widest text-zinc-500 uppercase flex justify-between items-center">
-                    Core Modules
+                <div class="px-3 mb-3 text-[9px] font-medium tracking-[0.2em] text-zinc-600 uppercase">
+                    Menu
                 </div>
                 
-                <button id="nav-home" onclick="switchTab('home', this)" class="nav-btn active flex items-center gap-3.5 px-3 py-3 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-white/5 transition-all text-sm font-medium text-left group">
-                    <i class="ph ph-squares-four text-xl w-5 text-center group-hover:scale-110 transition-transform"></i> <span class="truncate flex-1">Overview</span>
+                <button id="nav-home" onclick="switchTab('home', this)" class="nav-btn active flex items-center gap-4 px-4 py-3.5 rounded-2xl text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.02] transition-all duration-300 text-sm font-light text-left">
+                    <i class="ph ph-house text-lg w-5 text-center transition-transform duration-500 hover:-translate-y-0.5"></i> 
+                    <span class="truncate flex-1">Overview</span>
                 </button>
-                <button onclick="switchTab('ghostlink', this)" class="nav-btn flex items-center gap-3.5 px-3 py-3 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-white/5 transition-all text-sm font-medium text-left group">
-                    <i class="ph ph-ghost text-xl w-5 text-center group-hover:scale-110 transition-transform"></i> <span class="truncate flex-1">Ghostlink</span>
+                <button onclick="switchTab('ghostlink', this)" class="nav-btn flex items-center gap-4 px-4 py-3.5 rounded-2xl text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.02] transition-all duration-300 text-sm font-light text-left">
+                    <i class="ph ph-ghost text-lg w-5 text-center transition-transform duration-500 hover:-translate-y-0.5"></i> 
+                    <span class="truncate flex-1">Ghostlink</span>
                 </button>
             </nav>
 
             <!-- Bottom Profile & Settings Area -->
-            <div class="p-4 flex flex-col gap-2 border-t border-borderSubtle/50 bg-black/20">
-                <button id="settings-trigger" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/10 transition-all text-left text-zinc-300 text-sm font-medium w-full group border border-transparent hover:border-white/10">
-                    <div class="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden shrink-0 border border-white/20 group-hover:border-[var(--brand-color)] transition-colors">
-                        <i id="user-avatar-icon" class="ph ph-user text-sm"></i>
+            <div class="p-4 flex flex-col gap-2">
+                <button id="settings-trigger" class="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/[0.02] transition-all duration-300 text-left text-zinc-400 text-sm font-light w-full group">
+                    <div class="w-7 h-7 rounded-full bg-zinc-800/50 flex items-center justify-center overflow-hidden shrink-0">
+                        <i id="user-avatar-icon" class="ph ph-user text-sm text-zinc-500 group-hover:text-zinc-300 transition-colors"></i>
                         <img id="user-avatar-img" src="" class="w-full h-full object-cover hidden">
                     </div>
-                    <span id="user-name-label" class="truncate flex-1 text-sm">Sign In / Auth</span>
-                    <i class="ph ph-sign-out text-zinc-500 text-sm group-hover:text-white transition-colors"></i>
+                    <span id="user-name-label" class="truncate flex-1 text-sm group-hover:text-zinc-200 transition-colors">Sign In</span>
                 </button>
 
-                <button onclick="openSettings()" class="flex items-center gap-3.5 px-3 py-3 rounded-xl hover:bg-white/10 transition-all text-left text-zinc-400 hover:text-zinc-100 text-sm font-medium w-full group border border-transparent hover:border-white/10">
-                    <i class="ph ph-faders w-8 text-center text-xl group-hover:rotate-90 transition-transform duration-500"></i> Configuration
+                <button onclick="openSettings()" class="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/[0.02] transition-all duration-300 text-left text-zinc-400 hover:text-zinc-200 text-sm font-light w-full group">
+                    <i class="ph ph-faders w-7 text-center text-lg group-hover:rotate-180 transition-transform duration-700"></i> Settings
                 </button>
             </div>
         </aside>
@@ -163,34 +147,40 @@
         </main>
     </div>
 
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="fixed inset-0 z-[9998] bg-black/80 backdrop-blur-md flex items-center justify-center opacity-0 pointer-events-none transition-all duration-500">
-        <div class="bg-[#111] border border-white/10 rounded-3xl w-full max-w-md shadow-2xl transform scale-95 translate-y-4 transition-all duration-500" id="settings-box">
-            <div class="flex items-center justify-between px-6 py-5 border-b border-white/5">
-                <h3 class="text-white font-serif text-xl tracking-wide">System Configuration</h3>
-                <button onclick="closeSettings()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-all"><i class="ph ph-x text-lg"></i></button>
-            </div>
-            <div class="p-8 flex flex-col gap-6">
-                <div>
-                    <label class="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-4 block">Primary Hue</label>
-                    <div class="flex items-center gap-4">
-                        <button onclick="setThemeColor('#e5e5e5')" class="w-10 h-10 rounded-full bg-[#e5e5e5] border-2 border-transparent focus:border-zinc-400 hover:scale-110 transition-transform shadow-[0_0_15px_-3px_#e5e5e5]"></button>
-                        <button onclick="setThemeColor('#10b981')" class="w-10 h-10 rounded-full bg-emerald-500 border-2 border-transparent focus:border-white hover:scale-110 transition-transform shadow-[0_0_15px_-3px_#10b981]"></button>
-                        <button onclick="setThemeColor('#3b82f6')" class="w-10 h-10 rounded-full bg-blue-500 border-2 border-transparent focus:border-white hover:scale-110 transition-transform shadow-[0_0_15px_-3px_#3b82f6]"></button>
-                        <button onclick="setThemeColor('#8b5cf6')" class="w-10 h-10 rounded-full bg-violet-500 border-2 border-transparent focus:border-white hover:scale-110 transition-transform shadow-[0_0_15px_-3px_#8b5cf6]"></button>
-                        <button onclick="setThemeColor('#f43f5e')" class="w-10 h-10 rounded-full bg-rose-500 border-2 border-transparent focus:border-white hover:scale-110 transition-transform shadow-[0_0_15px_-3px_#f43f5e]"></button>
-                        <button onclick="setThemeColor('#f59e0b')" class="w-10 h-10 rounded-full bg-amber-500 border-2 border-transparent focus:border-white hover:scale-110 transition-transform shadow-[0_0_15px_-3px_#f59e0b]"></button>
+    <!-- Chill Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 z-[9998] bg-black/40 backdrop-blur-md flex items-center justify-center opacity-0 pointer-events-none transition-all duration-700 ease-out">
+        <div class="bg-[#0f0f0f] border border-borderSubtle rounded-[2rem] w-full max-w-sm shadow-2xl transform scale-95 translate-y-2 transition-all duration-700 ease-out p-1" id="settings-box">
+            
+            <div class="bg-[#141414] rounded-[1.8rem] p-8">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-zinc-200 font-medium text-lg">Appearance</h3>
+                    <button onclick="closeSettings()" class="w-8 h-8 rounded-full flex items-center justify-center text-zinc-500 hover:text-zinc-200 hover:bg-white/5 transition-all duration-300"><i class="ph ph-x text-lg"></i></button>
+                </div>
+                
+                <div class="flex flex-col gap-6 mb-8">
+                    <div>
+                        <label class="text-[10px] font-medium text-zinc-500 uppercase tracking-[0.15em] mb-4 block">Accent Color</label>
+                        <div class="flex items-center gap-4 flex-wrap">
+                            <!-- Softer pastel/muted colors for a chill vibe -->
+                            <button onclick="setThemeColor('#a3a3a3')" class="w-8 h-8 rounded-full bg-[#a3a3a3] hover:scale-110 transition-transform duration-300 shadow-sm"></button>
+                            <button onclick="setThemeColor('#81a1c1')" class="w-8 h-8 rounded-full bg-[#81a1c1] hover:scale-110 transition-transform duration-300 shadow-sm"></button>
+                            <button onclick="setThemeColor('#a3be8c')" class="w-8 h-8 rounded-full bg-[#a3be8c] hover:scale-110 transition-transform duration-300 shadow-sm"></button>
+                            <button onclick="setThemeColor('#b48ead')" class="w-8 h-8 rounded-full bg-[#b48ead] hover:scale-110 transition-transform duration-300 shadow-sm"></button>
+                            <button onclick="setThemeColor('#ebcb8b')" class="w-8 h-8 rounded-full bg-[#ebcb8b] hover:scale-110 transition-transform duration-300 shadow-sm"></button>
+                            <button onclick="setThemeColor('#bf616a')" class="w-8 h-8 rounded-full bg-[#bf616a] hover:scale-110 transition-transform duration-300 shadow-sm"></button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="px-6 py-5 border-t border-white/5 flex justify-end bg-black/20 rounded-b-3xl">
-                <button onclick="closeSettings()" class="px-6 py-2.5 rounded-xl bg-[var(--brand-color)] text-black font-semibold text-sm hover:opacity-90 transition-opacity shadow-glow">Apply Changes</button>
+
+                <div class="flex justify-end">
+                    <button onclick="closeSettings()" class="px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-300 text-sm font-medium transition-all duration-300">Done</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notifications -->
-    <div id="toast-container" class="fixed bottom-8 right-8 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
+    <!-- Minimal Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-2 pointer-events-none"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -207,14 +197,16 @@
             const savedColor = localStorage.getItem('nexus-brand-color');
             if(savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
 
+            // Gentle fade in
             setTimeout(() => {
                 const intro = document.getElementById('intro-screen');
                 const appCont = document.getElementById('app-container');
                 intro.style.opacity = '0';
-                intro.style.visibility = 'hidden';
-                appCont.style.opacity = '1';
-                appCont.style.transform = 'scale(1)';
-            }, 2000);
+                setTimeout(() => {
+                    intro.style.visibility = 'hidden';
+                    appCont.style.opacity = '1';
+                }, 1200);
+            }, 1800);
         });
 
         window.switchTab = (page, btn) => {
@@ -223,7 +215,11 @@
                 btn.classList.add('active');
             }
             const iframeView = document.getElementById('content-frame');
-            iframeView.src = page + '.html';
+            iframeView.style.opacity = '0';
+            setTimeout(() => {
+                iframeView.src = page + '.html';
+                iframeView.onload = () => iframeView.style.opacity = '1';
+            }, 300);
         };
 
         const settingsModal = document.getElementById('settings-modal');
@@ -231,12 +227,12 @@
         
         window.openSettings = () => {
             settingsModal.classList.remove('opacity-0', 'pointer-events-none');
-            settingsBox.classList.remove('scale-95', 'translate-y-4');
+            settingsBox.classList.remove('scale-95', 'translate-y-2');
         };
         
         window.closeSettings = () => {
             settingsModal.classList.add('opacity-0', 'pointer-events-none');
-            settingsBox.classList.add('scale-95', 'translate-y-4');
+            settingsBox.classList.add('scale-95', 'translate-y-2');
         };
 
         window.setThemeColor = (colorHex) => {
@@ -247,35 +243,36 @@
             if(iframe && iframe.contentWindow) {
                 iframe.contentWindow.postMessage({ type: 'update-theme', color: colorHex }, '*');
             }
-            showToast('System hue updated to ' + colorHex);
+            showToast('Vibe updated.');
         };
 
         settingsModal.addEventListener('click', (e) => {
             if (e.target === settingsModal) closeSettings();
         });
 
+        // Soft, center-aligned toast
         window.showToast = (msg) => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = 'glass-panel bg-[#111]/80 border border-white/10 px-5 py-3.5 rounded-2xl text-white text-sm shadow-2xl flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-500';
-            toast.innerHTML = `<i class="ph ph-check-circle text-[var(--brand-color)] text-xl shadow-glow"></i> <span class="font-medium tracking-wide">${msg}</span>`;
+            toast.className = 'chill-glass bg-[#1a1a1a]/60 border border-white/5 px-6 py-2.5 rounded-full text-zinc-300 text-sm shadow-xl flex items-center gap-3 transform translate-y-4 opacity-0 transition-all duration-700 ease-out font-light';
+            toast.innerHTML = `<span>${msg}</span>`;
             container.appendChild(toast);
             
-            requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
+            requestAnimationFrame(() => toast.classList.remove('translate-y-4', 'opacity-0'));
             setTimeout(() => {
-                toast.classList.add('translate-y-10', 'opacity-0');
-                setTimeout(() => toast.remove(), 500);
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 700);
             }, 3000);
         };
 
         document.getElementById('settings-trigger').addEventListener('click', async () => {
             if (auth.currentUser) {
                 await signOut(auth);
-                showToast("Connection severed. Logged out.");
+                showToast("Signed out.");
             } else {
                 try {
                     await signInWithPopup(auth, new GoogleAuthProvider());
-                    showToast("Authentication successful.");
+                    showToast("Welcome in.");
                 } catch (err) { }
             }
         });
@@ -289,11 +286,11 @@
                 icon.classList.add('hidden');
                 img.classList.remove('hidden');
                 img.src = user.photoURL || 'https://placehold.co/100';
-                label.textContent = user.displayName || 'Authorized User';
+                label.textContent = user.displayName?.split(' ')[0] || 'User';
             } else {
                 icon.classList.remove('hidden');
                 img.classList.add('hidden');
-                label.textContent = 'Sign In / Auth';
+                label.textContent = 'Sign In';
             }
         });
     </script>
