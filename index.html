@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus — Next-Gen OS Workspace</title>
+    <title>Nexus OS — Ultimate Workspace</title>
     
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
     <!-- Tailwind CSS -->
@@ -19,15 +19,19 @@
             theme: {
                 extend: {
                     fontFamily: { 
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'], 
-                        display: ['Syne', 'sans-serif'],
+                        sans: ['"Outfit"', 'sans-serif'], 
+                        display: ['"Space Grotesk"', 'sans-serif'],
                         mono: ['"JetBrains Mono"', 'monospace']
                     },
                     colors: {
-                        appBg: '#030305',
-                        surface: 'rgba(15, 15, 20, 0.65)',
-                        surfaceHover: 'rgba(255, 255, 255, 0.06)',
-                        borderSubtle: 'rgba(255, 255, 255, 0.08)'
+                        appBg: '#020203',
+                        surface: 'rgba(10, 10, 12, 0.45)',
+                        surfaceHover: 'rgba(255, 255, 255, 0.04)',
+                        borderSubtle: 'rgba(255, 255, 255, 0.05)'
+                    },
+                    transitionTimingFunction: {
+                        'spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+                        'smooth': 'cubic-bezier(0.22, 1, 0.36, 1)'
                     }
                 }
             }
@@ -37,287 +41,347 @@
     <style>
         :root {
             --accent: #10b981;
-            --accent-glow: rgba(16, 185, 129, 0.35);
-            --accent-rgb: 16, 185, 129;
+            --accent-glow: rgba(16, 185, 129, 0.15);
+            --accent-glow-strong: rgba(16, 185, 129, 0.4);
         }
 
         body { 
-            background-color: #030305; 
+            background-color: #020203; 
             color: #f4f4f5; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
+            font-family: 'Outfit', sans-serif; 
             overflow: hidden; 
             user-select: none;
+            -webkit-font-smoothing: antialiased;
         }
 
-        #bg-canvas {
-            position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.8;
+        /* Ambient Backgrounds */
+        .bg-grid {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
+        }
+        
+        #ambient-canvas {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.6;
         }
 
+        /* Tactile Noise Overlay */
+        .noise-overlay {
+            position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Next-Gen Glassmorphism */
         .glass { 
-            background: rgba(12, 12, 18, 0.65); 
-            backdrop-filter: blur(30px); 
-            -webkit-backdrop-filter: blur(30px); 
-            border: 1px solid rgba(255, 255, 255, 0.07); 
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            background: var(--surface); 
+            backdrop-filter: blur(40px) saturate(150%); 
+            -webkit-backdrop-filter: blur(40px) saturate(150%); 
+            border: 1px solid var(--border-subtle); 
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
         .glass-panel { 
-            background: rgba(8, 8, 12, 0.7); 
-            backdrop-filter: blur(24px); 
-            -webkit-backdrop-filter: blur(24px); 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06); 
+            background: rgba(5, 5, 7, 0.5); 
+            backdrop-filter: blur(30px); 
+            -webkit-backdrop-filter: blur(30px); 
+            border-bottom: 1px solid var(--border-subtle); 
         }
 
-        .accent-text { color: var(--accent); }
+        /* Accents & Utilities */
+        .accent-text { color: var(--accent); text-shadow: 0 0 20px var(--accent-glow-strong); }
         .accent-bg { background-color: var(--accent); }
         .accent-border { border-color: var(--accent); }
-        .accent-glow-box { box-shadow: 0 0 25px var(--accent-glow); }
         
+        /* Intro Animation */
         #intro-screen {
-            position: fixed; inset: 0; background-color: #030305; z-index: 9999;
+            position: fixed; inset: 0; background-color: #020203; z-index: 10000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s ease;
+            transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .intro-logo {
-            font-family: 'Syne', sans-serif; font-size: 4.5rem; font-weight: 800;
-            background: linear-gradient(135deg, #ffffff 30%, var(--accent) 100%);
+            font-family: 'Space Grotesk', sans-serif; font-size: 5rem; font-weight: 700;
+            letter-spacing: -0.05em;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.4) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            opacity: 0; transform: scale(0.9) translateY(20px); filter: blur(12px);
-            animation: introReveal 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0; filter: blur(20px); transform: scale(0.85);
+            animation: cinematicReveal 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
-        @keyframes introReveal {
-            0% { opacity: 0; transform: scale(0.9) translateY(20px); filter: blur(12px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
+        @keyframes cinematicReveal {
+            0% { opacity: 0; filter: blur(20px); transform: scale(0.85); }
+            100% { opacity: 1; filter: blur(0px); transform: scale(1); }
         }
 
+        /* Sidebar Navigation */
         .nav-btn {
-            position: relative; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .nav-btn::before {
-            content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px;
-            background: var(--accent); border-radius: 0 4px 4px 0;
-            opacity: 0; transform: scaleY(0); transition: all 0.25s ease;
+            content: ''; position: absolute; inset: 0; background: var(--accent);
+            opacity: 0; transform: scaleX(0); transform-origin: left;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+            z-index: 0; border-radius: 0.75rem;
         }
         .nav-btn.active {
-            background: rgba(255, 255, 255, 0.07); color: #fff;
-            border-color: rgba(255, 255, 255, 0.12);
+            color: #fff; border-color: rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px var(--accent-glow);
         }
-        .nav-btn.active::before { opacity: 1; transform: scaleY(1); }
-        .nav-btn.active i { color: var(--accent); }
+        .nav-btn.active::before { opacity: 0.1; transform: scaleX(1); }
+        .nav-btn.active i { color: var(--accent); transform: scale(1.1); }
+        .nav-btn * { position: relative; z-index: 1; transition: transform 0.3s ease; }
+        .nav-btn:hover:not(.active) { background: rgba(255, 255, 255, 0.03); }
 
+        /* Skeleton Shimmer */
         .shimmer {
-            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.8s infinite;
+            background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
+            background-size: 200% 100%; animation: shimmer 2s infinite linear;
         }
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked { right: 0; border-color: var(--accent); }
+        .toggle-checkbox:checked + .toggle-label { background-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow-strong); }
+
+        /* Context Menu */
+        #context-menu {
+            transform-origin: top left; transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .toast-enter { transform: translateY(20px) scale(0.95); opacity: 0; }
-        .toast-show { transform: translateY(0) scale(1); opacity: 1; }
-
+        /* Scrollbars */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
     </style>
 </head>
-<body class="h-screen w-screen flex antialiased selection:bg-emerald-500/30 selection:text-white">
+<body class="h-screen w-screen flex antialiased selection:bg-emerald-500/30 selection:text-white" oncontextmenu="return false;">
 
-    <canvas id="bg-canvas"></canvas>
+    <!-- Ambient Layers -->
+    <div class="bg-grid"></div>
+    <canvas id="ambient-canvas"></canvas>
+    <div class="noise-overlay"></div>
 
+    <!-- Intro Cinematic -->
     <div id="intro-screen">
-        <div class="intro-logo tracking-tight">NEXUS</div>
-        <div class="mt-6 flex items-center gap-3 text-xs font-mono text-zinc-400 tracking-[0.3em] uppercase">
-            <span class="w-2 h-2 rounded-full accent-bg animate-ping"></span>
-            Initializing Quantum Workspace
-        </div>
-        <div class="w-48 h-1 bg-white/10 rounded-full mt-6 overflow-hidden">
-            <div class="h-full accent-bg rounded-full animate-[shimmer_1.5s_infinite] w-full"></div>
+        <div class="intro-logo">NEXUS</div>
+        <div class="mt-8 flex flex-col items-center gap-4">
+            <div class="text-[10px] font-mono text-zinc-500 tracking-[0.4em] uppercase flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full accent-bg animate-pulse"></span> Booting Core OS
+            </div>
+            <div class="w-64 h-[2px] bg-white/5 rounded-full overflow-hidden">
+                <div class="h-full accent-bg w-0 rounded-full animate-[loading_1.5s_cubic-bezier(0.22,1,0.36,1)_forwards]"></div>
+            </div>
         </div>
     </div>
+    <style>@keyframes loading { 0% { width: 0; } 50% { width: 70%; } 100% { width: 100%; } }</style>
 
-    <!-- Command Palette Modal -->
-    <div id="command-palette" class="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-md flex items-start justify-center pt-[12vh] px-4 opacity-0 pointer-events-none transition-all duration-300">
-        <div class="glass rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300 border border-white/10" id="palette-box">
-            <div class="flex items-center px-5 py-4 border-b border-white/10 gap-3">
-                <i class="ph ph-magnifying-glass text-zinc-400 text-xl"></i>
-                <input id="palette-input" type="text" placeholder="Type a command or search workspace..." class="w-full bg-transparent border-none text-white text-lg focus:outline-none placeholder:text-zinc-500">
-                <kbd class="text-[10px] font-mono px-2 py-1 rounded bg-white/10 text-zinc-400 border border-white/10">ESC</kbd>
+    <!-- Custom Right-Click Context Menu -->
+    <div id="context-menu" class="fixed z-[10001] w-56 glass rounded-xl border border-white/10 shadow-2xl py-1.5 opacity-0 pointer-events-none scale-95 flex flex-col">
+        <button onclick="switchTab('home.html'); closeContextMenu()" class="flex items-center gap-3 px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-white/10 w-full text-left transition-colors">
+            <i class="ph ph-arrow-u-up-left text-zinc-400"></i> Return to Home
+        </button>
+        <button onclick="openPalette(); closeContextMenu()" class="flex items-center gap-3 px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-white/10 w-full text-left transition-colors">
+            <i class="ph ph-magnifying-glass text-zinc-400"></i> Open Command Palette
+        </button>
+        <div class="h-px w-full bg-white/5 my-1.5"></div>
+        <button onclick="openSettingsModal(); closeContextMenu()" class="flex items-center gap-3 px-4 py-2 text-sm text-zinc-300 hover:text-white hover:bg-white/10 w-full text-left transition-colors">
+            <i class="ph ph-gear text-zinc-400"></i> System Settings
+        </button>
+        <button onclick="location.reload()" class="flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 w-full text-left transition-colors">
+            <i class="ph ph-power"></i> Reboot System
+        </button>
+    </div>
+
+    <!-- Command Palette (Ctrl+K) -->
+    <div id="command-palette" class="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-xl flex items-start justify-center pt-[15vh] px-4 opacity-0 pointer-events-none transition-all duration-500 ease-out">
+        <div class="glass rounded-2xl w-full max-w-2xl shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden transform scale-95 translate-y-4 transition-all duration-500 ease-spring border border-white/10" id="palette-box">
+            <div class="flex items-center px-6 py-5 border-b border-white/5 gap-4 bg-white/[0.02]">
+                <i class="ph ph-terminal-window text-zinc-400 text-2xl accent-text"></i>
+                <input id="palette-input" type="text" placeholder="Type a command or search..." class="w-full bg-transparent border-none text-white text-xl font-light focus:outline-none placeholder:text-zinc-600">
+                <kbd class="text-[10px] font-mono px-2 py-1 rounded-md bg-white/5 text-zinc-500 border border-white/10">ESC</kbd>
             </div>
-            <div class="p-3 max-h-[360px] overflow-y-auto flex flex-col gap-1" id="palette-results">
-                <div class="px-3 py-1.5 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Applications</div>
-                <button onclick="paletteSelect('home.html', 'Dashboard')" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
-                    <div class="flex items-center gap-3"><i class="ph ph-squares-four text-lg accent-text"></i><span>Dashboard</span></div>
-                    <span class="text-xs text-zinc-500 font-mono">Jump to Home</span>
+            <div class="p-3 max-h-[400px] overflow-y-auto flex flex-col gap-1" id="palette-results">
+                <div class="px-4 py-2 text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em]">Apps</div>
+                <button onclick="paletteSelect('home.html', 'Dashboard')" class="palette-item w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-sm group">
+                    <div class="flex items-center gap-3"><i class="ph ph-squares-four text-lg text-emerald-400"></i><span>Dashboard</span></div>
+                    <span class="text-[10px] text-zinc-600 font-mono opacity-0 group-hover:opacity-100 transition-opacity">Jump to Home</span>
                 </button>
-                <button onclick="paletteSelect('ghostlink.html', 'Ghostlink')" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
-                    <div class="flex items-center gap-3"><i class="ph ph-ghost text-lg text-purple-400"></i><span>Ghostlink</span></div>
-                    <span class="text-xs text-zinc-500 font-mono">Secure Node</span>
+                <button onclick="paletteSelect('ghostlink.html', 'Ghostlink')" class="palette-item w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-sm group">
+                    <div class="flex items-center gap-3"><i class="ph ph-ghost text-lg text-purple-400"></i><span>Ghostlink Proxy</span></div>
+                    <span class="text-[10px] text-zinc-600 font-mono opacity-0 group-hover:opacity-100 transition-opacity">Secure Node</span>
                 </button>
-                <div class="px-3 py-1.5 mt-2 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">System Actions</div>
-                <button onclick="openSettingsModal()" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
-                    <div class="flex items-center gap-3"><i class="ph ph-gear text-lg"></i><span>Open Settings</span></div>
-                    <span class="text-xs text-zinc-500 font-mono">Preferences</span>
+                <button onclick="paletteSelect('terminal.html', 'Terminal')" class="palette-item w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-sm group">
+                    <div class="flex items-center gap-3"><i class="ph ph-code text-lg text-blue-400"></i><span>Terminal Interface</span></div>
+                    <span class="text-[10px] text-zinc-600 font-mono opacity-0 group-hover:opacity-100 transition-opacity">CLI Access</span>
                 </button>
-                <button onclick="toggleSound()" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
-                    <div class="flex items-center gap-3"><i class="ph ph-speaker-high text-lg"></i><span>Toggle UI Audio Feedback</span></div>
-                    <span class="text-xs text-zinc-500 font-mono" id="palette-sound-status">Enabled</span>
-                </button>
-                <button onclick="openShortcutsModal()" class="palette-item w-full flex items-center justify-between px-4 py-3 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 transition-all text-sm group">
-                    <div class="flex items-center gap-3"><i class="ph ph-keyboard text-lg"></i><span>Keyboard Shortcuts</span></div>
-                    <kbd class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-zinc-400">?</kbd>
+                <div class="px-4 py-2 mt-2 text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em]">System</div>
+                <button onclick="openSettingsModal()" class="palette-item w-full flex items-center justify-between px-4 py-3.5 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-all text-sm group">
+                    <div class="flex items-center gap-3"><i class="ph ph-gear-six text-lg"></i><span>Preferences</span></div>
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Settings Modal -->
-    <div id="settings-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
-        <div class="glass rounded-2xl w-full max-w-md p-8 shadow-2xl border border-white/10 relative">
-            <button onclick="closeSettingsModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white"><i class="ph ph-x text-xl"></i></button>
-            <h3 class="font-display text-xl font-bold text-white mb-6 flex items-center gap-2"><i class="ph ph-gear accent-text"></i> Settings</h3>
+    <div id="settings-modal" class="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xl flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-500 ease-out">
+        <div class="glass rounded-3xl w-full max-w-lg p-8 shadow-2xl border border-white/10 relative transform scale-95 translate-y-4 transition-all duration-500 ease-spring" id="settings-box">
+            <button onclick="closeSettingsModal()" class="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors bg-white/5 hover:bg-white/10 p-2 rounded-full"><i class="ph ph-x text-lg"></i></button>
+            <h3 class="font-display text-2xl font-bold text-white mb-2">System Preferences</h3>
+            <p class="text-sm text-zinc-500 mb-8">Customize your Nexus workspace experience.</p>
             
             <div class="space-y-8">
+                <!-- Theme Selection -->
                 <div>
-                    <h4 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Theme Accent</h4>
-                    <div class="flex items-center gap-4">
-                        <button onclick="setTheme('#10b981', 'rgba(16, 185, 129, 0.35)')" class="w-8 h-8 rounded-full bg-emerald-500 ring-2 ring-white/20 hover:scale-110 transition-transform"></button>
-                        <button onclick="setTheme('#8b5cf6', 'rgba(139, 92, 246, 0.35)')" class="w-8 h-8 rounded-full bg-purple-500 hover:scale-110 transition-transform"></button>
-                        <button onclick="setTheme('#06b6d4', 'rgba(6, 182, 212, 0.35)')" class="w-8 h-8 rounded-full bg-cyan-500 hover:scale-110 transition-transform"></button>
-                        <button onclick="setTheme('#f59e0b', 'rgba(245, 158, 11, 0.35)')" class="w-8 h-8 rounded-full bg-amber-500 hover:scale-110 transition-transform"></button>
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2"><i class="ph ph-palette"></i> Accent Color</h4>
+                    </div>
+                    <div class="flex items-center gap-4 bg-black/20 p-2 rounded-2xl border border-white/5">
+                        <button onclick="setTheme('#10b981', 'rgba(16, 185, 129, 0.4)')" class="flex-1 py-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 flex justify-center transition-colors group"><div class="w-4 h-4 rounded-full bg-emerald-500 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div></button>
+                        <button onclick="setTheme('#8b5cf6', 'rgba(139, 92, 246, 0.4)')" class="flex-1 py-3 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 flex justify-center transition-colors group"><div class="w-4 h-4 rounded-full bg-purple-500 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(139,92,246,0.5)]"></div></button>
+                        <button onclick="setTheme('#06b6d4', 'rgba(6, 182, 212, 0.4)')" class="flex-1 py-3 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/20 flex justify-center transition-colors group"><div class="w-4 h-4 rounded-full bg-cyan-500 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(6,182,212,0.5)]"></div></button>
+                        <button onclick="setTheme('#f43f5e', 'rgba(244, 63, 94, 0.4)')" class="flex-1 py-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 flex justify-center transition-colors group"><div class="w-4 h-4 rounded-full bg-rose-500 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(244,63,94,0.5)]"></div></button>
+                    </div>
+                </div>
+
+                <!-- Toggles -->
+                <div class="space-y-4">
+                    <h4 class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-2"><i class="ph ph-sliders-horizontal"></i> Behaviors</h4>
+                    
+                    <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/[0.07] transition-colors">
+                        <div>
+                            <div class="text-sm font-medium text-white">UI Audio Feedback</div>
+                            <div class="text-xs text-zinc-500 mt-0.5">Synthesized sound effects for actions</div>
+                        </div>
+                        <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" id="toggle-sound" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-zinc-700 appearance-none cursor-pointer z-10 transition-all duration-300" checked onclick="toggleSound()">
+                            <label for="toggle-sound" class="toggle-label block overflow-hidden h-6 rounded-full bg-zinc-800 cursor-pointer transition-colors duration-300"></label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/[0.07] transition-colors">
+                        <div>
+                            <div class="text-sm font-medium text-white">High Performance Mode</div>
+                            <div class="text-xs text-zinc-500 mt-0.5">Disables ambient canvas rendering</div>
+                        </div>
+                        <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" id="toggle-perf" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-zinc-700 appearance-none cursor-pointer z-10 transition-all duration-300" onclick="togglePerf()">
+                            <label for="toggle-perf" class="toggle-label block overflow-hidden h-6 rounded-full bg-zinc-800 cursor-pointer transition-colors duration-300"></label>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Keyboard Shortcuts Modal -->
-    <div id="shortcuts-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
-        <div class="glass rounded-2xl w-full max-w-md p-6 shadow-2xl border border-white/10 relative">
-            <button onclick="closeShortcutsModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white"><i class="ph ph-x text-xl"></i></button>
-            <h3 class="font-display text-xl font-bold text-white mb-4 flex items-center gap-2"><i class="ph ph-keyboard accent-text"></i> Shortcuts</h3>
-            <div class="space-y-3 text-sm text-zinc-300">
-                <div class="flex justify-between items-center py-1.5 border-b border-white/5"><span>Command Palette</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">⌘ + K</kbd></div>
-                <div class="flex justify-between items-center py-1.5 border-b border-white/5"><span>Dashboard</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">G + H</kbd></div>
-                <div class="flex justify-between items-center py-1.5 border-b border-white/5"><span>Shortcuts Help</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">?</kbd></div>
-                <div class="flex justify-between items-center py-1.5"><span>Close Windows</span><kbd class="px-2 py-0.5 rounded bg-white/10 font-mono text-xs text-zinc-300">ESC</kbd></div>
-            </div>
-        </div>
-    </div>
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[9999] flex flex-col items-center gap-3 pointer-events-none"></div>
 
-    <!-- Toast Notifications Container -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none"></div>
-
-    <!-- Main Workspace Layout -->
-    <div class="w-full h-full flex relative z-10 transition-all duration-1000 opacity-0 scale-[0.98]" id="app-container">
+    <!-- Layout Wrapper -->
+    <div class="w-full h-full flex p-3 gap-3 relative z-10 transition-all duration-[1.2s] opacity-0 scale-[0.97] ease-spring" id="app-container">
         
-        <!-- Sidebar -->
-        <aside class="w-[280px] h-full flex flex-col glass border-r border-borderSubtle shrink-0 select-none z-20 m-2 rounded-2xl overflow-hidden shadow-2xl relative">
-            <div class="h-[76px] flex items-center justify-between px-6 border-b border-white/5">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-black border border-white/15 flex items-center justify-center text-white shadow-xl relative overflow-hidden group">
-                        <div class="absolute inset-0 accent-bg opacity-20 blur-md group-hover:opacity-40 transition-opacity"></div>
+        <!-- Collapsible Sidebar -->
+        <aside id="sidebar" class="w-[280px] h-full flex flex-col glass rounded-2xl overflow-hidden shadow-2xl relative transition-all duration-500 ease-spring shrink-0">
+            
+            <!-- Brand Header -->
+            <div class="h-[80px] flex items-center justify-between px-6 border-b border-white/5 shrink-0 bg-white/[0.01]">
+                <div class="flex items-center gap-4 sidebar-content transition-opacity duration-300">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-b from-zinc-800 to-black border border-white/10 flex items-center justify-center text-white shadow-lg relative overflow-hidden group">
+                        <div class="absolute inset-0 accent-bg opacity-20 blur-xl group-hover:opacity-40 transition-opacity"></div>
                         <i class="ph ph-hexagon text-2xl accent-text relative z-10"></i>
                     </div>
-                    <div>
-                        <span class="font-display font-bold text-xl tracking-tight text-white block leading-none">NEXUS</span>
-                        <span class="text-[10px] font-mono text-zinc-500 tracking-wider">v4.0 OS</span>
+                    <div class="flex flex-col">
+                        <span class="font-display font-bold text-xl tracking-tight text-white leading-none mb-0.5">NEXUS</span>
+                        <span class="text-[9px] font-mono text-zinc-500 tracking-[0.2em] uppercase">System v5</span>
                     </div>
                 </div>
+                <button onclick="toggleSidebar()" class="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors border border-white/5">
+                    <i id="sidebar-toggle-icon" class="ph ph-sidebar-simple text-lg"></i>
+                </button>
             </div>
 
-            <!-- Nav Links -->
-            <nav class="flex-1 px-3 py-6 flex flex-col gap-1.5 overflow-y-auto">
-                <div class="px-3 mb-2 text-[10px] font-extrabold tracking-widest text-zinc-500 uppercase">Core Workspace</div>
+            <!-- Navigation -->
+            <nav class="flex-1 px-4 py-6 flex flex-col gap-2 overflow-y-auto sidebar-content transition-opacity duration-300">
+                <div class="px-2 mb-2 text-[10px] font-bold tracking-[0.15em] text-zinc-600 uppercase">Core Apps</div>
                 
-                <button onclick="switchTab('home.html', this)" class="nav-btn active flex items-center justify-between px-3.5 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium">
-                    <div class="flex items-center gap-3"><i class="ph ph-squares-four text-lg"></i> Dashboard</div>
-                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-500">01</span>
+                <button onclick="switchTab('home.html', this)" class="nav-btn active flex items-center px-4 py-3.5 rounded-xl text-zinc-400 text-sm font-medium border border-transparent">
+                    <i class="ph ph-squares-four text-xl mr-3"></i> 
+                    <span class="flex-1 text-left">Dashboard</span>
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-500 border border-white/5 shadow-sm">01</span>
                 </button>
-                <button onclick="switchTab('ghostlink.html', this)" class="nav-btn flex items-center justify-between px-3.5 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium">
-                    <div class="flex items-center gap-3"><i class="ph ph-ghost text-lg"></i> Ghostlink</div>
-                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-500">02</span>
+                <button onclick="switchTab('ghostlink.html', this)" class="nav-btn flex items-center px-4 py-3.5 rounded-xl text-zinc-400 text-sm font-medium border border-transparent">
+                    <i class="ph ph-ghost text-xl mr-3"></i> 
+                    <span class="flex-1 text-left">Ghostlink</span>
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-500 border border-white/5 shadow-sm">02</span>
                 </button>
-                <button onclick="switchTab('updates.html', this)" class="nav-btn flex items-center justify-between px-3.5 py-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium">
-                    <div class="flex items-center gap-3"><i class="ph ph-sparkle text-lg"></i> System Updates</div>
-                    <span class="w-2 h-2 rounded-full accent-bg"></span>
+                <button onclick="switchTab('terminal.html', this)" class="nav-btn flex items-center px-4 py-3.5 rounded-xl text-zinc-400 text-sm font-medium border border-transparent">
+                    <i class="ph ph-terminal-window text-xl mr-3"></i> 
+                    <span class="flex-1 text-left">Terminal</span>
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-zinc-500 border border-white/5 shadow-sm">03</span>
                 </button>
             </nav>
 
-            <!-- Bottom System Widget -->
-            <div class="p-3 bg-black/40 border-t border-white/5">
-                <div class="p-3 rounded-xl bg-white/5 border border-white/5 flex flex-col gap-2">
+            <!-- Bottom User/Status Area -->
+            <div class="p-4 border-t border-white/5 bg-gradient-to-t from-black/40 to-transparent sidebar-content transition-opacity duration-300 shrink-0">
+                <div class="p-4 rounded-xl bg-black/40 border border-white/5 flex flex-col gap-3 backdrop-blur-md">
                     <div class="flex items-center justify-between text-xs text-zinc-400">
-                        <span class="flex items-center gap-1.5"><i class="ph ph-cpu text-sm accent-text"></i> Engine</span>
-                        <span class="font-mono text-[10px] text-zinc-300">99.8% Optimal</span>
+                        <span class="flex items-center gap-2 font-medium"><i class="ph ph-cpu text-base accent-text"></i> Node Status</span>
+                        <span class="font-mono text-[10px] text-zinc-300 bg-white/10 px-1.5 py-0.5 rounded">ONLINE</span>
                     </div>
-                    <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                        <div class="h-full accent-bg w-[85%] rounded-full"></div>
+                    <div class="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden shadow-inner">
+                        <div class="h-full accent-bg w-[92%] rounded-full relative">
+                            <div class="absolute inset-0 bg-white/20 w-full animate-[shimmer_2s_infinite]"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content Column -->
-        <main class="flex-1 flex flex-col h-full relative z-10 my-2 mr-2">
+        <!-- Main Workspace Area -->
+        <main class="flex-1 flex flex-col h-full relative min-w-0">
             
-            <!-- Top Glass Header -->
-            <header class="h-[76px] shrink-0 flex items-center justify-between px-8 glass-panel rounded-2xl mb-2 relative z-30 border border-borderSubtle">
-                <div class="flex items-center gap-2 text-sm font-medium text-zinc-400">
+            <!-- Floating Header -->
+            <header class="h-[70px] shrink-0 flex items-center justify-between px-6 glass rounded-2xl mb-3 relative z-30 transition-all duration-300">
+                
+                <div class="flex items-center gap-3 text-sm font-medium text-zinc-400 bg-black/20 px-4 py-2 rounded-xl border border-white/5 shadow-inner">
                     <i class="ph ph-house text-lg"></i>
-                    <span>Workspace</span>
-                    <i class="ph ph-caret-right text-xs opacity-40"></i>
+                    <i class="ph ph-caret-right text-xs opacity-30"></i>
                     <span id="current-page-title" class="text-white font-semibold tracking-wide">Dashboard</span>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <!-- Settings Toggle -->
-                    <button onclick="openSettingsModal()" title="System Settings" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300 transition-colors">
-                        <i class="ph ph-gear text-lg"></i>
-                    </button>
-
-                    <!-- Audio Toggle -->
-                    <button onclick="toggleSound()" title="Toggle UI SFX" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300 transition-colors">
-                        <i id="sound-icon" class="ph ph-speaker-high text-lg"></i>
-                    </button>
-
-                    <!-- Shortcuts Button -->
-                    <button onclick="openShortcutsModal()" title="Keyboard Shortcuts" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300 transition-colors">
-                        <i class="ph ph-keyboard text-lg"></i>
-                    </button>
-
-                    <div class="hidden md:flex flex-col items-end text-right border-l border-white/10 pl-4">
-                        <div id="live-clock" class="text-xs font-mono font-bold text-white tracking-wider">00:00:00 AM</div>
-                        <div id="live-date" class="text-[10px] text-zinc-500 font-medium">Oct 01, 2026</div>
+                <div class="flex items-center gap-3">
+                    <div class="hidden lg:flex flex-col items-end text-right mr-2 bg-white/[0.02] px-4 py-1.5 rounded-xl border border-white/5">
+                        <div id="live-clock" class="text-xs font-mono font-bold text-white tracking-widest">00:00:00</div>
+                        <div id="live-date" class="text-[9px] text-zinc-500 font-medium uppercase tracking-wider">Date</div>
                     </div>
 
-                    <button onclick="openPalette()" class="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-black/50 hover:bg-black/80 border border-white/10 text-zinc-400 text-xs transition-all shadow-inner group">
-                        <i class="ph ph-magnifying-glass text-sm group-hover:text-white transition-colors"></i>
-                        <span class="hidden sm:inline">Search...</span>
-                        <kbd class="px-1.5 py-0.5 rounded bg-white/10 font-mono text-[10px] text-zinc-300">⌘K</kbd>
+                    <button onclick="openPalette()" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300 text-sm transition-all shadow-sm group">
+                        <i class="ph ph-magnifying-glass group-hover:text-white transition-colors"></i>
+                        <span class="hidden sm:inline font-medium">Search</span>
+                        <kbd class="px-1.5 py-0.5 rounded bg-black/50 font-mono text-[10px] text-zinc-400 border border-white/10 group-hover:border-white/20">⌘K</kbd>
                     </button>
 
-                    <div class="relative">
-                        <button id="auth-trigger" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-white shadow-sm">
-                            <div class="w-7 h-7 rounded-lg bg-zinc-800 border border-white/10 flex items-center justify-center overflow-hidden">
-                                <i id="user-avatar-icon" class="ph ph-user text-base"></i>
-                                <img id="user-avatar-img" src="" class="w-full h-full object-cover hidden">
-                            </div>
-                            <span id="user-name-label" class="text-xs font-semibold pr-1">Sign In</span>
-                        </button>
-                    </div>
+                    <button onclick="openSettingsModal()" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300 transition-colors shadow-sm">
+                        <i class="ph ph-sliders text-lg"></i>
+                    </button>
+
+                    <!-- Auth Block -->
+                    <button id="auth-trigger" class="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/10 transition-colors shadow-sm overflow-hidden relative group">
+                        <i id="user-avatar-icon" class="ph ph-user text-lg text-zinc-300 group-hover:text-white"></i>
+                        <img id="user-avatar-img" src="" class="w-full h-full object-cover hidden">
+                    </button>
                 </div>
             </header>
 
-            <div class="flex-1 w-full h-full relative rounded-2xl overflow-hidden glass border border-borderSubtle shadow-2xl">
-                <div id="frame-loader" class="absolute inset-0 z-20 flex flex-col p-8 bg-[#030305] transition-opacity duration-300 opacity-0 pointer-events-none">
-                    <div class="w-48 h-8 rounded-xl shimmer mb-4"></div>
-                    <div class="w-96 h-4 rounded-lg shimmer mb-8"></div>
-                    <div class="grid grid-cols-2 gap-6 flex-1">
-                        <div class="rounded-2xl shimmer"></div>
-                        <div class="rounded-2xl shimmer"></div>
+            <!-- Iframe Container -->
+            <div class="flex-1 w-full relative rounded-2xl overflow-hidden glass shadow-2xl">
+                <!-- Advanced Skeleton Loader -->
+                <div id="frame-loader" class="absolute inset-0 z-20 flex flex-col p-10 bg-appBg/95 backdrop-blur-3xl transition-opacity duration-500 opacity-0 pointer-events-none">
+                    <div class="w-1/3 h-10 rounded-xl shimmer mb-6 border border-white/5"></div>
+                    <div class="w-1/2 h-4 rounded-md shimmer mb-10 border border-white/5"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="h-48 rounded-2xl shimmer border border-white/5"></div>
+                        <div class="h-48 rounded-2xl shimmer border border-white/5"></div>
+                        <div class="h-48 rounded-2xl shimmer border border-white/5"></div>
                     </div>
                 </div>
 
@@ -326,10 +390,12 @@
         </main>
     </div>
 
+    <!-- Application Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+        // Mock Firebase Config (Keep provided structure)
         const firebaseConfig = {
             apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
             authDomain: "nexus-web-development-official.firebaseapp.com",
@@ -338,10 +404,14 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // State
         let soundEnabled = true;
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let perfMode = false;
+        let sidebarOpen = true;
 
-        window.playSFX = (freq = 440, type = 'sine', duration = 0.04) => {
+        // Audio Engine
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        window.playSFX = (freq = 440, type = 'sine', duration = 0.05, vol = 0.03) => {
             if (!soundEnabled) return;
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -349,7 +419,7 @@
                 const gain = audioCtx.createGain();
                 osc.type = type;
                 osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
@@ -358,99 +428,150 @@
             } catch (e) {}
         };
 
+        // UI Toggles
         window.toggleSound = () => {
-            soundEnabled = !soundEnabled;
-            const icon = document.getElementById('sound-icon');
-            const status = document.getElementById('palette-sound-status');
-            if (soundEnabled) {
-                icon.className = "ph ph-speaker-high text-lg";
-                if (status) status.textContent = "Enabled";
-                showToast("UI Audio Enabled");
-                playSFX(800, 'sine', 0.1);
-            } else {
-                icon.className = "ph ph-speaker-x text-lg text-zinc-500";
-                if (status) status.textContent = "Disabled";
-                showToast("UI Audio Muted");
-            }
+            soundEnabled = document.getElementById('toggle-sound').checked;
+            if(soundEnabled) playSFX(800, 'sine', 0.1);
+        };
+        
+        window.togglePerf = () => {
+            perfMode = document.getElementById('toggle-perf').checked;
+            document.getElementById('ambient-canvas').style.display = perfMode ? 'none' : 'block';
+            playSFX(300, 'square', 0.05);
         };
 
         window.setTheme = (hex, glow) => {
             document.documentElement.style.setProperty('--accent', hex);
             document.documentElement.style.setProperty('--accent-glow', glow);
-            playSFX(600, 'triangle', 0.08);
-            showToast(`Accent Updated`);
+            document.documentElement.style.setProperty('--accent-glow-strong', glow.replace('0.4', '0.6'));
+            playSFX(900, 'sine', 0.1);
         };
 
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
+        window.toggleSidebar = () => {
+            playSFX(400, 'sine', 0.05);
+            sidebarOpen = !sidebarOpen;
+            const sidebar = document.getElementById('sidebar');
+            const contents = document.querySelectorAll('.sidebar-content');
+            
+            if(sidebarOpen) {
+                sidebar.style.width = '280px';
+                contents.forEach(c => { c.style.opacity = '1'; c.style.pointerEvents = 'auto'; });
+            } else {
+                sidebar.style.width = '80px';
+                contents.forEach(c => { c.style.opacity = '0'; c.style.pointerEvents = 'none'; });
+            }
+        };
 
-        window.addEventListener('resize', () => {
+        // Advanced Network/Constellation Canvas
+        const canvas = document.getElementById('ambient-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles;
+        let mouse = { x: -1000, y: -1000 };
+
+        function initCanvas() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
-        });
+            particles = Array.from({ length: 70 }, () => ({
+                x: Math.random() * width, y: Math.random() * height,
+                vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+                size: Math.random() * 1.5 + 0.5
+            }));
+        }
+        
+        window.addEventListener('resize', initCanvas);
+        window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        initCanvas();
 
-        const particles = Array.from({ length: 35 }, () => ({
-            x: Math.random() * width, y: Math.random() * height,
-            vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
-            size: Math.random() * 2 + 1
-        }));
-
-        function animateCanvas() {
+        function drawCanvas() {
+            if(perfMode) return requestAnimationFrame(drawCanvas);
             ctx.clearRect(0, 0, width, height);
+            
             ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-            particles.forEach(p => {
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 0.5;
+
+            particles.forEach((p, i) => {
                 p.x += p.vx; p.y += p.vy;
                 if (p.x < 0 || p.x > width) p.vx *= -1;
                 if (p.y < 0 || p.y > height) p.vy *= -1;
+                
+                // Repel from mouse slightly
+                let dx = mouse.x - p.x;
+                let dy = mouse.y - p.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 150) {
+                    p.x -= dx * 0.01;
+                    p.y -= dy * 0.01;
+                }
+
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 ctx.fill();
-            });
-            requestAnimationFrame(animateCanvas);
-        }
-        animateCanvas();
 
+                // Connect lines
+                for(let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j];
+                    let d = Math.sqrt(Math.pow(p.x - p2.x, 2) + Math.pow(p.y - p2.y, 2));
+                    if (d < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(drawCanvas);
+        }
+        drawCanvas();
+
+        // Boot Sequence
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const intro = document.getElementById('intro-screen');
                 const appCont = document.getElementById('app-container');
                 intro.style.opacity = '0';
-                intro.style.transform = 'scale(1.05)';
-                playSFX(520, 'sine', 0.15);
+                intro.style.transform = 'scale(1.1)';
+                playSFX(600, 'sine', 0.2, 0.05);
+                setTimeout(() => playSFX(900, 'sine', 0.4, 0.05), 150);
                 setTimeout(() => {
                     intro.style.display = 'none';
                     appCont.style.opacity = '1';
                     appCont.style.transform = 'scale(1)';
-                }, 800);
-            }, 1600);
+                }, 1000);
+            }, 2200);
         });
 
+        // Clock
         setInterval(() => {
             const now = new Date();
             document.getElementById('live-clock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             document.getElementById('live-date').textContent = now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
         }, 1000);
 
+        // Premium Toast
         window.showToast = (msg) => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = 'glass px-5 py-3.5 rounded-xl text-white text-sm shadow-2xl flex items-center gap-3 border border-white/10 toast-enter transition-all duration-300';
-            toast.innerHTML = `<i class="ph ph-check-circle text-lg accent-text"></i> <span class="font-medium">${msg}</span>`;
+            toast.className = 'glass px-6 py-3 rounded-full text-white text-sm shadow-[0_10px_40px_rgba(0,0,0,0.5)] flex items-center gap-3 border border-white/10 transform translate-y-8 opacity-0 transition-all duration-500 ease-spring';
+            toast.innerHTML = `<span class="w-2 h-2 rounded-full accent-bg shadow-[0_0_10px_var(--accent)]"></span> <span class="font-medium tracking-wide">${msg}</span>`;
             container.appendChild(toast);
             
-            requestAnimationFrame(() => toast.classList.replace('toast-enter', 'toast-show'));
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-8', 'opacity-0');
+            });
             setTimeout(() => {
-                toast.classList.replace('toast-show', 'toast-enter');
-                setTimeout(() => toast.remove(), 300);
-            }, 3200);
+                toast.classList.add('translate-y-8', 'opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
         };
 
-        window.switchTab = (page, btn) => {
-            playSFX(400, 'sine', 0.05);
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
+        // Navigation
+        window.switchTab = (page, btn = null) => {
+            playSFX(450, 'sine', 0.06);
+            if(btn) {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
             
             const loader = document.getElementById('frame-loader');
             const frame = document.getElementById('content-frame');
@@ -459,8 +580,20 @@
             loader.style.pointerEvents = 'auto';
 
             setTimeout(() => {
-                frame.removeAttribute('srcdoc');
-                frame.src = page;
+                // Mock Terminal Page Generation
+                if(page === 'terminal.html') {
+                    frame.srcdoc = `
+                        <html class="dark"><head><script src="https://cdn.tailwindcss.com"><\/script></head>
+                        <body class="bg-transparent text-emerald-500 p-8 font-mono text-sm">
+                            <div>NexusOS [Version 5.0.12]<br>(c) 2026 Nexus Systems. All rights reserved.</div><br>
+                            <div>C:\\System\\Core> initializing terminal...</div>
+                            <div class="animate-pulse mt-2">_</div>
+                        </body></html>
+                    `;
+                } else {
+                    frame.removeAttribute('srcdoc');
+                    frame.src = page;
+                }
                 
                 const title = page.replace('.html', '');
                 document.getElementById('current-page-title').textContent = title.charAt(0).toUpperCase() + title.slice(1);
@@ -468,61 +601,85 @@
                 setTimeout(() => {
                     loader.style.opacity = '0';
                     loader.style.pointerEvents = 'none';
-                }, 300);
-            }, 400);
+                }, 400);
+            }, 500);
         };
 
+        // Command Palette
+        const palette = document.getElementById('command-palette');
+        const pBox = document.getElementById('palette-box');
         const pInput = document.getElementById('palette-input');
+
         pInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
             document.querySelectorAll('.palette-item').forEach(item => {
-                const text = item.innerText.toLowerCase();
-                item.style.display = text.includes(query) ? 'flex' : 'none';
+                item.style.display = item.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
             });
         });
 
-        const palette = document.getElementById('command-palette');
-        const pBox = document.getElementById('palette-box');
-
         window.openPalette = () => {
-            playSFX(700, 'sine', 0.06);
+            playSFX(800, 'sine', 0.05);
             palette.classList.remove('opacity-0', 'pointer-events-none');
-            pBox.classList.remove('scale-95');
-            pInput.focus();
+            pBox.classList.remove('scale-95', 'translate-y-4');
+            setTimeout(() => pInput.focus(), 100);
         };
+        
         window.closePalette = () => {
             palette.classList.add('opacity-0', 'pointer-events-none');
-            pBox.classList.add('scale-95');
+            pBox.classList.add('scale-95', 'translate-y-4');
             pInput.value = '';
             document.querySelectorAll('.palette-item').forEach(i => i.style.display = 'flex');
         };
+
         window.paletteSelect = (page, name) => {
             switchTab(page);
             closePalette();
-            showToast(`Navigated to ${name}`);
+            showToast(`Loaded ${name}`);
         };
 
+        // Settings Modal
         const settingsModal = document.getElementById('settings-modal');
+        const settingsBox = document.getElementById('settings-box');
         window.openSettingsModal = () => {
             closePalette();
-            playSFX(650, 'sine', 0.05);
+            playSFX(700, 'sine', 0.05);
             settingsModal.classList.remove('opacity-0', 'pointer-events-none');
+            settingsBox.classList.remove('scale-95', 'translate-y-4');
         };
         window.closeSettingsModal = () => {
             settingsModal.classList.add('opacity-0', 'pointer-events-none');
+            settingsBox.classList.add('scale-95', 'translate-y-4');
         };
 
-        const shortcutsModal = document.getElementById('shortcuts-modal');
-        window.openShortcutsModal = () => {
-            closePalette();
-            playSFX(650, 'sine', 0.05);
-            shortcutsModal.classList.remove('opacity-0', 'pointer-events-none');
-        };
-        window.closeShortcutsModal = () => {
-            shortcutsModal.classList.add('opacity-0', 'pointer-events-none');
+        // Custom Context Menu
+        const ctxMenu = document.getElementById('context-menu');
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            playSFX(900, 'square', 0.02, 0.01);
+            
+            let x = e.clientX;
+            let y = e.clientY;
+            
+            ctxMenu.style.left = `${x}px`;
+            ctxMenu.style.top = `${y}px`;
+            
+            // Adjust if off-screen
+            const rect = ctxMenu.getBoundingClientRect();
+            if (x + 224 > window.innerWidth) ctxMenu.style.left = `${window.innerWidth - 230}px`;
+            if (y + rect.height > window.innerHeight) ctxMenu.style.top = `${window.innerHeight - rect.height - 10}px`;
+
+            ctxMenu.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
+        });
+
+        document.addEventListener('click', (e) => {
+            if(!ctxMenu.contains(e.target)) closeContextMenu();
+        });
+
+        window.closeContextMenu = () => {
+            ctxMenu.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
         };
 
-        let keyBuffer = '';
+        // Keyboard Shortcuts
         document.addEventListener('keydown', (e) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') { 
                 e.preventDefault(); 
@@ -530,50 +687,36 @@
             }
             if (e.key === 'Escape') {
                 closePalette();
-                closeShortcutsModal();
                 closeSettingsModal();
-            }
-            if (e.key === '?' && document.activeElement.tagName !== 'INPUT') {
-                openShortcutsModal();
-            }
-
-            if (document.activeElement.tagName !== 'INPUT') {
-                keyBuffer += e.key.toLowerCase();
-                if (keyBuffer.endsWith('gh')) { switchTab('home.html'); keyBuffer = ''; }
-                setTimeout(() => keyBuffer = '', 1000);
+                closeContextMenu();
             }
         });
 
+        // Authentication
         const authBtn = document.getElementById('auth-trigger');
         authBtn.addEventListener('click', async () => {
             playSFX(500, 'sine', 0.05);
             if (auth.currentUser) {
                 await signOut(auth);
-                showToast("Signed out successfully");
+                showToast("Node Disconnected");
             } else {
                 try {
                     await signInWithPopup(auth, new GoogleAuthProvider());
-                    showToast("Welcome back!");
-                } catch (err) {
-                    showToast("Authentication canceled");
-                }
+                    showToast("Node Authorized");
+                } catch (err) {}
             }
         });
 
         onAuthStateChanged(auth, (user) => {
             const icon = document.getElementById('user-avatar-icon');
             const img = document.getElementById('user-avatar-img');
-            const label = document.getElementById('user-name-label');
-            
             if (user) {
                 icon.classList.add('hidden');
                 img.classList.remove('hidden');
                 img.src = user.photoURL || 'https://placehold.co/100';
-                label.textContent = user.displayName?.split(' ')[0] || 'User';
             } else {
                 icon.classList.remove('hidden');
                 img.classList.add('hidden');
-                label.textContent = 'Sign In';
             }
         });
     </script>
