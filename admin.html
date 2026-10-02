@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus — Admin Panel</title>
+    <title>Admin Panel - Nexus</title>
     
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -21,220 +23,298 @@
                         surfaceHover: '#1c1c1c',
                         border: '#262626',
                         textMain: '#ededed',
-                        textMuted: '#a1a1aa',
-                        brand: 'var(--brand-color, #ededed)'
+                        textMuted: '#a1a1aa'
                     }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #0a0a0a; color: #ededed; font-family: 'Inter', sans-serif; }
+        :root { --brand-color: #ededed; }
+        body { background-color: transparent; color: #ededed; font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
     </style>
 </head>
-<body class="w-full min-h-screen p-8 md:p-12 overflow-y-auto flex flex-col items-center justify-center" id="body-container">
+<body class="w-full h-full flex flex-col overflow-hidden bg-background">
 
-    <!-- Guard 1: Checking Account / Unauthorized Error -->
-    <div id="auth-message" class="flex flex-col items-center justify-center text-center gap-3">
-        <i class="ph ph-shield-warning text-4xl text-textMuted mb-2 animate-pulse"></i>
-        <h2 class="text-lg font-medium text-textMain">Authenticating...</h2>
-        <p class="text-sm text-textMuted max-w-xs">Verifying your Google account credentials.</p>
-    </div>
-
-    <!-- Guard 2: The Password Screen -->
-    <div id="password-screen" class="hidden w-full max-w-sm bg-surface border border-border p-6 rounded-xl shadow-2xl flex-col gap-4">
-        <div class="flex items-center gap-3 mb-2">
-            <div class="w-10 h-10 rounded-full bg-border flex items-center justify-center text-textMain">
-                <i class="ph ph-lock-key text-lg"></i>
-            </div>
+    <!-- Admin Header -->
+    <header class="h-16 border-b border-border flex items-center justify-between px-8 bg-surface shrink-0 z-10">
+        <div class="flex items-center gap-3">
+            <i class="ph ph-shield-check text-textMuted text-xl"></i>
             <div>
-                <h2 class="text-sm font-medium text-textMain">Admin Clearance</h2>
-                <p class="text-xs text-textMuted">Enter the master passcode.</p>
+                <h2 class="font-semibold text-textMain text-sm">Admin Control Center</h2>
+                <p class="text-[11px] text-textMuted">User Directory & Permissions</p>
             </div>
         </div>
-        <input type="password" id="admin-passcode" placeholder="Passcode" class="w-full bg-background border border-border p-3 rounded-lg outline-none text-sm text-center text-textMain focus:border-textMuted transition-colors tracking-widest">
-        <button id="verify-btn" class="w-full px-5 py-2.5 rounded-lg bg-textMain text-background hover:opacity-90 text-sm font-medium transition-opacity">
-            Unlock Command Center
-        </button>
-        <p id="pass-error" class="text-xs text-red-400 text-center hidden">Incorrect passcode.</p>
+        
+        <div id="admin-badge" class="hidden items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full font-medium">
+            <i class="ph ph-lock-key-open"></i> Owner Access
+        </div>
+    </header>
+
+    <!-- Permission Restriction Warning -->
+    <div id="access-denied-banner" class="hidden bg-red-500/10 border-b border-red-500/20 px-8 py-3 text-red-400 text-xs font-medium flex items-center gap-2 shrink-0">
+        <i class="ph ph-warning text-sm"></i> Restricted Access: You are in view-only mode. Only the system owner can modify roles, ban users, or delete accounts.
     </div>
 
-    <!-- The Actual Admin Content (Hidden until verified) -->
-    <div id="admin-content" class="hidden w-full max-w-2xl mx-auto h-full flex-col justify-start">
-        
-        <!-- Admin Profile Header -->
-        <div class="flex items-center justify-between mb-8 pb-6 border-b border-border">
-            <div class="flex items-center gap-3.5">
-                <img src="IMG_0728.jpeg" alt="Brody Williams" class="w-12 h-12 rounded-full object-cover border border-border shrink-0">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="text-lg font-semibold text-textMain tracking-tight">Brody Williams</h1>
-                        <span class="text-[9px] uppercase tracking-wider bg-[var(--brand-color)]/10 text-[var(--brand-color)] border border-[var(--brand-color)]/20 px-1.5 py-0.5 rounded-md font-bold">Owner</span>
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-8 relative">
+        <div class="max-w-6xl mx-auto flex flex-col gap-6">
+            
+            <!-- Stats Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-surface border border-border p-4 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-textMuted font-medium">Total Registered Users</p>
+                        <h3 id="stat-total" class="text-2xl font-bold text-textMain mt-1">0</h3>
                     </div>
-                    <p class="text-xs text-textMuted">Admin Command Center</p>
+                    <div class="w-10 h-10 rounded-lg bg-surfaceHover border border-border flex items-center justify-center text-textMuted">
+                        <i class="ph ph-users text-xl"></i>
+                    </div>
+                </div>
+                <div class="bg-surface border border-border p-4 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-textMuted font-medium">Banned Accounts</p>
+                        <h3 id="stat-banned" class="text-2xl font-bold text-red-400 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
+                        <i class="ph ph-user-minus text-xl"></i>
+                    </div>
+                </div>
+                <div class="bg-surface border border-border p-4 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-textMuted font-medium">Admins & Staff</p>
+                        <h3 id="stat-admins" class="text-2xl font-bold text-[var(--brand-color)] mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-[var(--brand-color)]/10 border border-[var(--brand-color)]/20 flex items-center justify-center text-[var(--brand-color)]">
+                        <i class="ph ph-crown text-xl"></i>
+                    </div>
                 </div>
             </div>
-            <span class="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
-                <i class="ph ph-shield-check"></i> Secured
-            </span>
-        </div>
 
-        <!-- Post Publisher Card -->
-        <div class="bg-surface border border-border p-5 rounded-xl flex flex-col gap-4 shadow-xl">
-            <h2 class="text-sm font-medium text-textMain border-b border-border pb-3">Publish New Update</h2>
-            
-            <textarea id="update-text" rows="3" placeholder="Write your update announcement..." class="w-full bg-background border border-border p-3 rounded-lg outline-none text-sm text-textMain placeholder:text-textMuted resize-none focus:border-textMuted transition-colors"></textarea>
-            
-            <div class="flex items-center justify-between pt-2">
-                <label class="cursor-pointer bg-background border border-border px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:border-textMuted transition-all flex items-center gap-2 text-xs font-medium">
-                    <i class="ph ph-image text-base"></i>
-                    <span id="file-name">Attach Image</span>
-                    <input type="file" id="update-image" accept="image/*" class="hidden">
-                </label>
+            <!-- User Table Container -->
+            <div class="bg-surface border border-border rounded-xl overflow-hidden shadow-2xl">
+                <div class="p-4 border-b border-border flex items-center justify-between bg-surface">
+                    <h3 class="text-sm font-semibold text-textMain">All Users</h3>
+                    <span class="text-xs text-textMuted">Realtime synchronization enabled</span>
+                </div>
 
-                <button id="post-btn" class="px-5 py-2 rounded-lg bg-textMain text-background hover:opacity-90 text-sm font-medium transition-opacity flex items-center gap-2">
-                    Publish Update
-                </button>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-textMuted">
+                        <thead class="bg-background text-xs uppercase tracking-wider text-textMuted border-b border-border">
+                            <tr>
+                                <th class="py-3.5 px-6 font-medium">User Profile</th>
+                                <th class="py-3.5 px-6 font-medium">Email</th>
+                                <th class="py-3.5 px-6 font-medium">Role</th>
+                                <th class="py-3.5 px-6 font-medium">Status</th>
+                                <th class="py-3.5 px-6 font-medium text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body" class="divide-y divide-border">
+                            <!-- Loading State -->
+                            <tr>
+                                <td colspan="5" class="py-12 text-center text-textMuted">
+                                    <i class="ph ph-spinner animate-spin text-2xl mb-2 block mx-auto"></i>
+                                    Fetching user registry...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <p id="upload-status" class="text-xs text-[var(--brand-color)] hidden font-medium"></p>
         </div>
-    </div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref as dbRef, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+        import { getDatabase, ref as dbRef, onValue, update, remove, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
             authDomain: "nexus-web-development-official.firebaseapp.com",
             projectId: "nexus-web-development-official",
-            storageBucket: "nexus-web-development-official.firebasestorage.app",
             databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com" 
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const storage = getStorage(app);
-        const updatesRef = dbRef(db, 'workspace_updates');
 
-        // UI Elements
-        const authMessage = document.getElementById('auth-message');
-        const passwordScreen = document.getElementById('password-screen');
-        const adminContent = document.getElementById('admin-content');
-        const bodyContainer = document.getElementById('body-container');
-        
-        const passcodeIn = document.getElementById('admin-passcode');
-        const verifyBtn = document.getElementById('verify-btn');
-        const passError = document.getElementById('pass-error');
+        let currentUser = null;
+        let isOwner = false;
 
-        // 1. Check Google Auth & Specific Email
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                authMessage.innerHTML = `
-                    <i class="ph ph-lock text-4xl text-textMuted mb-2"></i>
-                    <h2 class="text-lg font-medium text-textMain">Access Denied</h2>
-                    <p class="text-sm text-textMuted max-w-xs">You must be logged in via the main page to access the admin panel.</p>
-                `;
-            } else if (user.email !== 'brodywilliams0226@gmail.com') {
-                authMessage.innerHTML = `
-                    <i class="ph ph-user-circle-minus text-4xl text-red-400 mb-2"></i>
-                    <h2 class="text-lg font-medium text-textMain">Unauthorized Account</h2>
-                    <p class="text-sm text-textMuted max-w-xs">The account <b>${user.email}</b> does not have administrative privileges.</p>
-                `;
+        const tableBody = document.getElementById('user-table-body');
+        const adminBadge = document.getElementById('admin-badge');
+        const accessBanner = document.getElementById('access-denied-banner');
+
+        // Watch Auth State & Sync Profile into DB
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if (user) {
+                isOwner = (user.email === 'brodywilliams0226@gmail.com');
+                
+                if (isOwner) {
+                    adminBadge.classList.remove('hidden');
+                    adminBadge.classList.add('flex');
+                    accessBanner.classList.add('hidden');
+                } else {
+                    adminBadge.classList.add('hidden');
+                    accessBanner.classList.remove('hidden');
+                }
+
+                // Register/Update logged-in user details in database
+                const userRef = dbRef(db, `textnexus/users/${user.uid}`);
+                const defaultRole = isOwner ? 'Owner' : 'User';
+
+                await update(userRef, {
+                    uid: user.uid,
+                    name: user.displayName || 'Anonymous User',
+                    email: user.email,
+                    photoURL: isOwner ? 'IMG_0728.jpeg' : (user.photoURL || 'https://placehold.co/100'),
+                    lastLogin: Date.now()
+                });
+
+                // Guarantee Owner role for brodywilliams0226@gmail.com
+                if (isOwner) {
+                    await update(userRef, { role: 'Owner', isBanned: false });
+                }
             } else {
-                authMessage.classList.add('hidden');
-                passwordScreen.classList.remove('hidden');
-                passwordScreen.classList.add('flex');
+                isOwner = false;
+                adminBadge.classList.add('hidden');
+                accessBanner.classList.remove('hidden');
             }
+            listenToUsers();
         });
 
-        // 2. Check Passcode
-        const checkPasscode = () => {
-            if (passcodeIn.value === '0226') {
-                passwordScreen.classList.add('hidden');
-                passwordScreen.classList.remove('flex');
-                adminContent.classList.remove('hidden');
-                adminContent.classList.add('flex');
-                bodyContainer.classList.remove('justify-center');
-                bodyContainer.classList.add('justify-start');
-            } else {
-                passError.classList.remove('hidden');
-                passcodeIn.value = '';
+        // Listen for all users from Realtime Database
+        function listenToUsers() {
+            const usersRef = dbRef(db, 'textnexus/users');
+            onValue(usersRef, (snapshot) => {
+                const data = snapshot.val();
+                tableBody.innerHTML = '';
+
+                if (!data) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="py-8 text-center text-textMuted">
+                                No registered users found in database yet.
+                            </td>
+                        </tr>
+                    `;
+                    updateStats(0, 0, 0);
+                    return;
+                }
+
+                const users = Object.keys(data).map(key => ({ uid: key, ...data[key] }));
+
+                let totalCount = users.length;
+                let bannedCount = 0;
+                let adminCount = 0;
+
+                users.forEach(u => {
+                    if (u.isBanned) bannedCount++;
+                    if (u.role === 'Admin' || u.role === 'Owner') adminCount++;
+
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-surfaceHover/50 transition-colors';
+
+                    const isTargetOwner = (u.email === 'brodywilliams0226@gmail.com');
+                    const disableControls = !isOwner || isTargetOwner;
+
+                    row.innerHTML = `
+                        <!-- Profile Column -->
+                        <td class="py-4 px-6 flex items-center gap-3">
+                            <img src="${u.photoURL || 'https://placehold.co/100'}" class="w-9 h-9 rounded-full object-cover border border-border">
+                            <div class="flex flex-col">
+                                <span class="font-medium text-textMain text-sm flex items-center gap-2">
+                                    ${u.name}
+                                    ${isTargetOwner ? '<span class="text-[9px] bg-[var(--brand-color)]/10 text-[var(--brand-color)] border border-[var(--brand-color)]/20 px-1.5 py-0.5 rounded-md font-bold uppercase">System Owner</span>' : ''}
+                                </span>
+                                <span class="text-[10px] text-textMuted font-mono">ID: ${u.uid.substring(0, 8)}...</span>
+                            </div>
+                        </td>
+
+                        <!-- Email Column -->
+                        <td class="py-4 px-6 text-textMain font-mono text-xs">
+                            ${u.email}
+                        </td>
+
+                        <!-- Role Selector -->
+                        <td class="py-4 px-6">
+                            <select onchange="window.changeRole('${u.uid}', this.value)" ${disableControls ? 'disabled' : ''} class="bg-background border border-border text-textMain text-xs rounded-lg px-2.5 py-1.5 outline-none focus:border-textMuted disabled:opacity-50 disabled:cursor-not-allowed">
+                                <option value="User" ${u.role === 'User' ? 'selected' : ''}>User</option>
+                                <option value="Moderator" ${u.role === 'Moderator' ? 'selected' : ''}>Moderator</option>
+                                <option value="Admin" ${u.role === 'Admin' ? 'selected' : ''}>Admin</option>
+                                <option value="Owner" ${u.role === 'Owner' ? 'selected' : ''}>Owner</option>
+                            </select>
+                        </td>
+
+                        <!-- Ban Status Column -->
+                        <td class="py-4 px-6">
+                            ${u.isBanned 
+                                ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-red-500/10 text-red-400 border border-red-500/20"><i class="ph ph-prohibit"></i> Banned</span>' 
+                                : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><i class="ph ph-check-circle"></i> Active</span>'
+                            }
+                        </td>
+
+                        <!-- Action Buttons -->
+                        <td class="py-4 px-6 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <!-- Ban / Unban Toggle -->
+                                <button onclick="window.toggleBan('${u.uid}', ${!!u.isBanned})" ${disableControls ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${u.isBanned ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20' : 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20'} disabled:opacity-30 disabled:cursor-not-allowed">
+                                    ${u.isBanned ? 'Unban' : 'Ban User'}
+                                </button>
+
+                                <!-- Delete Account Record -->
+                                <button onclick="window.deleteUserRecord('${u.uid}', '${u.name}')" ${disableControls ? 'disabled' : ''} class="p-1.5 rounded-lg bg-surfaceHover border border-border text-textMuted hover:text-red-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="Delete User Record">
+                                    <i class="ph ph-trash text-base"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                updateStats(totalCount, bannedCount, adminCount);
+            });
+        }
+
+        function updateStats(total, banned, admins) {
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-banned').textContent = banned;
+            document.getElementById('stat-admins').textContent = admins;
+        }
+
+        // Action Handlers
+        window.changeRole = async (targetUid, newRole) => {
+            if (!isOwner) return alert("Only the owner can modify roles.");
+            await update(dbRef(db, `textnexus/users/${targetUid}`), { role: newRole });
+        };
+
+        window.toggleBan = async (targetUid, currentBannedState) => {
+            if (!isOwner) return alert("Only the owner can ban/unban users.");
+            await update(dbRef(db, `textnexus/users/${targetUid}`), { isBanned: !currentBannedState });
+        };
+
+        window.deleteUserRecord = async (targetUid, userName) => {
+            if (!isOwner) return alert("Only the owner can delete users.");
+            if (confirm(`Are you sure you want to remove ${userName}'s profile from the database?`)) {
+                await remove(dbRef(db, `textnexus/users/${targetUid}`));
             }
         };
 
-        verifyBtn.addEventListener('click', checkPasscode);
-        passcodeIn.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPasscode(); });
-
-        // Database & Storage Upload Logic
-        const textInput = document.getElementById('update-text');
-        const imageInput = document.getElementById('update-image');
-        const fileNameDisplay = document.getElementById('file-name');
-        const postBtn = document.getElementById('post-btn');
-        const statusText = document.getElementById('upload-status');
-
-        imageInput.addEventListener('change', (e) => {
-            if(e.target.files.length > 0) fileNameDisplay.textContent = e.target.files[0].name;
-            else fileNameDisplay.textContent = "Attach Image";
-        });
-
-        postBtn.addEventListener('click', async () => {
-            const text = textInput.value.trim();
-            const file = imageInput.files[0];
-
-            if (!text && !file) return;
-
-            postBtn.disabled = true;
-            postBtn.innerHTML = '<i class="ph ph-spinner animate-spin text-base"></i> Publishing...';
-            statusText.classList.remove('hidden');
-            statusText.classList.replace('text-red-400', 'text-[var(--brand-color)]');
-            
-            let downloadUrl = null;
-
-            try {
-                if (file) {
-                    statusText.textContent = "Uploading image...";
-                    const uniqueFileName = `updates/${Date.now()}_${file.name}`;
-                    const imageRef = storageRef(storage, uniqueFileName);
-                    
-                    const snapshot = await uploadBytes(imageRef, file);
-                    downloadUrl = await getDownloadURL(snapshot.ref);
-                }
-
-                statusText.textContent = "Saving to database...";
-
-                await push(updatesRef, {
-                    text: text,
-                    timestamp: serverTimestamp(),
-                    imageUrl: downloadUrl
-                });
-
-                textInput.value = '';
-                imageInput.value = '';
-                fileNameDisplay.textContent = "Attach Image";
-                statusText.textContent = "Published successfully!";
-                
-                setTimeout(() => statusText.classList.add('hidden'), 3000);
-
-            } catch (error) {
-                console.error(error);
-                statusText.textContent = "Error: " + error.message;
-                statusText.classList.replace('text-[var(--brand-color)]', 'text-red-400');
-            } finally {
-                postBtn.disabled = false;
-                postBtn.innerHTML = 'Publish Update';
+        // Theme Sync
+        const savedColor = localStorage.getItem('nexus-brand-color');
+        if (savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'update-theme') {
+                document.documentElement.style.setProperty('--brand-color', event.data.color);
             }
         });
-
-        const savedColor = localStorage.getItem('nexus-brand-color');
-        if(savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
     </script>
 </body>
 </html>
