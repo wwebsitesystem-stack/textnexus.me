@@ -35,16 +35,44 @@
         ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
     </style>
 </head>
-<body class="w-full min-h-screen p-8 md:p-12 overflow-y-auto">
+<body class="w-full min-h-screen p-8 md:p-12 overflow-y-auto flex flex-col items-center justify-center" id="body-container">
 
-    <div class="max-w-2xl mx-auto">
+    <!-- Guard 1: Checking Account / Unauthorized Error -->
+    <div id="auth-message" class="flex flex-col items-center justify-center text-center gap-3">
+        <i class="ph ph-shield-warning text-4xl text-textMuted mb-2 animate-pulse"></i>
+        <h2 class="text-lg font-medium text-textMain">Authenticating...</h2>
+        <p class="text-sm text-textMuted max-w-xs">Verifying your Google account credentials.</p>
+    </div>
+
+    <!-- Guard 2: The Password Screen -->
+    <div id="password-screen" class="hidden w-full max-w-sm bg-surface border border-border p-6 rounded-xl shadow-2xl flex-col gap-4">
+        <div class="flex items-center gap-3 mb-2">
+            <div class="w-10 h-10 rounded-full bg-border flex items-center justify-center text-textMain">
+                <i class="ph ph-lock-key text-lg"></i>
+            </div>
+            <div>
+                <h2 class="text-sm font-medium text-textMain">Admin Clearance</h2>
+                <p class="text-xs text-textMuted">Enter the master passcode.</p>
+            </div>
+        </div>
+        <input type="password" id="admin-passcode" placeholder="Passcode" class="w-full bg-background border border-border p-3 rounded-lg outline-none text-sm text-center text-textMain focus:border-textMuted transition-colors tracking-widest">
+        <button id="verify-btn" class="w-full px-5 py-2.5 rounded-lg bg-textMain text-background hover:opacity-90 text-sm font-medium transition-opacity">
+            Unlock Command Center
+        </button>
+        <p id="pass-error" class="text-xs text-red-400 text-center hidden">Incorrect passcode.</p>
+    </div>
+
+    <!-- The Actual Admin Content (Hidden until verified) -->
+    <div id="admin-content" class="hidden w-full max-w-2xl mx-auto h-full flex-col justify-start">
         <div class="flex items-center justify-between mb-8">
             <h1 class="text-2xl font-semibold text-textMain tracking-tight">Admin Dashboard</h1>
-            <span class="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2.5 py-1 rounded-full font-medium">Private</span>
+            <span class="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
+                <i class="ph ph-shield-check"></i> Secured
+            </span>
         </div>
 
         <!-- Post Publisher Card -->
-        <div class="bg-surface border border-border p-5 rounded-xl flex flex-col gap-4 shadow-xl mb-10">
+        <div class="bg-surface border border-border p-5 rounded-xl flex flex-col gap-4 shadow-xl">
             <h2 class="text-sm font-medium text-textMain border-b border-border pb-3">Publish New Update</h2>
             
             <textarea id="update-text" rows="3" placeholder="Write your update announcement..." class="w-full bg-background border border-border p-3 rounded-lg outline-none text-sm text-textMain placeholder:text-textMuted resize-none focus:border-textMuted transition-colors"></textarea>
@@ -67,6 +95,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getDatabase, ref as dbRef, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
         import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
@@ -79,10 +108,62 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getDatabase(app);
         const storage = getStorage(app);
         const updatesRef = dbRef(db, 'workspace_updates');
 
+        // UI Elements
+        const authMessage = document.getElementById('auth-message');
+        const passwordScreen = document.getElementById('password-screen');
+        const adminContent = document.getElementById('admin-content');
+        const bodyContainer = document.getElementById('body-container');
+        
+        const passcodeIn = document.getElementById('admin-passcode');
+        const verifyBtn = document.getElementById('verify-btn');
+        const passError = document.getElementById('pass-error');
+
+        // 1. Check Google Auth & Specific Email
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                authMessage.innerHTML = `
+                    <i class="ph ph-lock text-4xl text-textMuted mb-2"></i>
+                    <h2 class="text-lg font-medium text-textMain">Access Denied</h2>
+                    <p class="text-sm text-textMuted max-w-xs">You must be logged in via the main page to access the admin panel.</p>
+                `;
+            } else if (user.email !== 'brodywilliams0226@gmail.com') {
+                authMessage.innerHTML = `
+                    <i class="ph ph-user-circle-minus text-4xl text-red-400 mb-2"></i>
+                    <h2 class="text-lg font-medium text-textMain">Unauthorized Account</h2>
+                    <p class="text-sm text-textMuted max-w-xs">The account <b>${user.email}</b> does not have administrative privileges.</p>
+                `;
+            } else {
+                // Email matches! Hide message, show password screen
+                authMessage.classList.add('hidden');
+                passwordScreen.classList.remove('hidden');
+                passwordScreen.classList.add('flex');
+            }
+        });
+
+        // 2. Check Passcode
+        const checkPasscode = () => {
+            if (passcodeIn.value === '0226') {
+                passwordScreen.classList.add('hidden');
+                passwordScreen.classList.remove('flex');
+                adminContent.classList.remove('hidden');
+                adminContent.classList.add('flex');
+                bodyContainer.classList.remove('justify-center');
+                bodyContainer.classList.add('justify-start');
+            } else {
+                passError.classList.remove('hidden');
+                passcodeIn.value = '';
+            }
+        };
+
+        verifyBtn.addEventListener('click', checkPasscode);
+        passcodeIn.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPasscode(); });
+
+        // --- Database & Storage Upload Logic ---
         const textInput = document.getElementById('update-text');
         const imageInput = document.getElementById('update-image');
         const fileNameDisplay = document.getElementById('file-name');
@@ -109,7 +190,7 @@
 
             try {
                 if (file) {
-                    statusText.textContent = "Uploading image to Firebase Storage...";
+                    statusText.textContent = "Uploading image...";
                     const uniqueFileName = `updates/${Date.now()}_${file.name}`;
                     const imageRef = storageRef(storage, uniqueFileName);
                     
@@ -117,7 +198,7 @@
                     downloadUrl = await getDownloadURL(snapshot.ref);
                 }
 
-                statusText.textContent = "Saving post to database...";
+                statusText.textContent = "Saving to database...";
 
                 await push(updatesRef, {
                     text: text,
