@@ -64,8 +64,19 @@
 
     <!-- The Actual Admin Content (Hidden until verified) -->
     <div id="admin-content" class="hidden w-full max-w-2xl mx-auto h-full flex-col justify-start">
-        <div class="flex items-center justify-between mb-8">
-            <h1 class="text-2xl font-semibold text-textMain tracking-tight">Admin Dashboard</h1>
+        
+        <!-- Admin Profile Header -->
+        <div class="flex items-center justify-between mb-8 pb-6 border-b border-border">
+            <div class="flex items-center gap-3.5">
+                <img src="IMG_0728.jpeg" alt="Brody Williams" class="w-12 h-12 rounded-full object-cover border border-border shrink-0">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-lg font-semibold text-textMain tracking-tight">Brody Williams</h1>
+                        <span class="text-[9px] uppercase tracking-wider bg-[var(--brand-color)]/10 text-[var(--brand-color)] border border-[var(--brand-color)]/20 px-1.5 py-0.5 rounded-md font-bold">Owner</span>
+                    </div>
+                    <p class="text-xs text-textMuted">Admin Command Center</p>
+                </div>
+            </div>
             <span class="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
                 <i class="ph ph-shield-check"></i> Secured
             </span>
@@ -138,7 +149,6 @@
                     <p class="text-sm text-textMuted max-w-xs">The account <b>${user.email}</b> does not have administrative privileges.</p>
                 `;
             } else {
-                // Email matches! Hide message, show password screen
                 authMessage.classList.add('hidden');
                 passwordScreen.classList.remove('hidden');
                 passwordScreen.classList.add('flex');
@@ -163,7 +173,7 @@
         verifyBtn.addEventListener('click', checkPasscode);
         passcodeIn.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPasscode(); });
 
-        // --- Database & Storage Upload Logic ---
+        // Database & Storage Upload Logic
         const textInput = document.getElementById('update-text');
         const imageInput = document.getElementById('update-image');
         const fileNameDisplay = document.getElementById('file-name');
