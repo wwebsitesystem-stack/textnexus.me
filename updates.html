@@ -92,12 +92,13 @@
                 item.className = 'bg-surface border border-border p-5 rounded-xl transition-all';
                 item.innerHTML = `
                     <div class="flex items-center gap-3 mb-3">
-                        <div class="w-8 h-8 rounded-full bg-border flex items-center justify-center text-textMuted shrink-0">
-                            <i class="ph ph-user text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-textMain">Admin</p>
-                            <p class="text-[11px] text-textMuted">${timeString}</p>
+                        <img src="IMG_0728.jpeg" alt="Brody Williams" class="w-10 h-10 rounded-full object-cover shrink-0 border border-border">
+                        <div class="flex flex-col">
+                            <div class="flex items-center gap-2">
+                                <p class="text-sm font-medium text-textMain">Brody Williams</p>
+                                <span class="text-[9px] uppercase tracking-wider bg-[var(--brand-color)]/10 text-[var(--brand-color)] border border-[var(--brand-color)]/20 px-1.5 py-0.5 rounded-md font-bold">Owner</span>
+                            </div>
+                            <p class="text-[11px] text-textMuted mt-0.5">${timeString}</p>
                         </div>
                     </div>
                     ${update.text ? `<p class="text-sm text-textMain whitespace-pre-wrap leading-relaxed">${update.text}</p>` : ''}
