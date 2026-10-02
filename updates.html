@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus — Updates</title>
+    <title>Workspace Updates - Nexus</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -18,6 +20,7 @@
                     colors: {
                         background: '#0a0a0a',
                         surface: '#121212',
+                        surfaceHover: '#1c1c1c',
                         border: '#262626',
                         textMain: '#ededed',
                         textMuted: '#a1a1aa'
@@ -27,32 +30,63 @@
         }
     </script>
     <style>
+        :root { --brand-color: #ededed; }
         body { background-color: transparent; color: #ededed; font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
+        
+        /* Subtle animation for new posts */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .update-card { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
-<body class="w-full h-full p-8 md:p-12 overflow-y-auto">
+<body class="w-full h-full flex flex-col overflow-hidden bg-background">
 
-    <div class="max-w-3xl mx-auto">
-        <div class="flex items-center justify-between mb-8">
-            <h1 class="text-2xl font-semibold text-textMain tracking-tight">Updates</h1>
-            <div class="flex items-center gap-2 text-xs text-textMuted">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live
+    <!-- Header -->
+    <header class="h-16 border-b border-border flex items-center px-8 bg-surface shrink-0 z-10 sticky top-0">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-[var(--brand-color)]/10 flex items-center justify-center text-[var(--brand-color)] border border-[var(--brand-color)]/20">
+                <i class="ph ph-bell-ringing text-lg"></i>
+            </div>
+            <div>
+                <h2 class="font-semibold text-textMain text-sm">Workspace Updates</h2>
+                <p class="text-[11px] text-textMuted">Official announcements and patch notes</p>
             </div>
         </div>
+    </header>
 
-        <!-- Read-Only Feed Container -->
-        <div id="updates-feed" class="flex flex-col gap-4">
-            <div class="text-sm text-textMuted">Loading workspace updates...</div>
+    <!-- Main Scrollable Area -->
+    <main class="flex-1 overflow-y-auto p-8 relative">
+        <div class="max-w-3xl mx-auto flex flex-col gap-6" id="updates-container">
+            
+            <!-- Loading State -->
+            <div id="loading-state" class="flex flex-col items-center justify-center py-20 text-textMuted gap-3">
+                <i class="ph ph-spinner animate-spin text-3xl"></i>
+                <p class="text-xs font-medium">Fetching updates...</p>
+            </div>
+
+            <!-- Empty State (Hidden by default) -->
+            <div id="empty-state" class="hidden flex-col items-center justify-center py-20 text-textMuted gap-3 text-center border border-dashed border-border rounded-xl bg-surface/50">
+                <i class="ph ph-envelope-simple-open text-4xl mb-2 opacity-50"></i>
+                <h3 class="text-sm font-semibold text-textMain">No Updates Yet</h3>
+                <p class="text-xs">Check back later for official announcements and patch notes.</p>
+            </div>
+
+            <!-- Posts inject here dynamically -->
+            <div id="posts-list" class="flex flex-col gap-6"></div>
+
         </div>
-    </div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getDatabase, ref as dbRef, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
             authDomain: "nexus-web-development-official.firebaseapp.com",
@@ -62,55 +96,87 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const updatesRef = dbRef(db, 'workspace_updates');
-        const feedContainer = document.getElementById('updates-feed');
 
-        // Real-time Feed Listener
-        onValue(updatesRef, (snapshot) => {
-            feedContainer.innerHTML = ''; 
-            const data = snapshot.val();
+        const container = document.getElementById('posts-list');
+        const loadingState = document.getElementById('loading-state');
+        const emptyState = document.getElementById('empty-state');
+
+        // Helper: Format Timestamp
+        function formatTime(timestamp) {
+            if (!timestamp) return 'Just now';
+            const date = new Date(timestamp);
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+        }
+
+        // Listen for Updates
+        onValue(dbRef(db, 'workspace_updates'), (snapshot) => {
+            loadingState.classList.add('hidden');
+            container.innerHTML = '';
             
+            const data = snapshot.val();
+
             if (!data) {
-                feedContainer.innerHTML = '<div class="p-8 text-center text-sm text-textMuted bg-surface rounded-xl border border-border">No updates posted yet.</div>';
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
                 return;
             }
 
-            const updatesArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-            updatesArray.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            emptyState.classList.add('hidden');
+            emptyState.classList.remove('flex');
 
-            updatesArray.forEach(update => {
-                const timeString = update.timestamp 
-                    ? new Date(update.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' }) 
-                    : 'Just now';
+            // Convert to array and sort newest first
+            const posts = Object.keys(data)
+                .map(key => ({ id: key, ...data[key] }))
+                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            posts.forEach((post, index) => {
+                const article = document.createElement('article');
+                article.className = 'update-card bg-surface border border-border rounded-xl p-6 shadow-xl relative overflow-hidden';
+                article.style.animationDelay = `${index * 0.05}s`; // Staggered fade in
                 
-                let imageHtml = '';
-                if (update.imageUrl) {
-                    imageHtml = `<img src="${update.imageUrl}" loading="lazy" class="mt-4 rounded-lg border border-border max-w-full md:max-w-md object-cover">`;
-                }
+                // Add brand color accent bar
+                const accentBar = document.createElement('div');
+                accentBar.className = 'absolute top-0 left-0 w-full h-1 bg-[var(--brand-color)] opacity-80';
+                article.appendChild(accentBar);
 
-                const item = document.createElement('div');
-                item.className = 'bg-surface border border-border p-5 rounded-xl transition-all';
-                item.innerHTML = `
-                    <div class="flex items-center gap-3 mb-3">
-                        <img src="IMG_0728.jpeg" alt="Brody Williams" class="w-10 h-10 rounded-full object-cover shrink-0 border border-border">
-                        <div class="flex flex-col">
-                            <div class="flex items-center gap-2">
-                                <p class="text-sm font-medium text-textMain">Brody Williams</p>
-                                <span class="text-[9px] uppercase tracking-wider bg-[var(--brand-color)]/10 text-[var(--brand-color)] border border-[var(--brand-color)]/20 px-1.5 py-0.5 rounded-md font-bold">Owner</span>
-                            </div>
-                            <p class="text-[11px] text-textMuted mt-0.5">${timeString}</p>
-                        </div>
+                article.innerHTML += `
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <h3 class="text-base font-bold text-textMain leading-tight">${post.title}</h3>
+                        <span class="shrink-0 text-[10px] font-mono text-textMuted bg-surfaceHover px-2 py-1 rounded border border-border flex items-center gap-1.5">
+                            <i class="ph ph-clock"></i> ${formatTime(post.timestamp)}
+                        </span>
                     </div>
-                    ${update.text ? `<p class="text-sm text-textMain whitespace-pre-wrap leading-relaxed">${update.text}</p>` : ''}
-                    ${imageHtml}
+                    
+                    <div class="text-sm text-textMuted leading-relaxed whitespace-pre-wrap mb-6 border-l-2 border-border pl-4">
+                        ${post.content}
+                    </div>
+                    
+                    <div class="flex items-center gap-2 border-t border-border pt-4">
+                        <div class="w-6 h-6 rounded-full bg-surfaceHover border border-border flex items-center justify-center text-textMuted">
+                            <i class="ph ph-user text-xs"></i>
+                        </div>
+                        <p class="text-xs text-textMuted font-medium">
+                            Posted by <span class="text-textMain">${post.authorName || 'Nexus Admin'}</span>
+                        </p>
+                        ${post.authorEmail === 'brodywilliams0226@gmail.com' ? 
+                            `<span class="ml-2 text-[9px] bg-[var(--brand-color)]/10 text-[var(--brand-color)] border border-[var(--brand-color)]/20 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">System Owner</span>` 
+                            : ''
+                        }
+                    </div>
                 `;
-                feedContainer.appendChild(item);
+                container.appendChild(article);
             });
         });
 
-        // Theme sync listener
+        // Theme Sync
         const savedColor = localStorage.getItem('nexus-brand-color');
-        if(savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
+        if (savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
         window.addEventListener('message', (event) => {
             if (event.data && event.data.type === 'update-theme') {
                 document.documentElement.style.setProperty('--brand-color', event.data.color);
