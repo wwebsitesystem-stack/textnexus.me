@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TextNexus</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        background: '#0a0a0a',
+                        surface: '#121212',
+                        surfaceHover: '#1c1c1c',
+                        border: '#262626',
+                        textMain: '#ededed',
+                        textMuted: '#a1a1aa'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: transparent; color: #ededed; font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
+        .chat-active { background-color: #1c1c1c; border-color: var(--brand-color); }
+    </style>
+</head>
+<body class="w-full h-full flex overflow-hidden">
+
+    <!-- Chat Sidebar (Channels) -->
+    <aside class="w-64 border-r border-border bg-background flex flex-col h-full shrink-0">
+        <div class="p-4 border-b border-border flex items-center justify-between">
+            <h2 class="font-semibold text-textMain text-sm">Chats</h2>
+            <button id="create-chat-btn" class="w-7 h-7 rounded-lg bg-surface hover:bg-surfaceHover border border-border flex items-center justify-center text-textMuted hover:text-textMain transition-colors">
+                <i class="ph ph-plus"></i>
+            </button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto p-2 flex flex-col gap-1" id="chat-list">
+            <!-- Global Chat (Always pinned) -->
+            <button onclick="loadChat('global', 'Global Chat')" class="w-full text-left p-3 rounded-lg chat-active border border-transparent flex items-center gap-3 group transition-colors">
+                <div class="w-8 h-8 rounded-full bg-[var(--brand-color)]/10 text-[var(--brand-color)] flex items-center justify-center shrink-0">
+                    <i class="ph ph-globe-hemisphere text-lg"></i>
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-sm font-medium text-textMain truncate">Global Chat</p>
+                    <p class="text-[11px] text-textMuted truncate">Public channel</p>
+                </div>
+            </button>
+            <!-- Future custom chats will inject here -->
+        </div>
+    </aside>
+
+    <!-- Main Chat Window -->
+    <main class="flex-1 flex flex-col bg-surface h-full relative">
+        
+        <!-- Chat Header -->
+        <header class="h-16 border-b border-border flex items-center justify-between px-6 bg-surface shrink-0 z-10">
+            <div class="flex items-center gap-3">
+                <i class="ph ph-hash text-textMuted text-xl"></i>
+                <h2 id="current-chat-title" class="font-semibold text-textMain">Global Chat</h2>
+            </div>
+            <div class="flex items-center gap-2">
+                <button class="w-8 h-8 rounded-lg hover:bg-surfaceHover flex items-center justify-center text-textMuted opacity-50 cursor-not-allowed transition-colors" title="Calling coming soon">
+                    <i class="ph ph-phone text-lg"></i>
+                </button>
+                <button id="chat-settings-btn" class="hidden w-8 h-8 rounded-lg hover:bg-surfaceHover flex items-center justify-center text-textMuted transition-colors">
+                    <i class="ph ph-dots-three text-xl"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Messages Area -->
+        <div id="messages-container" class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+            <div class="text-center text-xs text-textMuted my-4">Welcome to TextNexus</div>
+        </div>
+
+        <!-- Input Box -->
+        <div class="p-4 border-t border-border bg-background">
+            <div class="max-w-4xl mx-auto relative flex items-center">
+                <input type="text" id="message-input" placeholder="Type a message..." disabled class="w-full bg-surface border border-border rounded-xl py-3 pl-4 pr-12 outline-none text-sm text-textMain focus:border-textMuted transition-colors disabled:opacity-50">
+                <button id="send-btn" disabled class="absolute right-2 w-8 h-8 bg-textMain text-background rounded-lg flex items-center justify-center disabled:opacity-50 hover:opacity-90 transition-opacity">
+                    <i class="ph ph-paper-plane-right text-sm"></i>
+                </button>
+            </div>
+            <p id="login-warning" class="text-center text-[11px] text-textMuted mt-2 hidden">You must log in from the sidebar to send messages.</p>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref as dbRef, push, onValue, serverTimestamp, off } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
+            authDomain: "nexus-web-development-official.firebaseapp.com",
+            projectId: "nexus-web-development-official",
+            databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com" 
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUser = null;
+        let activeChatId = 'global';
+        let currentListener = null;
+
+        const messagesContainer = document.getElementById('messages-container');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const loginWarning = document.getElementById('login-warning');
+        const chatTitle = document.getElementById('current-chat-title');
+
+        // Check Auth Status
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                loginWarning.classList.add('hidden');
+                messageInput.placeholder = `Message as ${user.displayName}...`;
+            } else {
+                messageInput.disabled = true;
+                sendBtn.disabled = true;
+                loginWarning.classList.remove('hidden');
+                messageInput.placeholder = "Log in to chat";
+            }
+        });
+
+        // Load Chat Function
+        window.loadChat = (chatId, title) => {
+            activeChatId = chatId;
+            chatTitle.textContent = title;
+            messagesContainer.innerHTML = '<div class="text-center text-xs text-textMuted my-4"><i class="ph ph-spinner animate-spin text-lg"></i> Loading messages...</div>';
+            
+            // Remove old listener if exists
+            if (currentListener) off(currentListener);
+
+            const chatRef = dbRef(db, `textnexus/chats/${chatId}/messages`);
+            currentListener = chatRef;
+
+            onValue(chatRef, (snapshot) => {
+                messagesContainer.innerHTML = '';
+                const data = snapshot.val();
+                if (!data) {
+                    messagesContainer.innerHTML = '<div class="text-center text-xs text-textMuted my-4">No messages yet. Say hi!</div>';
+                    return;
+                }
+
+                // Sort by timestamp
+                const msgs = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+                msgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+                msgs.forEach(msg => {
+                    const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Now';
+                    
+                    // Determine if sender is Owner
+                    let badgeHtml = '';
+                    if (msg.email === 'brodywilliams0226@gmail.com') {
+                        badgeHtml = `<span class="ml-2 text-[9px] uppercase tracking-wider bg-[var(--brand-color)]/10 text-[var(--brand-color)] border border-[var(--brand-color)]/20 px-1.5 py-0.5 rounded-md font-bold">Owner</span>`;
+                    }
+
+                    const isMe = currentUser && msg.email === currentUser.email;
+                    
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = `flex items-start gap-3 max-w-2xl ${isMe ? 'ml-auto flex-row-reverse' : ''}`;
+                    msgDiv.innerHTML = `
+                        <img src="${msg.photoURL || 'https://placehold.co/100'}" alt="User" class="w-9 h-9 rounded-full object-cover shrink-0 border border-border">
+                        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-sm font-medium text-textMain">${msg.name}</span>
+                                ${!isMe ? badgeHtml : ''}
+                                <span class="text-[10px] text-textMuted">${time}</span>
+                            </div>
+                            <div class="bg-${isMe ? '[var(--brand-color)] text-background' : 'background border border-border text-textMain'} px-4 py-2.5 rounded-2xl ${isMe ? 'rounded-tr-sm' : 'rounded-tl-sm'} text-sm leading-relaxed">
+                                ${msg.text}
+                            </div>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(msgDiv);
+                });
+                // Auto scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        };
+
+        // Send Message
+        const sendMessage = async () => {
+            const text = messageInput.value.trim();
+            if (!text || !currentUser) return;
+
+            messageInput.value = '';
+            messageInput.focus();
+
+            const chatRef = dbRef(db, `textnexus/chats/${activeChatId}/messages`);
+            
+            // Custom Profile Picture override for Owner
+            let customPhoto = currentUser.photoURL;
+            if (currentUser.email === 'brodywilliams0226@gmail.com') {
+                customPhoto = 'IMG_0728.jpeg'; // Uses your local admin photo if sent by owner
+            }
+
+            await push(chatRef, {
+                text: text,
+                uid: currentUser.uid,
+                email: currentUser.email,
+                name: currentUser.displayName?.split(' ')[0] || 'User',
+                photoURL: customPhoto,
+                timestamp: serverTimestamp()
+            });
+        };
+
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+        // Initialize Global Chat by default
+        loadChat('global', 'Global Chat');
+
+        // Theme sync listener
+        const savedColor = localStorage.getItem('nexus-brand-color');
+        if(savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'update-theme') {
+                document.documentElement.style.setProperty('--brand-color', event.data.color);
+            }
+        });
+    </script>
+</body>
+</html>
