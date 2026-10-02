@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TextNexus</title>
     
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -28,28 +30,34 @@
         }
     </script>
     <style>
-        body { background-color: transparent; color: #ededed; font-family: 'Inter', sans-serif; }
+        body { background-color: #0a0a0a; color: #ededed; font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
-        .chat-active { background-color: #1c1c1c; border-color: var(--brand-color); }
+        .chat-active { background-color: #1c1c1c; border-color: #3f3f46; }
     </style>
 </head>
-<body class="w-full h-full flex overflow-hidden">
+<body class="w-screen h-screen flex overflow-hidden bg-background">
 
-    <!-- Chat Sidebar (Channels) -->
+    <!-- Chat Sidebar -->
     <aside class="w-64 border-r border-border bg-background flex flex-col h-full shrink-0">
         <div class="p-4 border-b border-border flex items-center justify-between">
             <h2 class="font-semibold text-textMain text-sm">Chats</h2>
-            <button id="create-chat-btn" class="w-7 h-7 rounded-lg bg-surface hover:bg-surfaceHover border border-border flex items-center justify-center text-textMuted hover:text-textMain transition-colors">
-                <i class="ph ph-plus"></i>
-            </button>
+            <div class="flex items-center gap-1">
+                <button onclick="openModal('join-modal')" class="p-1.5 rounded-lg bg-surface hover:bg-surfaceHover border border-border text-textMuted hover:text-textMain transition-colors" title="Join with Code">
+                    <i class="ph ph-keyhole text-sm"></i>
+                </button>
+                <button onclick="openModal('create-modal')" class="p-1.5 rounded-lg bg-surface hover:bg-surfaceHover border border-border text-textMuted hover:text-textMain transition-colors" title="Create Group Chat">
+                    <i class="ph ph-plus text-sm"></i>
+                </button>
+            </div>
         </div>
         
+        <!-- Channels List -->
         <div class="flex-1 overflow-y-auto p-2 flex flex-col gap-1" id="chat-list">
-            <!-- Global Chat (Always pinned) -->
-            <button onclick="loadChat('global', 'Global Chat')" class="w-full text-left p-3 rounded-lg chat-active border border-transparent flex items-center gap-3 group transition-colors">
-                <div class="w-8 h-8 rounded-full bg-[var(--brand-color)]/10 text-[var(--brand-color)] flex items-center justify-center shrink-0">
+            <!-- Global Chat (Default Pinned) -->
+            <button id="btn-global" onclick="loadChat('global', 'Global Chat')" class="w-full text-left p-3 rounded-xl chat-active border border-transparent flex items-center gap-3 group transition-colors">
+                <div class="w-8 h-8 rounded-full bg-textMain/10 text-textMain flex items-center justify-center shrink-0">
                     <i class="ph ph-globe-hemisphere text-lg"></i>
                 </div>
                 <div class="flex-1 overflow-hidden">
@@ -57,37 +65,47 @@
                     <p class="text-[11px] text-textMuted truncate">Public channel</p>
                 </div>
             </button>
-            <!-- Future custom chats will inject here -->
+            <!-- Custom group chats will inject here -->
         </div>
     </aside>
 
-    <!-- Main Chat Window -->
-    <main class="flex-1 flex flex-col bg-surface h-full relative">
+    <!-- Main Workspace (Chat Area) -->
+    <main class="flex-1 flex flex-col h-full bg-surface relative overflow-hidden">
         
         <!-- Chat Header -->
         <header class="h-16 border-b border-border flex items-center justify-between px-6 bg-surface shrink-0 z-10">
             <div class="flex items-center gap-3">
                 <i class="ph ph-hash text-textMuted text-xl"></i>
-                <h2 id="current-chat-title" class="font-semibold text-textMain">Global Chat</h2>
+                <div>
+                    <h2 id="current-chat-title" class="font-semibold text-textMain text-sm">Global Chat</h2>
+                    <p id="invite-code-display" class="text-[10px] text-textMuted hidden">Invite Code: <span id="code-value" class="font-mono text-textMain font-bold"></span></p>
+                </div>
             </div>
+            
             <div class="flex items-center gap-2">
+                <!-- Calling Coming Soon -->
                 <button class="w-8 h-8 rounded-lg hover:bg-surfaceHover flex items-center justify-center text-textMuted opacity-50 cursor-not-allowed transition-colors" title="Calling coming soon">
                     <i class="ph ph-phone text-lg"></i>
                 </button>
-                <button id="chat-settings-btn" class="hidden w-8 h-8 rounded-lg hover:bg-surfaceHover flex items-center justify-center text-textMuted transition-colors">
+                <!-- Chat Settings (For Chat Owner) -->
+                <button id="chat-settings-btn" onclick="openModal('settings-chat-modal')" class="hidden w-8 h-8 rounded-lg hover:bg-surfaceHover flex items-center justify-center text-textMuted transition-colors">
                     <i class="ph ph-dots-three text-xl"></i>
                 </button>
             </div>
         </header>
 
-        <!-- Messages Area -->
-        <div id="messages-container" class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+        <!-- Scrollable Messages Container -->
+        <div id="messages-container" class="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
             <div class="text-center text-xs text-textMuted my-4">Welcome to TextNexus</div>
         </div>
 
-        <!-- Input Box -->
-        <div class="p-4 border-t border-border bg-background">
-            <div class="max-w-4xl mx-auto relative flex items-center">
+        <!-- Pinned Input Box at Bottom -->
+        <div class="p-4 border-t border-border bg-background shrink-0">
+            <div id="disabled-notice" class="hidden text-center py-2 text-xs text-red-400 font-medium">
+                <i class="ph ph-lock-key"></i> This chat has been disabled by the owner.
+            </div>
+
+            <div id="input-wrapper" class="max-w-4xl mx-auto relative flex items-center">
                 <input type="text" id="message-input" placeholder="Type a message..." disabled class="w-full bg-surface border border-border rounded-xl py-3 pl-4 pr-12 outline-none text-sm text-textMain focus:border-textMuted transition-colors disabled:opacity-50">
                 <button id="send-btn" disabled class="absolute right-2 w-8 h-8 bg-textMain text-background rounded-lg flex items-center justify-center disabled:opacity-50 hover:opacity-90 transition-opacity">
                     <i class="ph ph-paper-plane-right text-sm"></i>
@@ -97,10 +115,57 @@
         </div>
     </main>
 
+    <!-- Create Group Chat Modal -->
+    <div id="create-modal" class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center opacity-0 pointer-events-none transition-opacity">
+        <div class="bg-surface border border-border rounded-xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4">
+            <h3 class="font-medium text-textMain text-base">Create Group Chat</h3>
+            <div>
+                <label class="text-xs text-textMuted mb-1 block">Group Name</label>
+                <input type="text" id="new-group-name" placeholder="e.g. Project Team" class="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm text-textMain outline-none focus:border-textMuted">
+            </div>
+            <div class="flex justify-end gap-2 mt-2">
+                <button onclick="closeModal('create-modal')" class="px-3 py-1.5 rounded-lg text-xs text-textMuted hover:text-textMain">Cancel</button>
+                <button id="confirm-create-btn" class="px-4 py-1.5 rounded-lg text-xs bg-textMain text-background font-medium hover:opacity-90">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Join Group Chat Modal -->
+    <div id="join-modal" class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center opacity-0 pointer-events-none transition-opacity">
+        <div class="bg-surface border border-border rounded-xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4">
+            <h3 class="font-medium text-textMain text-base">Join Group Chat</h3>
+            <div>
+                <label class="text-xs text-textMuted mb-1 block">Enter 6-Character Code</label>
+                <input type="text" id="join-code-input" placeholder="e.g. X8K2P9" uppercase class="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm text-textMain uppercase outline-none focus:border-textMuted font-mono">
+            </div>
+            <div class="flex justify-end gap-2 mt-2">
+                <button onclick="closeModal('join-modal')" class="px-3 py-1.5 rounded-lg text-xs text-textMuted hover:text-textMain">Cancel</button>
+                <button id="confirm-join-btn" class="px-4 py-1.5 rounded-lg text-xs bg-textMain text-background font-medium hover:opacity-90">Join</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Settings Modal (Owner Controls) -->
+    <div id="settings-chat-modal" class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center opacity-0 pointer-events-none transition-opacity">
+        <div class="bg-surface border border-border rounded-xl w-full max-w-sm p-6 shadow-2xl flex flex-col gap-4">
+            <h3 class="font-medium text-textMain text-base">Chat Management</h3>
+            <p class="text-xs text-textMuted">As the owner of this group chat, you can control its status or delete it entirely.</p>
+            <div class="flex flex-col gap-2 mt-2">
+                <button id="toggle-disable-btn" class="w-full py-2 rounded-lg border border-border bg-background hover:bg-surfaceHover text-xs text-textMain font-medium transition-colors">
+                    Disable Chat
+                </button>
+                <button id="delete-chat-btn" class="w-full py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 text-xs font-medium transition-colors">
+                    Delete Group Chat
+                </button>
+            </div>
+            <button onclick="closeModal('settings-chat-modal')" class="mt-2 text-xs text-textMuted hover:text-textMain text-center">Close</button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref as dbRef, push, onValue, serverTimestamp, off } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getDatabase, ref as dbRef, push, set, onValue, serverTimestamp, off, update, remove, get } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
@@ -115,13 +180,24 @@
 
         let currentUser = null;
         let activeChatId = 'global';
-        let currentListener = null;
+        let currentChatData = null;
+        let currentMessagesListener = null;
 
         const messagesContainer = document.getElementById('messages-container');
         const messageInput = document.getElementById('message-input');
         const sendBtn = document.getElementById('send-btn');
         const loginWarning = document.getElementById('login-warning');
         const chatTitle = document.getElementById('current-chat-title');
+        const inviteCodeDisplay = document.getElementById('invite-code-display');
+        const codeValue = document.getElementById('code-value');
+        const chatSettingsBtn = document.getElementById('chat-settings-btn');
+        const chatList = document.getElementById('chat-list');
+        const disabledNotice = document.getElementById('disabled-notice');
+        const inputWrapper = document.getElementById('input-wrapper');
+
+        // Modal Helpers
+        window.openModal = (id) => document.getElementById(id).classList.remove('opacity-0', 'pointer-events-none');
+        window.closeModal = (id) => document.getElementById(id).classList.add('opacity-0', 'pointer-events-none');
 
         // Check Auth Status
         onAuthStateChanged(auth, (user) => {
@@ -135,63 +211,127 @@
                 messageInput.disabled = true;
                 sendBtn.disabled = true;
                 loginWarning.classList.remove('hidden');
-                messageInput.placeholder = "Log in to chat";
+                messageInput.placeholder = "Log in from sidebar to chat";
             }
+            listenToUserChats();
         });
 
-        // Load Chat Function
+        // Listen for joined/created group chats
+        function listenToUserChats() {
+            const chatsRef = dbRef(db, 'textnexus/chats');
+            onValue(chatsRef, (snapshot) => {
+                const data = snapshot.val();
+                
+                // Clear extra chats (preserve Global)
+                const globalBtn = document.getElementById('btn-global');
+                chatList.innerHTML = '';
+                chatList.appendChild(globalBtn);
+
+                if (!data) return;
+
+                Object.keys(data).forEach(chatId => {
+                    if (chatId === 'global') return;
+                    const chat = data[chatId];
+                    
+                    // Show if user is owner or member
+                    const isOwner = currentUser && (chat.createdBy === currentUser.uid || currentUser.email === 'brodywilliams0226@gmail.com');
+                    const isMember = currentUser && chat.members && chat.members[currentUser.uid];
+
+                    if (isOwner || isMember) {
+                        const btn = document.createElement('button');
+                        btn.onclick = () => loadChat(chatId, chat.name);
+                        btn.className = `w-full text-left p-3 rounded-xl border border-transparent flex items-center gap-3 transition-colors ${activeChatId === chatId ? 'chat-active' : 'hover:bg-surfaceHover'}`;
+                        btn.innerHTML = `
+                            <div class="w-8 h-8 rounded-full bg-border flex items-center justify-center shrink-0 text-textMuted">
+                                <i class="ph ph-users text-sm"></i>
+                            </div>
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-sm font-medium text-textMain truncate">${chat.name}</p>
+                                <p class="text-[11px] text-textMuted truncate">Code: ${chat.code}</p>
+                            </div>
+                        `;
+                        chatList.appendChild(btn);
+                    }
+                });
+            });
+        }
+
+        // Load Active Chat
         window.loadChat = (chatId, title) => {
             activeChatId = chatId;
             chatTitle.textContent = title;
             messagesContainer.innerHTML = '<div class="text-center text-xs text-textMuted my-4"><i class="ph ph-spinner animate-spin text-lg"></i> Loading messages...</div>';
             
-            // Remove old listener if exists
-            if (currentListener) off(currentListener);
+            if (currentMessagesListener) off(currentMessagesListener);
 
-            const chatRef = dbRef(db, `textnexus/chats/${chatId}/messages`);
-            currentListener = chatRef;
-
+            const chatRef = dbRef(db, `textnexus/chats/${chatId}`);
             onValue(chatRef, (snapshot) => {
-                messagesContainer.innerHTML = '';
-                const data = snapshot.val();
-                if (!data) {
-                    messagesContainer.innerHTML = '<div class="text-center text-xs text-textMuted my-4">No messages yet. Say hi!</div>';
-                    return;
-                }
+                currentChatData = snapshot.val();
 
-                // Sort by timestamp
-                const msgs = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-                msgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                // Handle global or missing
+                if (chatId === 'global') {
+                    inviteCodeDisplay.classList.add('hidden');
+                    chatSettingsBtn.classList.add('hidden');
+                    inputWrapper.classList.remove('hidden');
+                    disabledNotice.classList.add('hidden');
+                } else if (currentChatData) {
+                    inviteCodeDisplay.classList.remove('hidden');
+                    codeValue.textContent = currentChatData.code;
 
-                msgs.forEach(msg => {
-                    const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Now';
-                    
-                    // Determine if sender is Owner
-                    let badgeHtml = '';
-                    if (msg.email === 'brodywilliams0226@gmail.com') {
-                        badgeHtml = `<span class="ml-2 text-[9px] uppercase tracking-wider bg-[var(--brand-color)]/10 text-[var(--brand-color)] border border-[var(--brand-color)]/20 px-1.5 py-0.5 rounded-md font-bold">Owner</span>`;
+                    // Owner permissions check
+                    const isOwner = currentUser && (currentChatData.createdBy === currentUser.uid || currentUser.email === 'brodywilliams0226@gmail.com');
+                    if (isOwner) chatSettingsBtn.classList.remove('hidden');
+                    else chatSettingsBtn.classList.add('hidden');
+
+                    // Disabled status check
+                    if (currentChatData.disabled) {
+                        inputWrapper.classList.add('hidden');
+                        disabledNotice.classList.remove('hidden');
+                    } else {
+                        inputWrapper.classList.remove('hidden');
+                        disabledNotice.classList.add('hidden');
                     }
 
-                    const isMe = currentUser && msg.email === currentUser.email;
-                    
-                    const msgDiv = document.createElement('div');
-                    msgDiv.className = `flex items-start gap-3 max-w-2xl ${isMe ? 'ml-auto flex-row-reverse' : ''}`;
-                    msgDiv.innerHTML = `
-                        <img src="${msg.photoURL || 'https://placehold.co/100'}" alt="User" class="w-9 h-9 rounded-full object-cover shrink-0 border border-border">
-                        <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-sm font-medium text-textMain">${msg.name}</span>
-                                ${!isMe ? badgeHtml : ''}
-                                <span class="text-[10px] text-textMuted">${time}</span>
+                    // Update toggle button text in modal
+                    document.getElementById('toggle-disable-btn').textContent = currentChatData.disabled ? 'Enable Chat' : 'Disable Chat';
+                }
+
+                // Render Messages
+                const msgs = currentChatData && currentChatData.messages ? currentChatData.messages : {};
+                messagesContainer.innerHTML = '';
+
+                const sortedMsgs = Object.keys(msgs).map(k => ({ id: k, ...msgs[k] })).sort((a,b) => (a.timestamp||0) - (b.timestamp||0));
+
+                if (sortedMsgs.length === 0) {
+                    messagesContainer.innerHTML = '<div class="text-center text-xs text-textMuted my-4">No messages yet. Say hi!</div>';
+                } else {
+                    sortedMsgs.forEach(msg => {
+                        const time = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Now';
+                        let badgeHtml = '';
+                        if (msg.email === 'brodywilliams0226@gmail.com') {
+                            badgeHtml = `<span class="ml-2 text-[9px] uppercase tracking-wider bg-textMain/10 text-textMain border border-textMain/20 px-1.5 py-0.5 rounded-md font-bold">Owner</span>`;
+                        }
+
+                        const isMe = currentUser && msg.email === currentUser.email;
+
+                        const msgDiv = document.createElement('div');
+                        msgDiv.className = `flex items-start gap-3 max-w-2xl ${isMe ? 'ml-auto flex-row-reverse' : ''}`;
+                        msgDiv.innerHTML = `
+                            <img src="${msg.photoURL || 'https://placehold.co/100'}" class="w-8 h-8 rounded-full object-cover shrink-0 border border-border">
+                            <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-xs font-medium text-textMain">${msg.name}</span>
+                                    ${!isMe ? badgeHtml : ''}
+                                    <span class="text-[10px] text-textMuted">${time}</span>
+                                </div>
+                                <div class="bg-${isMe ? 'textMain text-background' : 'background border border-border text-textMain'} px-4 py-2 rounded-2xl ${isMe ? 'rounded-tr-sm' : 'rounded-tl-sm'} text-sm leading-relaxed">
+                                    ${msg.text}
+                                </div>
                             </div>
-                            <div class="bg-${isMe ? '[var(--brand-color)] text-background' : 'background border border-border text-textMain'} px-4 py-2.5 rounded-2xl ${isMe ? 'rounded-tr-sm' : 'rounded-tl-sm'} text-sm leading-relaxed">
-                                ${msg.text}
-                            </div>
-                        </div>
-                    `;
-                    messagesContainer.appendChild(msgDiv);
-                });
-                // Auto scroll to bottom
+                        `;
+                        messagesContainer.appendChild(msgDiv);
+                    });
+                }
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             });
         };
@@ -200,24 +340,18 @@
         const sendMessage = async () => {
             const text = messageInput.value.trim();
             if (!text || !currentUser) return;
+            if (currentChatData && currentChatData.disabled) return;
 
             messageInput.value = '';
             messageInput.focus();
 
-            const chatRef = dbRef(db, `textnexus/chats/${activeChatId}/messages`);
-            
-            // Custom Profile Picture override for Owner
-            let customPhoto = currentUser.photoURL;
-            if (currentUser.email === 'brodywilliams0226@gmail.com') {
-                customPhoto = 'IMG_0728.jpeg'; // Uses your local admin photo if sent by owner
-            }
-
-            await push(chatRef, {
+            const msgRef = dbRef(db, `textnexus/chats/${activeChatId}/messages`);
+            await push(msgRef, {
                 text: text,
                 uid: currentUser.uid,
                 email: currentUser.email,
                 name: currentUser.displayName?.split(' ')[0] || 'User',
-                photoURL: customPhoto,
+                photoURL: currentUser.photoURL,
                 timestamp: serverTimestamp()
             });
         };
@@ -225,17 +359,83 @@
         sendBtn.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
-        // Initialize Global Chat by default
-        loadChat('global', 'Global Chat');
+        // Create Group Chat Handler
+        document.getElementById('confirm-create-btn').addEventListener('click', async () => {
+            const name = document.getElementById('new-group-name').value.trim();
+            if (!name || !currentUser) return;
 
-        // Theme sync listener
-        const savedColor = localStorage.getItem('nexus-brand-color');
-        if(savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
-        window.addEventListener('message', (event) => {
-            if (event.data && event.data.type === 'update-theme') {
-                document.documentElement.style.setProperty('--brand-color', event.data.color);
+            const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const newChatRef = push(dbRef(db, 'textnexus/chats'));
+
+            await set(newChatRef, {
+                name: name,
+                code: inviteCode,
+                createdBy: currentUser.uid,
+                createdEmail: currentUser.email,
+                disabled: false,
+                members: {
+                    [currentUser.uid]: true
+                }
+            });
+
+            document.getElementById('new-group-name').value = '';
+            closeModal('create-modal');
+            loadChat(newChatRef.key, name);
+        });
+
+        // Join Group Chat Handler
+        document.getElementById('confirm-join-btn').addEventListener('click', async () => {
+            const codeInput = document.getElementById('join-code-input').value.trim().toUpperCase();
+            if (!codeInput || !currentUser) return;
+
+            const chatsRef = dbRef(db, 'textnexus/chats');
+            const snapshot = await get(chatsRef);
+            const chats = snapshot.val();
+
+            let foundChatId = null;
+            let foundChatName = '';
+
+            if (chats) {
+                Object.keys(chats).forEach(id => {
+                    if (chats[id].code === codeInput) {
+                        foundChatId = id;
+                        foundChatName = chats[id].name;
+                    }
+                });
+            }
+
+            if (foundChatId) {
+                await update(dbRef(db, `textnexus/chats/${foundChatId}/members`), {
+                    [currentUser.uid]: true
+                });
+                document.getElementById('join-code-input').value = '';
+                closeModal('join-modal');
+                loadChat(foundChatId, foundChatName);
+            } else {
+                alert('Invalid invite code. Please try again.');
             }
         });
+
+        // Toggle Disable Chat
+        document.getElementById('toggle-disable-btn').addEventListener('click', async () => {
+            if (!activeChatId || activeChatId === 'global') return;
+            const newStatus = !currentChatData.disabled;
+            await update(dbRef(db, `textnexus/chats/${activeChatId}`), { disabled: newStatus });
+            closeModal('settings-chat-modal');
+        });
+
+        // Delete Chat
+        document.getElementById('delete-chat-btn').addEventListener('click', async () => {
+            if (!activeChatId || activeChatId === 'global') return;
+            if (confirm('Are you sure you want to delete this chat? This cannot be undone.')) {
+                await remove(dbRef(db, `textnexus/chats/${activeChatId}`));
+                closeModal('settings-chat-modal');
+                loadChat('global', 'Global Chat');
+            }
+        });
+
+        // Initialize Global Chat
+        loadChat('global', 'Global Chat');
     </script>
 </body>
 </html>
