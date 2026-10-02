@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus — Home</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -18,149 +18,58 @@
                     colors: {
                         background: '#0a0a0a',
                         surface: '#121212',
-                        surfaceHover: '#1c1c1c',
                         border: '#262626',
                         textMain: '#ededed',
-                        textMuted: '#a1a1aa',
-                        brand: 'var(--brand-color)'
+                        textMuted: '#a1a1aa'
                     }
                 }
             }
         }
     </script>
-
     <style>
-        :root { --brand-color: #ededed; }
         body { background-color: transparent; color: #ededed; font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="w-full h-full p-8 md:p-12 overflow-y-auto fade-in">
+<body class="w-full h-full p-8 md:p-12 overflow-y-auto">
 
-    <div class="max-w-5xl mx-auto">
-        
-        <!-- Header -->
-        <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
-            <div>
-                <p id="date-display" class="text-xs font-semibold text-textMuted uppercase tracking-wider mb-2"></p>
-                <h1 id="greeting-display" class="text-3xl font-semibold text-textMain tracking-tight">Good evening</h1>
-            </div>
-        </header>
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-semibold text-textMain tracking-tight mb-8">Overview</h1>
 
-        <!-- Post New Update to Firebase -->
-        <div class="mb-10 bg-surface border border-border p-4 rounded-xl flex gap-3 items-center">
-            <div class="w-8 h-8 rounded-full bg-border flex items-center justify-center text-textMuted shrink-0">
-                <i class="ph ph-text-t"></i>
-            </div>
-            <input type="text" id="new-update-input" placeholder="Post a new update to the database..." class="flex-1 bg-transparent border-none outline-none text-sm text-textMain placeholder:text-textMuted">
-            <button id="post-update-btn" class="px-4 py-2 rounded-lg bg-textMain text-background hover:opacity-90 text-sm font-medium transition-opacity">
-                Post
-            </button>
-        </div>
-
-        <!-- Live Activity Log -->
-        <div>
-            <h2 class="text-sm font-medium text-textMain mb-4 flex items-center gap-2">
-                Live Updates <span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
-            </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             
-            <!-- Container for Firebase Data -->
-            <div id="activity-feed" class="bg-surface border border-border rounded-xl divide-y divide-border">
-                <div class="p-4 text-sm text-textMuted">Loading updates from Firebase...</div>
+            <!-- Welcome Widget -->
+            <div class="bg-surface border border-border p-6 rounded-xl flex flex-col justify-between h-48">
+                <div>
+                    <h2 class="text-sm font-medium text-textMain mb-1">Welcome to Nexus</h2>
+                    <p class="text-xs text-textMuted">Your workspace is active and fully functional.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-xs font-medium text-textMuted">System Online</span>
+                </div>
             </div>
+
+            <!-- Quick Links / Info Widget -->
+            <div class="bg-surface border border-border p-6 rounded-xl h-48 flex flex-col gap-4">
+                <h2 class="text-sm font-medium text-textMain">Quick Access</h2>
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-center gap-3 text-sm text-textMuted p-2 rounded-lg bg-background border border-border">
+                        <i class="ph ph-bell text-lg"></i> Check the Updates tab for recent news.
+                    </div>
+                    <div class="flex items-center gap-3 text-sm text-textMuted p-2 rounded-lg bg-background border border-border">
+                        <i class="ph ph-ghost text-lg"></i> Secure your files in Ghostlink.
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
 
-    <!-- Firebase Realtime Database Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getDatabase, ref, onValue, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-
-        // IMPORTANT: Ensure databaseURL matches your Firebase project settings
-        const firebaseConfig = {
-            apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
-            authDomain: "nexus-web-development-official.firebaseapp.com",
-            projectId: "nexus-web-development-official",
-            databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com" 
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const updatesRef = ref(db, 'workspace_updates');
-
-        // 1. Read Data (Live Sync)
-        onValue(updatesRef, (snapshot) => {
-            const feedContainer = document.getElementById('activity-feed');
-            feedContainer.innerHTML = ''; // Clear loading text
-            
-            const data = snapshot.val();
-            if (!data) {
-                feedContainer.innerHTML = '<div class="p-4 text-sm text-textMuted">No updates yet.</div>';
-                return;
-            }
-
-            // Convert to array and sort newest first
-            const updatesArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-            updatesArray.sort((a, b) => b.timestamp - a.timestamp);
-
-            updatesArray.forEach(update => {
-                const timeString = update.timestamp ? new Date(update.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Just now';
-                
-                // Cloudflare Image Logic: If an image ID exists in the DB, format it into a Cloudflare URL
-                // Replace 'YOUR_ACCOUNT_HASH' later when you set up Cloudflare
-                let imageHtml = '';
-                if (update.cloudflareImageId) {
-                    const cfUrl = `https://imagedelivery.net/YOUR_ACCOUNT_HASH/${update.cloudflareImageId}/public`;
-                    imageHtml = `<img src="${cfUrl}" class="mt-2 rounded-lg border border-border w-48 object-cover">`;
-                }
-
-                const item = document.createElement('div');
-                item.className = 'flex gap-4 p-4 hover:bg-surfaceHover transition-colors';
-                item.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center text-[var(--brand-color)] shrink-0">
-                        <i class="ph ph-lightning text-sm"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm text-textMain">${update.text}</p>
-                        ${imageHtml}
-                    </div>
-                    <span class="text-xs text-textMuted shrink-0">${timeString}</span>
-                `;
-                feedContainer.appendChild(item);
-            });
-        });
-
-        // 2. Write Data
-        const postBtn = document.getElementById('post-update-btn');
-        const inputField = document.getElementById('new-update-input');
-
-        postBtn.addEventListener('click', () => {
-            const text = inputField.value.trim();
-            if (!text) return;
-
-            // Push text to Realtime Database
-            push(updatesRef, {
-                text: text,
-                timestamp: serverTimestamp(),
-                // cloudflareImageId: "abc-123-xyz" // We will use this later when you upload images
-            });
-
-            inputField.value = '';
-        });
-
-        // Allow pressing Enter to post
-        inputField.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') postBtn.click();
-        });
-    </script>
-
-    <!-- UI Helper Script -->
     <script>
+        // Theme Listener
         const savedColor = localStorage.getItem('nexus-brand-color');
         if(savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
         window.addEventListener('message', (event) => {
@@ -168,14 +77,6 @@
                 document.documentElement.style.setProperty('--brand-color', event.data.color);
             }
         });
-
-        const now = new Date();
-        document.getElementById('date-display').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-        const hour = now.getHours();
-        let greeting = 'Good evening';
-        if (hour >= 5 && hour < 12) greeting = 'Good morning';
-        else if (hour >= 12 && hour < 17) greeting = 'Good afternoon';
-        document.getElementById('greeting-display').textContent = greeting;
     </script>
 </body>
 </html>
