@@ -31,9 +31,6 @@
         }
     </script>
 
-    <!-- Cloudflare Turnstile Script -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-
     <style>
         :root {
             --brand-color: #ededed;
@@ -82,7 +79,7 @@
         </div>
     </div>
 
-    <!-- App Layout (Hidden initially) -->
+    <!-- App Layout -->
     <div id="app-container" class="w-full h-full flex opacity-0 transition-opacity duration-700 ease-out">
         
         <!-- Sidebar -->
@@ -123,7 +120,7 @@
                     <span id="user-name-label" class="truncate flex-1">Log In</span>
                 </button>
 
-                <!-- NEW Admin Panel Button -->
+                <!-- Admin Panel Button -->
                 <button onclick="switchTab('admin', this)" class="nav-btn flex items-center gap-3 px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium w-full">
                     <i class="ph ph-shield-check text-lg"></i> Admin Panel
                 </button>
@@ -138,22 +135,6 @@
         <main class="flex-1 h-full relative bg-background">
             <iframe id="content-frame" class="w-full h-full border-none bg-transparent" src="home.html"></iframe>
         </main>
-    </div>
-
-    <!-- Security Check Modal (Turnstile) -->
-    <div id="security-modal" class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-200">
-        <div class="bg-surface border border-border rounded-xl w-full max-w-sm shadow-2xl p-6 flex flex-col items-center justify-center transform scale-95 transition-transform duration-200" id="security-box">
-            <div class="w-12 h-12 rounded-full bg-border flex items-center justify-center text-textMuted mb-4">
-                <i class="ph ph-shield-check text-2xl"></i>
-            </div>
-            <h3 class="text-textMain font-medium text-lg mb-1">Security Verification</h3>
-            <p class="text-sm text-textMuted mb-6 text-center">Please complete the check below to proceed to authentication.</p>
-            
-            <!-- Turnstile Widget Injection Point -->
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAAFLfaHWQlbqdlS_j" data-callback="onTurnstileSuccess" data-theme="dark"></div>
-            
-            <button onclick="closeSecurityModal()" class="mt-6 text-xs text-textMuted hover:text-textMain transition-colors">Cancel</button>
-        </div>
     </div>
 
     <!-- Settings Modal -->
@@ -216,7 +197,7 @@
             document.getElementById('content-frame').src = page + '.html';
         };
 
-        // --- Settings Modal Logic ---
+        // Settings Modal Logic
         const settingsModal = document.getElementById('settings-modal');
         const settingsBox = document.getElementById('settings-box');
         
@@ -241,43 +222,18 @@
             if (e.target === settingsModal) closeSettings();
         });
 
-        // --- Security Modal & Auth Logic ---
-        const securityModal = document.getElementById('security-modal');
-        const securityBox = document.getElementById('security-box');
-
-        window.closeSecurityModal = () => {
-            securityModal.classList.add('opacity-0', 'pointer-events-none');
-            securityBox.classList.add('scale-95');
-            // Reset the widget if user closes modal without completing it
-            if(typeof turnstile !== 'undefined') turnstile.reset();
-        };
-
+        // Auth Logic (Direct Google Sign-In)
         document.getElementById('auth-trigger').addEventListener('click', async () => {
             if (auth.currentUser) {
-                // If already logged in, just sign out directly
                 await signOut(auth);
             } else {
-                // If logging in, open the security check modal first
-                securityModal.classList.remove('opacity-0', 'pointer-events-none');
-                securityBox.classList.remove('scale-95');
+                try {
+                    await signInWithPopup(auth, new GoogleAuthProvider());
+                } catch (err) {
+                    console.error("Authentication failed or was cancelled.", err);
+                }
             }
         });
-
-        // This function is called automatically by Cloudflare when the human check passes
-        window.onTurnstileSuccess = async function(token) {
-            // Check passed, hide the security modal
-            window.closeSecurityModal();
-            
-            // Trigger Firebase Auth
-            try {
-                await signInWithPopup(auth, new GoogleAuthProvider());
-            } catch (err) {
-                console.error("Authentication failed or was cancelled.");
-            }
-            
-            // Reset the widget so it can be used again later
-            if(typeof turnstile !== 'undefined') turnstile.reset();
-        };
 
         onAuthStateChanged(auth, (user) => {
             const icon = document.getElementById('user-avatar-icon');
