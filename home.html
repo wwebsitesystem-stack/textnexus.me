@@ -32,6 +32,9 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
     </style>
+
+    <!-- Dynamic Theme Stylesheet Tag -->
+    <link id="theme-stylesheet" rel="stylesheet" href="">
 </head>
 <body class="w-full h-full p-8 md:p-12 overflow-y-auto">
 
@@ -68,8 +71,38 @@
         </div>
     </div>
 
-    <script>
-        // Theme Listener
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getDatabase, ref as dbRef, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        const app = initializeApp({
+            apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
+            authDomain: "nexus-web-development-official.firebaseapp.com",
+            projectId: "nexus-web-development-official",
+            databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com" 
+        });
+        const db = getDatabase(app);
+
+        // Realtime Theme Listener
+        const themeStylesheet = document.getElementById('theme-stylesheet');
+        const themeRef = dbRef(db, 'system/theme');
+
+        onValue(themeRef, (snapshot) => {
+            const themeVal = snapshot.val();
+            if (themeVal && themeVal !== 'default' && themeVal !== 'none') {
+                let themePath = themeVal.trim();
+                if (!themePath.endsWith('.css')) {
+                    themePath = `themes/${themePath}.css`;
+                } else if (!themePath.startsWith('themes/')) {
+                    themePath = `themes/${themePath}`;
+                }
+                themeStylesheet.href = themePath;
+            } else {
+                themeStylesheet.href = '';
+            }
+        });
+
+        // Brand Color Listener
         const savedColor = localStorage.getItem('nexus-brand-color');
         if(savedColor) document.documentElement.style.setProperty('--brand-color', savedColor);
         window.addEventListener('message', (event) => {
