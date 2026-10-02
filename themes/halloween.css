@@ -1,0 +1,105 @@
+/* ====================================================
+   Nexus Theme: Halloween Mode
+   File: themes/halloween.css
+   ==================================================== */
+
+:root {
+    --brand-color: #ff6b00 !important; /* Spooky Pumpkin Orange */
+    --halloween-purple: #9d4edd;
+    --halloween-dark: #0c0714;
+    --halloween-surface: #170d26;
+    --halloween-border: #3b1d63;
+}
+
+/* Background & Body Accent Overrides */
+body {
+    background-color: var(--halloween-dark) !important;
+    color: #f3e8ff !important;
+}
+
+/* Ambient Halloween Radial Glow in Top Right */
+body::before {
+    content: '';
+    position: fixed;
+    top: -120px;
+    right: -120px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255, 107, 0, 0.18) 0%, rgba(157, 78, 221, 0.1) 55%, transparent 75%);
+    pointer-events: none;
+    z-index: 90;
+    animation: halloweenPulse 6s ease-in-out infinite alternate;
+}
+
+/* Subtle Pumpkin Accent Corner Badge */
+body::after {
+    content: '🎃';
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 2rem;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 99;
+    filter: drop-shadow(0 0 10px rgba(255,107,0,0.6));
+}
+
+@keyframes halloweenPulse {
+    0% { transform: scale(1) translate(0, 0); opacity: 0.6; }
+    100% { transform: scale(1.2) translate(-15px, 15px); opacity: 0.9; }
+}
+
+/* Sidebar Halloween Overrides */
+aside {
+    background-color: var(--halloween-surface) !important;
+    border-color: var(--halloween-border) !important;
+    box-shadow: 4px 0 25px rgba(157, 78, 221, 0.08);
+}
+
+aside div, aside nav {
+    border-color: var(--halloween-border) !important;
+}
+
+/* Sidebar Active Button Glow */
+.nav-btn.active {
+    background-color: rgba(255, 107, 0, 0.18) !important;
+    color: #ffaa5b !important;
+    border: 1px solid rgba(255, 107, 0, 0.4);
+    box-shadow: 0 0 14px rgba(255, 107, 0, 0.25);
+}
+
+.nav-btn.active i {
+    color: #ff6b00 !important;
+    filter: drop-shadow(0 0 6px rgba(255, 107, 0, 0.8));
+}
+
+.nav-btn:hover:not(.active) {
+    background-color: rgba(157, 78, 221, 0.18) !important;
+    color: #f3e8ff !important;
+}
+
+/* Custom Scrollbar Halloween Style */
+::-webkit-scrollbar-thumb {
+    background: #5a2e8e !important;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #ff6b00 !important;
+}
+
+/* Spooky Intro Screen Accent */
+#intro-screen {
+    background-color: var(--halloween-dark) !important;
+}
+
+#intro-screen .bg-textMain {
+    background-color: #ff6b00 !important;
+    box-shadow: 0 0 25px rgba(255, 107, 0, 0.7);
+}
+
+/* Toast Notifications Halloween Glow */
+.toast-notify {
+    background-color: var(--halloween-surface) !important;
+    border-color: #ff6b00 !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 18px rgba(255, 107, 0, 0.3) !important;
+}
