@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Nexus</title>
+    <title>Admin Control Center - Nexus</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -35,6 +35,7 @@
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
+        .tab-btn.active { background-color: #1c1c1c; color: #ededed; border-color: #3f3f46; }
     </style>
 </head>
 <body class="w-full h-full flex flex-col overflow-hidden bg-background">
@@ -44,31 +45,44 @@
         <div class="flex items-center gap-3">
             <i class="ph ph-shield-check text-textMuted text-xl"></i>
             <div>
-                <h2 class="font-semibold text-textMain text-sm">Admin Control Center</h2>
-                <p class="text-[11px] text-textMuted">User Directory & Permissions</p>
+                <h2 class="font-semibold text-textMain text-sm">Nexus Admin Control Center</h2>
+                <p class="text-[11px] text-textMuted">Users, TextNexus Channels & Workspace Management</p>
             </div>
         </div>
         
         <div id="admin-badge" class="hidden items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full font-medium">
-            <i class="ph ph-lock-key-open"></i> Owner Access
+            <i class="ph ph-lock-key-open"></i> System Owner
         </div>
     </header>
 
     <!-- Permission Restriction Warning -->
     <div id="access-denied-banner" class="hidden bg-red-500/10 border-b border-red-500/20 px-8 py-3 text-red-400 text-xs font-medium flex items-center gap-2 shrink-0">
-        <i class="ph ph-warning text-sm"></i> Restricted Access: You are in view-only mode. Only the system owner can modify roles, ban users, or delete accounts.
+        <i class="ph ph-warning text-sm"></i> Restricted Access: You are in view-only mode. Only brodywilliams0226@gmail.com can make administrative changes.
     </div>
 
-    <!-- Main Content Area -->
+    <!-- Sub-navigation Tabs -->
+    <div class="border-b border-border bg-surface px-8 py-2.5 flex items-center gap-2 shrink-0">
+        <button onclick="switchAdminTab('users', this)" class="tab-btn active px-3.5 py-1.5 rounded-lg border border-transparent text-xs font-medium text-textMuted hover:text-textMain transition-colors flex items-center gap-2">
+            <i class="ph ph-users text-sm"></i> User Directory
+        </button>
+        <button onclick="switchAdminTab('chats', this)" class="tab-btn px-3.5 py-1.5 rounded-lg border border-transparent text-xs font-medium text-textMuted hover:text-textMain transition-colors flex items-center gap-2">
+            <i class="ph ph-chat-teardrop-text text-sm"></i> TextNexus Channels
+        </button>
+        <button onclick="switchAdminTab('updates', this)" class="tab-btn px-3.5 py-1.5 rounded-lg border border-transparent text-xs font-medium text-textMuted hover:text-textMain transition-colors flex items-center gap-2">
+            <i class="ph ph-bell text-sm"></i> Workspace Updates
+        </button>
+    </div>
+
+    <!-- Main Scrollable Area -->
     <main class="flex-1 overflow-y-auto p-8 relative">
         <div class="max-w-6xl mx-auto flex flex-col gap-6">
             
-            <!-- Stats Row -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Overall System Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-surface border border-border p-4 rounded-xl flex items-center justify-between">
                     <div>
                         <p class="text-xs text-textMuted font-medium">Total Registered Users</p>
-                        <h3 id="stat-total" class="text-2xl font-bold text-textMain mt-1">0</h3>
+                        <h3 id="stat-total-users" class="text-2xl font-bold text-textMain mt-1">0</h3>
                     </div>
                     <div class="w-10 h-10 rounded-lg bg-surfaceHover border border-border flex items-center justify-center text-textMuted">
                         <i class="ph ph-users text-xl"></i>
@@ -85,45 +99,114 @@
                 </div>
                 <div class="bg-surface border border-border p-4 rounded-xl flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-textMuted font-medium">Admins & Staff</p>
-                        <h3 id="stat-admins" class="text-2xl font-bold text-[var(--brand-color)] mt-1">0</h3>
+                        <p class="text-xs text-textMuted font-medium">Active TextNexus Chats</p>
+                        <h3 id="stat-chats" class="text-2xl font-bold text-textMain mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-surfaceHover border border-border flex items-center justify-center text-textMuted">
+                        <i class="ph ph-chats text-xl"></i>
+                    </div>
+                </div>
+                <div class="bg-surface border border-border p-4 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-textMuted font-medium">Total Updates Posted</p>
+                        <h3 id="stat-updates" class="text-2xl font-bold text-[var(--brand-color)] mt-1">0</h3>
                     </div>
                     <div class="w-10 h-10 rounded-lg bg-[var(--brand-color)]/10 border border-[var(--brand-color)]/20 flex items-center justify-center text-[var(--brand-color)]">
-                        <i class="ph ph-crown text-xl"></i>
+                        <i class="ph ph-newspaper text-xl"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- User Table Container -->
-            <div class="bg-surface border border-border rounded-xl overflow-hidden shadow-2xl">
-                <div class="p-4 border-b border-border flex items-center justify-between bg-surface">
-                    <h3 class="text-sm font-semibold text-textMain">All Users</h3>
-                    <span class="text-xs text-textMuted">Realtime synchronization enabled</span>
+            <!-- TAB 1: USER MANAGEMENT -->
+            <section id="tab-users" class="admin-section flex flex-col gap-4">
+                <div class="bg-surface border border-border rounded-xl overflow-hidden shadow-2xl">
+                    <div class="p-4 border-b border-border flex items-center justify-between bg-surface">
+                        <h3 class="text-sm font-semibold text-textMain">User Accounts & Roles</h3>
+                        <span class="text-xs text-textMuted">Change roles, ban users, or purge account entries</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-textMuted">
+                            <thead class="bg-background text-xs uppercase tracking-wider text-textMuted border-b border-border">
+                                <tr>
+                                    <th class="py-3.5 px-6 font-medium">User Profile</th>
+                                    <th class="py-3.5 px-6 font-medium">Email</th>
+                                    <th class="py-3.5 px-6 font-medium">Role</th>
+                                    <th class="py-3.5 px-6 font-medium">Status</th>
+                                    <th class="py-3.5 px-6 font-medium text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-table-body" class="divide-y divide-border">
+                                <tr>
+                                    <td colspan="5" class="py-12 text-center text-textMuted">
+                                        <i class="ph ph-spinner animate-spin text-2xl mb-2 block mx-auto"></i> Fetching users...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: TEXTNEXUS CHATS MANAGEMENT -->
+            <section id="tab-chats" class="admin-section hidden flex-col gap-4">
+                <div class="bg-surface border border-border rounded-xl overflow-hidden shadow-2xl">
+                    <div class="p-4 border-b border-border flex items-center justify-between bg-surface">
+                        <h3 class="text-sm font-semibold text-textMain">All Active TextNexus Group Chats</h3>
+                        <span class="text-xs text-textMuted">Disable, enable, or delete group channels</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-textMuted">
+                            <thead class="bg-background text-xs uppercase tracking-wider text-textMuted border-b border-border">
+                                <tr>
+                                    <th class="py-3.5 px-6 font-medium">Chat Name</th>
+                                    <th class="py-3.5 px-6 font-medium">Invite Code</th>
+                                    <th class="py-3.5 px-6 font-medium">Creator</th>
+                                    <th class="py-3.5 px-6 font-medium">State</th>
+                                    <th class="py-3.5 px-6 font-medium text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="chat-table-body" class="divide-y divide-border">
+                                <tr>
+                                    <td colspan="5" class="py-12 text-center text-textMuted">
+                                        <i class="ph ph-spinner animate-spin text-2xl mb-2 block mx-auto"></i> Fetching channels...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: WORKSPACE UPDATES MANAGEMENT -->
+            <section id="tab-updates" class="admin-section hidden flex-col gap-4">
+                <div class="bg-surface border border-border rounded-xl p-6 shadow-xl flex flex-col gap-4">
+                    <h3 class="text-sm font-semibold text-textMain border-b border-border pb-3 flex items-center gap-2">
+                        <i class="ph ph-plus-circle text-lg text-[var(--brand-color)]"></i> Quick Publish Announcement
+                    </h3>
+                    <div class="flex flex-col gap-3">
+                        <input type="text" id="admin-update-title" placeholder="Announcement Title" class="bg-background border border-border rounded-lg px-3.5 py-2 text-sm text-textMain outline-none focus:border-textMuted">
+                        <textarea id="admin-update-content" rows="3" placeholder="Announcement Details..." class="bg-background border border-border rounded-lg p-3.5 text-sm text-textMain outline-none focus:border-textMuted resize-none"></textarea>
+                        <div class="flex justify-end">
+                            <button id="admin-publish-btn" class="px-5 py-2 bg-textMain text-background rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity">
+                                Post Update
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-textMuted">
-                        <thead class="bg-background text-xs uppercase tracking-wider text-textMuted border-b border-border">
-                            <tr>
-                                <th class="py-3.5 px-6 font-medium">User Profile</th>
-                                <th class="py-3.5 px-6 font-medium">Email</th>
-                                <th class="py-3.5 px-6 font-medium">Role</th>
-                                <th class="py-3.5 px-6 font-medium">Status</th>
-                                <th class="py-3.5 px-6 font-medium text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="user-table-body" class="divide-y divide-border">
-                            <!-- Loading State -->
-                            <tr>
-                                <td colspan="5" class="py-12 text-center text-textMuted">
-                                    <i class="ph ph-spinner animate-spin text-2xl mb-2 block mx-auto"></i>
-                                    Fetching user registry...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="bg-surface border border-border rounded-xl overflow-hidden shadow-2xl">
+                    <div class="p-4 border-b border-border flex items-center justify-between bg-surface">
+                        <h3 class="text-sm font-semibold text-textMain">Published Workspace Updates</h3>
+                        <span class="text-xs text-textMuted">Manage or delete existing announcements</span>
+                    </div>
+
+                    <div id="admin-updates-list" class="p-4 flex flex-col gap-3">
+                        <!-- Items inject here -->
+                    </div>
                 </div>
-            </div>
+            </section>
 
         </div>
     </main>
@@ -131,7 +214,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref as dbRef, onValue, update, remove, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getDatabase, ref as dbRef, onValue, update, remove, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
@@ -147,165 +230,250 @@
         let currentUser = null;
         let isOwner = false;
 
-        const tableBody = document.getElementById('user-table-body');
         const adminBadge = document.getElementById('admin-badge');
         const accessBanner = document.getElementById('access-denied-banner');
 
-        // Watch Auth State & Sync Profile into DB
+        // Tab Switcher
+        window.switchAdminTab = (tabName, btn) => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
+            btn.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+        };
+
+        // Auth Listener
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             if (user) {
                 isOwner = (user.email === 'brodywilliams0226@gmail.com');
-                
                 if (isOwner) {
-                    adminBadge.classList.remove('hidden');
-                    adminBadge.classList.add('flex');
+                    adminBadge.classList.replace('hidden', 'flex');
                     accessBanner.classList.add('hidden');
                 } else {
-                    adminBadge.classList.add('hidden');
+                    adminBadge.classList.replace('flex', 'hidden');
                     accessBanner.classList.remove('hidden');
                 }
 
-                // Register/Update logged-in user details in database
+                // Register logged in profile
                 const userRef = dbRef(db, `textnexus/users/${user.uid}`);
-                const defaultRole = isOwner ? 'Owner' : 'User';
-
                 await update(userRef, {
                     uid: user.uid,
-                    name: user.displayName || 'Anonymous User',
+                    name: user.displayName || 'Anonymous',
                     email: user.email,
                     photoURL: isOwner ? 'IMG_0728.jpeg' : (user.photoURL || 'https://placehold.co/100'),
                     lastLogin: Date.now()
                 });
-
-                // Guarantee Owner role for brodywilliams0226@gmail.com
-                if (isOwner) {
-                    await update(userRef, { role: 'Owner', isBanned: false });
-                }
+                if (isOwner) await update(userRef, { role: 'Owner', isBanned: false });
             } else {
                 isOwner = false;
-                adminBadge.classList.add('hidden');
+                adminBadge.classList.replace('flex', 'hidden');
                 accessBanner.classList.remove('hidden');
             }
+
             listenToUsers();
+            listenToChats();
+            listenToUpdates();
         });
 
-        // Listen for all users from Realtime Database
+        // 1. Listen to Users
         function listenToUsers() {
-            const usersRef = dbRef(db, 'textnexus/users');
-            onValue(usersRef, (snapshot) => {
+            onValue(dbRef(db, 'textnexus/users'), (snapshot) => {
                 const data = snapshot.val();
-                tableBody.innerHTML = '';
+                const tbody = document.getElementById('user-table-body');
+                tbody.innerHTML = '';
 
                 if (!data) {
-                    tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="5" class="py-8 text-center text-textMuted">
-                                No registered users found in database yet.
-                            </td>
-                        </tr>
-                    `;
-                    updateStats(0, 0, 0);
+                    tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-textMuted">No users found.</td></tr>`;
+                    document.getElementById('stat-total-users').textContent = '0';
+                    document.getElementById('stat-banned').textContent = '0';
                     return;
                 }
 
-                const users = Object.keys(data).map(key => ({ uid: key, ...data[key] }));
-
-                let totalCount = users.length;
-                let bannedCount = 0;
-                let adminCount = 0;
+                const users = Object.keys(data).map(k => ({ uid: k, ...data[k] }));
+                document.getElementById('stat-total-users').textContent = users.length;
+                document.getElementById('stat-banned').textContent = users.filter(u => u.isBanned).length;
 
                 users.forEach(u => {
-                    if (u.isBanned) bannedCount++;
-                    if (u.role === 'Admin' || u.role === 'Owner') adminCount++;
-
-                    const row = document.createElement('tr');
-                    row.className = 'hover:bg-surfaceHover/50 transition-colors';
-
                     const isTargetOwner = (u.email === 'brodywilliams0226@gmail.com');
                     const disableControls = !isOwner || isTargetOwner;
 
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-surfaceHover/50 transition-colors';
                     row.innerHTML = `
-                        <!-- Profile Column -->
                         <td class="py-4 px-6 flex items-center gap-3">
                             <img src="${u.photoURL || 'https://placehold.co/100'}" class="w-9 h-9 rounded-full object-cover border border-border">
                             <div class="flex flex-col">
                                 <span class="font-medium text-textMain text-sm flex items-center gap-2">
                                     ${u.name}
-                                    ${isTargetOwner ? '<span class="text-[9px] bg-[var(--brand-color)]/10 text-[var(--brand-color)] border border-[var(--brand-color)]/20 px-1.5 py-0.5 rounded-md font-bold uppercase">System Owner</span>' : ''}
+                                    ${isTargetOwner ? '<span class="text-[9px] bg-[var(--brand-color)]/10 text-[var(--brand-color)] border border-[var(--brand-color)]/20 px-1.5 py-0.5 rounded-md font-bold uppercase">Owner</span>' : ''}
                                 </span>
-                                <span class="text-[10px] text-textMuted font-mono">ID: ${u.uid.substring(0, 8)}...</span>
                             </div>
                         </td>
-
-                        <!-- Email Column -->
-                        <td class="py-4 px-6 text-textMain font-mono text-xs">
-                            ${u.email}
-                        </td>
-
-                        <!-- Role Selector -->
+                        <td class="py-4 px-6 text-textMain font-mono text-xs">${u.email}</td>
                         <td class="py-4 px-6">
-                            <select onchange="window.changeRole('${u.uid}', this.value)" ${disableControls ? 'disabled' : ''} class="bg-background border border-border text-textMain text-xs rounded-lg px-2.5 py-1.5 outline-none focus:border-textMuted disabled:opacity-50 disabled:cursor-not-allowed">
+                            <select onchange="window.changeRole('${u.uid}', this.value)" ${disableControls ? 'disabled' : ''} class="bg-background border border-border text-textMain text-xs rounded-lg px-2.5 py-1.5 outline-none focus:border-textMuted disabled:opacity-50">
                                 <option value="User" ${u.role === 'User' ? 'selected' : ''}>User</option>
                                 <option value="Moderator" ${u.role === 'Moderator' ? 'selected' : ''}>Moderator</option>
                                 <option value="Admin" ${u.role === 'Admin' ? 'selected' : ''}>Admin</option>
                                 <option value="Owner" ${u.role === 'Owner' ? 'selected' : ''}>Owner</option>
                             </select>
                         </td>
-
-                        <!-- Ban Status Column -->
                         <td class="py-4 px-6">
                             ${u.isBanned 
-                                ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-red-500/10 text-red-400 border border-red-500/20"><i class="ph ph-prohibit"></i> Banned</span>' 
-                                : '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><i class="ph ph-check-circle"></i> Active</span>'
+                                ? '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-red-500/10 text-red-400 border border-red-500/20">Banned</span>' 
+                                : '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Active</span>'
                             }
                         </td>
-
-                        <!-- Action Buttons -->
                         <td class="py-4 px-6 text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <!-- Ban / Unban Toggle -->
-                                <button onclick="window.toggleBan('${u.uid}', ${!!u.isBanned})" ${disableControls ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${u.isBanned ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20' : 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20'} disabled:opacity-30 disabled:cursor-not-allowed">
+                                <button onclick="window.toggleBan('${u.uid}', ${!!u.isBanned})" ${disableControls ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-medium border ${u.isBanned ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'} disabled:opacity-30">
                                     ${u.isBanned ? 'Unban' : 'Ban User'}
                                 </button>
-
-                                <!-- Delete Account Record -->
-                                <button onclick="window.deleteUserRecord('${u.uid}', '${u.name}')" ${disableControls ? 'disabled' : ''} class="p-1.5 rounded-lg bg-surfaceHover border border-border text-textMuted hover:text-red-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="Delete User Record">
+                                <button onclick="window.deleteUserRecord('${u.uid}', '${u.name}')" ${disableControls ? 'disabled' : ''} class="p-1.5 rounded-lg bg-surfaceHover border border-border text-textMuted hover:text-red-400 disabled:opacity-30">
                                     <i class="ph ph-trash text-base"></i>
                                 </button>
                             </div>
                         </td>
                     `;
-                    tableBody.appendChild(row);
+                    tbody.appendChild(row);
                 });
-
-                updateStats(totalCount, bannedCount, adminCount);
             });
         }
 
-        function updateStats(total, banned, admins) {
-            document.getElementById('stat-total').textContent = total;
-            document.getElementById('stat-banned').textContent = banned;
-            document.getElementById('stat-admins').textContent = admins;
+        // 2. Listen to TextNexus Group Chats
+        function listenToChats() {
+            onValue(dbRef(db, 'textnexus/chats'), (snapshot) => {
+                const data = snapshot.val();
+                const tbody = document.getElementById('chat-table-body');
+                tbody.innerHTML = '';
+
+                if (!data) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-textMuted">No channels created.</td></tr>`;
+                    document.getElementById('stat-chats').textContent = '0';
+                    return;
+                }
+
+                const chats = Object.keys(data).map(k => ({ id: k, ...data[k] }));
+                document.getElementById('stat-chats').textContent = chats.length;
+
+                chats.forEach(chat => {
+                    const isGlobal = (chat.id === 'global');
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-surfaceHover/50 transition-colors';
+                    row.innerHTML = `
+                        <td class="py-4 px-6 font-medium text-textMain text-sm">${chat.name || 'Global Chat'}</td>
+                        <td class="py-4 px-6 font-mono text-xs text-textMuted">${chat.code || 'PUBLIC'}</td>
+                        <td class="py-4 px-6 text-xs text-textMuted">${chat.createdEmail || 'System'}</td>
+                        <td class="py-4 px-6">
+                            ${chat.disabled 
+                                ? '<span class="px-2 py-0.5 rounded text-[10px] bg-red-500/10 text-red-400 border border-red-500/20 font-medium">Disabled</span>' 
+                                : '<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">Active</span>'
+                            }
+                        </td>
+                        <td class="py-4 px-6 text-right">
+                            ${!isGlobal ? `
+                                <div class="flex items-center justify-end gap-2">
+                                    <button onclick="window.toggleChatStatus('${chat.id}', ${!!chat.disabled})" ${!isOwner ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg text-xs font-medium border border-border bg-background hover:bg-surfaceHover text-textMain disabled:opacity-30">
+                                        ${chat.disabled ? 'Enable' : 'Disable'}
+                                    </button>
+                                    <button onclick="window.deleteChat('${chat.id}')" ${!isOwner ? 'disabled' : ''} class="p-1 rounded-lg bg-surfaceHover border border-border text-textMuted hover:text-red-400 disabled:opacity-30">
+                                        <i class="ph ph-trash text-base"></i>
+                                    </button>
+                                </div>
+                            ` : '<span class="text-xs text-textMuted italic">System Pinned</span>'}
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            });
         }
 
-        // Action Handlers
+        // 3. Listen to Workspace Updates
+        function listenToUpdates() {
+            onValue(dbRef(db, 'workspace_updates'), (snapshot) => {
+                const data = snapshot.val();
+                const list = document.getElementById('admin-updates-list');
+                list.innerHTML = '';
+
+                if (!data) {
+                    list.innerHTML = `<p class="text-xs text-textMuted text-center py-4">No workspace updates found.</p>`;
+                    document.getElementById('stat-updates').textContent = '0';
+                    return;
+                }
+
+                const posts = Object.keys(data).map(k => ({ id: k, ...data[k] }));
+                document.getElementById('stat-updates').textContent = posts.length;
+
+                posts.forEach(p => {
+                    const item = document.createElement('div');
+                    item.className = 'p-3 rounded-lg border border-border bg-background flex items-center justify-between gap-4';
+                    item.innerHTML = `
+                        <div>
+                            <h4 class="text-xs font-semibold text-textMain">${p.title}</h4>
+                            <p class="text-[11px] text-textMuted truncate max-w-xl mt-0.5">${p.content}</p>
+                        </div>
+                        <button onclick="window.deleteUpdate('${p.id}')" ${!isOwner ? 'disabled' : ''} class="p-1.5 rounded bg-surfaceHover text-textMuted hover:text-red-400 disabled:opacity-30">
+                            <i class="ph ph-trash text-sm"></i>
+                        </button>
+                    `;
+                    list.appendChild(item);
+                });
+            });
+        }
+
+        // Admin Actions
         window.changeRole = async (targetUid, newRole) => {
             if (!isOwner) return alert("Only the owner can modify roles.");
             await update(dbRef(db, `textnexus/users/${targetUid}`), { role: newRole });
         };
 
         window.toggleBan = async (targetUid, currentBannedState) => {
-            if (!isOwner) return alert("Only the owner can ban/unban users.");
+            if (!isOwner) return alert("Only the owner can ban users.");
             await update(dbRef(db, `textnexus/users/${targetUid}`), { isBanned: !currentBannedState });
         };
 
-        window.deleteUserRecord = async (targetUid, userName) => {
-            if (!isOwner) return alert("Only the owner can delete users.");
-            if (confirm(`Are you sure you want to remove ${userName}'s profile from the database?`)) {
+        window.deleteUserRecord = async (targetUid, name) => {
+            if (!isOwner) return;
+            if (confirm(`Remove ${name} from user directory?`)) {
                 await remove(dbRef(db, `textnexus/users/${targetUid}`));
             }
         };
+
+        window.toggleChatStatus = async (chatId, isCurrentlyDisabled) => {
+            if (!isOwner) return;
+            await update(dbRef(db, `textnexus/chats/${chatId}`), { disabled: !isCurrentlyDisabled });
+        };
+
+        window.deleteChat = async (chatId) => {
+            if (!isOwner) return;
+            if (confirm("Delete this group chat permanently?")) {
+                await remove(dbRef(db, `textnexus/chats/${chatId}`));
+            }
+        };
+
+        window.deleteUpdate = async (postId) => {
+            if (!isOwner) return;
+            if (confirm("Delete this workspace update?")) {
+                await remove(dbRef(db, `workspace_updates/${postId}`));
+            }
+        };
+
+        document.getElementById('admin-publish-btn').addEventListener('click', async () => {
+            if (!isOwner) return alert("Only the owner can post announcements.");
+            const title = document.getElementById('admin-update-title').value.trim();
+            const content = document.getElementById('admin-update-content').value.trim();
+            if (!title || !content) return alert("Fill in title and content.");
+
+            await push(dbRef(db, 'workspace_updates'), {
+                title, content,
+                authorName: auth.currentUser?.displayName || 'Brody Williams',
+                authorEmail: auth.currentUser?.email || 'brodywilliams0226@gmail.com',
+                timestamp: serverTimestamp()
+            });
+
+            document.getElementById('admin-update-title').value = '';
+            document.getElementById('admin-update-content').value = '';
+        });
 
         // Theme Sync
         const savedColor = localStorage.getItem('nexus-brand-color');
