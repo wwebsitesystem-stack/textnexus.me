@@ -49,6 +49,9 @@
         }
         .toast-notify { animation: toastSlide 4s forwards cubic-bezier(0.16, 1, 0.3, 1); }
     </style>
+
+    <!-- Dynamic Theme Stylesheet Tag -->
+    <link id="theme-stylesheet" rel="stylesheet" href="">
 </head>
 <body class="h-screen w-screen flex antialiased selection:bg-brand/20 selection:text-white">
 
@@ -80,12 +83,12 @@
                 <button onclick="switchTab('ghostlink', this)" class="nav-btn flex items-center gap-3 px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium"><i class="ph ph-ghost text-lg"></i> Ghostlink</button>
                 
                 <p class="px-3 mt-4 mb-2 text-[11px] font-semibold tracking-wider text-textMuted uppercase">Communication</p>
-                <!-- NEW: TextNexus Tab -->
+                <!-- TextNexus Tab -->
                 <button onclick="switchTab('TextNexus', this)" class="nav-btn flex items-center justify-between px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium group">
                     <div class="flex items-center gap-3"><i class="ph ph-chat-teardrop-text text-lg"></i> TextNexus</div>
                 </button>
-                <!-- NEW: Notifications Tab -->
-                <button onclick="switchTab('notifications', this)" class="nav-btn flex items-center justify-between px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium id="nav-notifications">
+                <!-- Notifications Tab -->
+                <button onclick="switchTab('notifications', this)" class="nav-btn flex items-center justify-between px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium" id="nav-notifications">
                     <div class="flex items-center gap-3"><i class="ph ph-tray text-lg"></i> Notifications</div>
                 </button>
             </nav>
@@ -116,7 +119,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref as dbRef, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getDatabase, ref as dbRef, onChildAdded, onValue, query, limitToLast } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         const app = initializeApp({
             apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
@@ -126,6 +129,28 @@
         });
         const auth = getAuth(app);
         const db = getDatabase(app);
+
+        // Realtime Database Theme Listener (system/theme)
+        const themeStylesheet = document.getElementById('theme-stylesheet');
+        const themeRef = dbRef(db, 'system/theme');
+
+        onValue(themeRef, (snapshot) => {
+            const themeVal = snapshot.val();
+            
+            if (themeVal && themeVal !== 'default' && themeVal !== 'none') {
+                let themePath = themeVal.trim();
+                // Ensure correct file path format
+                if (!themePath.endsWith('.css')) {
+                    themePath = `themes/${themePath}.css`;
+                } else if (!themePath.startsWith('themes/')) {
+                    themePath = `themes/${themePath}`;
+                }
+                themeStylesheet.href = themePath;
+            } else {
+                // Disable dynamic theme stylesheet
+                themeStylesheet.href = '';
+            }
+        });
 
         // UI Initialization
         window.addEventListener('load', () => {
