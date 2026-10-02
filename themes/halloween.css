@@ -17,21 +17,23 @@ body {
     color: #f3e8ff !important;
 }
 
-/* Ambient Halloween Radial Glow in Top Right */
+/* Ambient Halloween Radial Glow and Spider Web in Top Right */
 body::before {
     content: '';
     position: fixed;
-    top: -120px;
-    right: -120px;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(255, 107, 0, 0.18) 0%, rgba(157, 78, 221, 0.1) 55%, transparent 75%);
+    top: 0;
+    right: 0;
+    width: 350px;
+    height: 350px;
+    background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cpath d="M0 0 L100 100 M100 0 L0 100 M50 0 L50 100 M0 50 L100 50 M25 0 L75 100 M75 0 L25 100" stroke="%23ff6b00" stroke-width="0.5" opacity="0.4"/%3E%3C/svg%3E');
+    background-size: contain;
+    background-repeat: no-repeat;
     pointer-events: none;
     z-index: 90;
     animation: halloweenPulse 6s ease-in-out infinite alternate;
 }
 
-/* Subtle Pumpkin Accent Corner Badge */
+/* Subtle Pumpkin Accent Corner Badge (moved lower for better spacing) */
 body::after {
     content: '🎃';
     position: fixed;
@@ -46,7 +48,7 @@ body::after {
 
 @keyframes halloweenPulse {
     0% { transform: scale(1) translate(0, 0); opacity: 0.6; }
-    100% { transform: scale(1.2) translate(-15px, 15px); opacity: 0.9; }
+    100% { transform: scale(1.1) translate(-10px, 10px); opacity: 0.9; }
 }
 
 /* Sidebar Halloween Overrides */
