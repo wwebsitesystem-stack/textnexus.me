@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Submit a Suggestion</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f0f0f;
+            color: #e5e5e5;
+        }
+        
+        /* Custom Scrollbar for Textarea */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #0f0f0f; 
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #222222; 
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #333333; 
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-[#0f0f0f] flex flex-col items-center justify-center p-4 md:p-8">
+
+    <main class="w-full max-w-3xl mt-4 mb-auto">
+        <header class="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-3 mb-4">
+                    <i class="ph-fill ph-hexagon text-2xl text-white"></i>
+                    <span class="text-white font-semibold text-lg tracking-wide">Nexus</span>
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2 tracking-tight">Overview</h1>
+                <p class="text-gray-400 text-sm">Submit suggestions to improve your workspace.</p>
+            </div>
+            <div class="flex items-center gap-2 px-3 py-1.5 bg-[#161616] border border-[#222222] rounded-full h-fit self-start sm:self-auto">
+                <div class="w-2 h-2 bg-[#22c55e] rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                <span class="text-xs font-medium text-gray-400">System Online</span>
+            </div>
+        </header>
+
+        <div class="bg-[#161616] border border-[#222222] rounded-xl p-6 md:p-8 shadow-2xl">
+            <form id="suggestion-form" class="space-y-6">
+                
+                <!-- Status Message Toast -->
+                <div id="status-message" class="hidden px-4 py-3 rounded-lg text-sm flex items-center gap-2 border">
+                    <i id="status-icon" class="ph-fill text-lg"></i>
+                    <span id="status-text"></span>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="suggestion" class="block text-sm font-medium text-gray-300">Your Suggestion</label>
+                    <textarea id="suggestion" name="suggestion" rows="6" required
+                        class="w-full bg-[#0f0f0f] border border-[#222222] rounded-lg px-4 py-3 text-gray-200 placeholder-gray-600 focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition-colors resize-y"
+                        placeholder="Describe your idea or feedback in detail..."></textarea>
+                </div>
+                
+                <div class="flex justify-end pt-2">
+                    <button type="submit" id="submit-btn" class="bg-white text-black font-medium py-2.5 px-6 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#161616] focus:ring-white transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                        <span>Send to Nexus</span>
+                        <i class="ph ph-paper-plane-right"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration provided by user
+        const firebaseConfig = {
+            apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
+            authDomain: "nexus-web-development-official.firebaseapp.com",
+            projectId: "nexus-web-development-official",
+            storageBucket: "nexus-web-development-official.firebasestorage.app",
+            messagingSenderId: "553556577139",
+            appId: "1:553556577139:web:ea4469b06c2c01cc999306",
+            measurementId: "G-S6K1M5PZLE"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // UI Elements
+        const form = document.getElementById('suggestion-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const statusMsg = document.getElementById('status-message');
+        const statusIcon = document.getElementById('status-icon');
+        const statusText = document.getElementById('status-text');
+
+        // Note: Using Firestore as per strict environment guidelines for data persistence
+        // Fallback appId if not injected by environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nexus-web-development'; 
+
+        function showStatus(message, isSuccess = true) {
+            statusMsg.classList.remove('hidden', 'bg-green-900/20', 'border-green-800', 'text-green-400', 'bg-red-900/20', 'border-red-800', 'text-red-400');
+            statusIcon.className = 'ph-fill text-lg ' + (isSuccess ? 'ph-check-circle' : 'ph-warning-circle');
+            
+            if (isSuccess) {
+                statusMsg.classList.add('bg-green-900/20', 'border-green-800', 'text-green-400');
+            } else {
+                statusMsg.classList.add('bg-red-900/20', 'border-red-800', 'text-red-400');
+            }
+            
+            statusText.textContent = message;
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                statusMsg.classList.add('hidden');
+            }, 5000);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const suggestionText = document.getElementById('suggestion').value.trim();
+            if (!suggestionText) return;
+
+            // UI Loading state
+            submitBtn.disabled = true;
+            const originalBtnContent = submitBtn.innerHTML;
+            submitBtn.innerHTML = `<i class="ph ph-spinner animate-spin"></i> <span>Submitting...</span>`;
+            statusMsg.classList.add('hidden');
+
+            try {
+                // Mandatory Authentication Check before DB writes
+                if (!auth.currentUser) {
+                    await signInAnonymously(auth);
+                }
+
+                // Mandatory Strict Path for Public Data in Firestore
+                const suggestionsRef = collection(db, 'artifacts', appId, 'public', 'data', 'suggestions');
+                
+                await addDoc(suggestionsRef, {
+                    text: suggestionText,
+                    userId: auth.currentUser.uid,
+                    timestamp: serverTimestamp()
+                });
+
+                showStatus("Suggestion submitted successfully! Thank you.");
+                form.reset();
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                showStatus("Failed to submit suggestion. Please try again later.", false);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnContent;
+            }
+        });
+    </script>
+</body>
+</html>
