@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Creator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        background: '#0a0a0a',
+                        surface: '#121212',
+                        border: '#262626',
+                        textMain: '#ededed',
+                        textMuted: '#a1a1aa',
+                        brand: '#ededed'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0a0a; color: #ededed; font-family: 'Inter', sans-serif; padding: 2rem; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="max-w-2xl mx-auto bg-surface border border-border rounded-xl p-8 shadow-lg">
+        <h2 class="text-2xl font-semibold mb-2">Nexus AI Website Builder</h2>
+        <p class="text-textMuted mb-6 text-sm">Describe your website, and our AI will build and deploy it to a live Textnexus.me subdomain automatically.</p>
+        
+        <div class="flex flex-col gap-5">
+            <div>
+                <label class="block text-sm font-medium mb-1.5 text-textMain">What should the website look like?</label>
+                <textarea id="site-prompt" rows="4" class="w-full bg-background border border-border rounded-lg p-3 text-textMain text-sm focus:outline-none focus:border-textMuted transition-colors placeholder:text-border" placeholder="A futuristic dark-mode landing page for a tech startup..."></textarea>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-1.5 text-textMain">Choose your link</label>
+                <div class="flex items-center">
+                    <input type="text" id="subdomain-name" class="flex-1 bg-background border border-border rounded-l-lg p-3 text-textMain text-sm focus:outline-none focus:border-textMuted transition-colors placeholder:text-border" placeholder="my-new-site">
+                    <span class="bg-surface border border-l-0 border-border rounded-r-lg p-3 text-textMuted text-sm">.textnexus.me</span>
+                </div>
+            </div>
+
+            <button id="generate-btn" class="w-full bg-textMain text-background font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity mt-2 text-sm">Build & Deploy Website</button>
+        </div>
+
+        <div id="status-output" class="mt-6 p-4 rounded-lg bg-background border border-border text-sm whitespace-pre-wrap hidden"></div>
+    </div>
+
+    <script>
+        const generateBtn = document.getElementById('generate-btn');
+        const statusOutput = document.getElementById('status-output');
+
+        generateBtn.addEventListener('click', async () => {
+            const prompt = document.getElementById('site-prompt').value;
+            const subdomain = document.getElementById('subdomain-name').value;
+
+            if (!prompt || !subdomain) return alert("Please fill out both fields.");
+
+            const cleanSubdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, '');
+            
+            statusOutput.style.display = 'block';
+            statusOutput.innerText = "Processing... AI is writing the code and configuring Cloudflare DNS...";
+
+            try {
+                // Your Cloudflare Worker URL
+                const workerUrl = "https://throbbing-hill-3378.brodywilliams0226.workers.dev"; 
+                
+                const response = await fetch(workerUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt, subdomain: cleanSubdomain })
+                });
+
+                const result = await response.json();
+                
+                if (result.error) {
+                    statusOutput.innerText = `Error: ${result.error}`;
+                } else {
+                    statusOutput.innerText = `Success! Your site is deploying.\n\nGitHub Repo: ${result.repoUrl}\nLive Link: https://${cleanSubdomain}.textnexus.me\n\n(Note: DNS and GitHub Pages may take 1-3 minutes to go live).`;
+                }
+            } catch (error) {
+                statusOutput.innerText = "Error connecting to backend.";
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
