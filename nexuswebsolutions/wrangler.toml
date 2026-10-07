@@ -1,0 +1,13 @@
+name = "nexus-ai-backend"
+main = "index.js"
+compatibility_date = "2024-02-08"
+
+# This enables Cloudflare Workers AI
+[ai]
+binding = "AI"
+
+# Never put your actual keys here. You will upload them securely later.
+# This just tells the worker to expect these variables.
+[vars]
+# COMPOSIO_API_KEY = "added-via-secrets"
+# CLOUDFLARE_API_TOKEN = "added-via-secrets"
