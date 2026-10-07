@@ -13,6 +13,7 @@ const firebaseConfig = {
   measurementId: "G-KYSK367Y02"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
@@ -58,8 +59,8 @@ generateBtn.addEventListener('click', async () => {
   statusOutput.innerText = "Processing... Cloudflare AI is writing the code...";
 
   try {
-    // Replace this URL with your Cloudflare Worker URL after you deploy it
-    const workerUrl = "https://your-worker-name.your-username.workers.dev"; 
+    // Your Cloudflare Worker URL
+    const workerUrl = "https://throbbing-hill-3378.brodywilliams0226.workers.dev"; 
     
     const response = await fetch(workerUrl, {
       method: "POST",
@@ -68,7 +69,12 @@ generateBtn.addEventListener('click', async () => {
     });
 
     const result = await response.json();
-    statusOutput.innerText = `Success! AI Generated the code and started deployment.\n\nAI Output:\n${result.aiGeneratedCode}`;
+    
+    if (result.error) {
+      statusOutput.innerText = `Error: ${result.error}`;
+    } else {
+      statusOutput.innerText = `Success! AI Generated the code for ${result.subdomain}:\n\n${result.code}`;
+    }
   } catch (error) {
     statusOutput.innerText = "Error connecting to backend.";
     console.error(error);
