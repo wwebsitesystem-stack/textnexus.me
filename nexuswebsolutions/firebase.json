@@ -1,0 +1,31 @@
+import { initializeApp } from "firebase/app";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
+  authDomain: "nexus-web-development-official.firebaseapp.com",
+  databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com",
+  projectId: "nexus-web-development-official",
+  storageBucket: "nexus-web-development-official.firebasestorage.app",
+  messagingSenderId: "553556577139",
+  appId: "1:553556577139:web:bc86f60395c0f32d999306",
+  measurementId: "G-KYSK367Y02"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+function loginWithGoogle() {
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      if (result.user.email === "brodywilliams0226@gmail.com") {
+        console.log("Welcome Admin");
+        // Grant access to admin features
+      } else {
+        console.log("Welcome User");
+        // Load standard user interface
+      }
+    })
+    .catch((error) => console.error(error));
+}
