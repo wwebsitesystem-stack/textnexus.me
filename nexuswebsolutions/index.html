@@ -3,39 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexus Web Solutions - Admin</title>
+  <title>Nexus Web Solutions - AI Generator</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>Nexus Web Solutions</h1>
-    
-    <!-- Login Section -->
-    <div id="login-section">
-      <p>Please log in with your admin email to continue.</p>
-      <button id="login-btn">Login with Google</button>
-    </div>
-
-    <!-- Admin Panel (Hidden until logged in) -->
-    <div id="admin-panel" style="display: none;">
-      <h2>Admin Dashboard</h2>
-      <p>Welcome, <span id="admin-email"></span></p>
+    <p>Describe your website, and our AI will build and deploy it live.</p>
       
-      <div class="generator-box">
-        <label for="site-prompt">What kind of website should the AI build?</label>
-        <textarea id="site-prompt" rows="4" placeholder="e.g., A dark-themed portfolio for a photographer..."></textarea>
-        
-        <label for="subdomain-name">Subdomain Name (e.g., 'portfolio'):</label>
-        <input type="text" id="subdomain-name" placeholder="portfolio">
+    <div class="generator-box">
+      <label for="site-prompt">What should the website look like?</label>
+      <textarea id="site-prompt" rows="4" placeholder="A futuristic dark-mode landing page for a tech startup..."></textarea>
+      
+      <label for="subdomain-name">Choose your link (e.g., typing 'coolsite' makes coolsite.textnexus.me):</label>
+      <input type="text" id="subdomain-name" placeholder="my-new-site">
 
-        <button id="generate-btn">Generate & Deploy Site</button>
-      </div>
-
-      <div id="status-output"></div>
+      <button id="generate-btn">Build & Deploy Website</button>
     </div>
+
+    <div id="status-output"></div>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script type="module" src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
