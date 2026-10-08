@@ -17,8 +17,8 @@ export default {
       const repoName = `nexus-${subdomain}`;
       const githubUsername = "wwebsitesystem-stack";
 
-      // 1. Run Cloudflare AI with active fast model variant
-      const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fast', {
+      // 1. Run Cloudflare AI with the current active Llama 3.1 FP8 model
+      const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fp8', {
         messages: [
           { role: "system", content: "You are an expert web developer. Return ONLY complete HTML with inline CSS. No markdown formatting." },
           { role: "user", content: prompt }
