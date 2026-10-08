@@ -3,234 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus AI Creator</title>
+    <title>Nexus Creator Workspace</title>
     <style>
-        /* Base styling for iframe/page body */
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: transparent; /* Allows parent index.html background to show if iframed */
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #0b0b0c; color: #ededed; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* Top Navigation Header */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: #121214; border-bottom: 1px solid #26262a; }
+        .nav-left { display: flex; align-items: center; gap: 16px; }
+        .back-btn { background: transparent; border: 1px solid #333; color: #ededed; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; text-decoration: none; transition: 0.2s; }
+        .back-btn:hover { background: #26262a; }
+        .logo { font-weight: 700; font-size: 16px; letter-spacing: -0.5px; }
+        .user-credits { font-size: 13px; color: #a1a1aa; background: #18181b; padding: 4px 10px; border-radius: 99px; border: 1px solid #27272a; }
 
-        /* Styling to match the original TextNexus UI */
-        .nexus-creator-panel {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            max-width: 650px;
-            color: #ffffff;
-            padding: 20px;
-        }
-        .header-flex {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 32px;
-        }
-        .header-text h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin: 0 0 8px 0;
-            letter-spacing: -0.5px;
-        }
-        .header-text p {
-            color: #a1a1aa;
-            font-size: 15px;
-            margin: 0;
-            line-height: 1.5;
-            max-width: 300px;
-        }
-        .credits-badge {
-            background: #18181b;
-            border: 1px solid #27272a;
-            padding: 10px 14px;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-        .credits-badge span:first-child {
-            font-size: 10px;
-            font-weight: 600;
-            color: #d4d4d8;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-        .credits-badge span:last-child {
-            font-size: 16px;
-            font-weight: 700;
-            font-family: monospace;
-        }
-        .form-group {
-            margin-bottom: 24px;
-        }
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #f4f4f5;
-        }
-        textarea, input[type="text"] {
-            width: 100%;
-            background-color: #09090b;
-            border: 1px solid #27272a;
-            color: #ffffff;
-            border-radius: 8px;
-            padding: 14px;
-            font-size: 15px;
-            outline: none;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
-        }
-        textarea:focus, input[type="text"]:focus {
-            border-color: #52525b;
-        }
-        .input-group {
-            display: flex;
-            background-color: #09090b;
-            border: 1px solid #27272a;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .input-group input {
-            border: none;
-            border-radius: 0;
-            flex-grow: 1;
-        }
-        .input-group .suffix {
-            background-color: #18181b;
-            padding: 14px 16px;
-            color: #a1a1aa;
-            font-size: 15px;
-            border-left: 1px solid #27272a;
-            font-family: monospace;
-            display: flex;
-            align-items: center;
-        }
-        button {
-            width: 100%;
-            background-color: #3b82f6; /* Matching the blue button from your UI */
-            color: #ffffff;
-            border: none;
-            padding: 16px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: opacity 0.2s;
-        }
-        button:hover {
-            opacity: 0.9;
-        }
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        #statusBox {
-            margin-top: 16px;
-            border-radius: 8px;
-        }
+        /* Main Workspace Split View */
+        .workspace { display: flex; flex: 1; height: calc(100vh - 53px); overflow: hidden; }
+        
+        /* Left Panel: Chat & History */
+        .sidebar { width: 380px; background: #121214; border-right: 1px solid #26262a; display: flex; flex-direction: column; }
+        .chat-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .message { padding: 10px 14px; border-radius: 8px; font-size: 14px; max-width: 85%; line-height: 1.4; }
+        .message.user { background: #27272a; align-self: flex-end; color: #fff; }
+        .message.assistant { background: #18181b; border: 1px solid #27272a; align-self: flex-start; color: #d4d4d8; }
+        
+        /* Prompt Input Area */
+        .input-area { padding: 16px; background: #121214; border-top: 1px solid #26262a; display: flex; flex-direction: column; gap: 10px; }
+        .subdomain-input, textarea { width: 100%; background: #18181b; border: 1px solid #27272a; border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 14px; outline: none; resize: none; }
+        .subdomain-input:focus, textarea:focus { border-color: #52525b; }
+        .build-btn { background: #fff; color: #000; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .build-btn:hover { background: #e4e4e7; }
+
+        /* Right Panel: Live Preview */
+        .preview-pane { flex: 1; background: #09090b; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; background: #fff; }
+        .preview-placeholder { color: #52525b; font-size: 14px; text-align: center; }
     </style>
 </head>
 <body>
 
-<div class="nexus-creator-panel">
-    <div class="header-flex">
-        <div class="header-text">
-            <h1>Build with Nexus</h1>
-            <p>AI generates code and deploys to a live Textnexus.me subdomain.</p>
+    <header>
+        <div class="nav-left">
+            <a href="https://textnexus.me" class="back-btn">← Back to Nexus</a>
+            <span class="logo">Nexus Creator</span>
         </div>
-        <div class="credits-badge">
-            <span>REMAINING CREDITS</span>
-            <span>9,999,999,999,998,000</span>
+        <div class="user-credits" id="creditDisplay">Credits: 10,000 | Cost: 1,000 / build</div>
+    </header>
+
+    <div class="workspace">
+        <!-- Sidebar for Chat & Prompting -->
+        <div class="sidebar">
+            <div class="chat-container" id="chatHistory">
+                <div class="message assistant">Hello! Describe the website you want to build, enter your preferred subdomain, and hit build. (Costs 1,000 credits). Note: Generated sites remain active for 7 days.</div>
+            </div>
+            <div class="input-area">
+                <input type="text" id="subdomainInput" class="subdomain-input" placeholder="subdomain (e.g. mycoolsite)">
+                <textarea id="promptInput" rows="3" placeholder="What should we build?"></textarea>
+                <button class="build-btn" onclick="startBuild()">Build Website (1,000 Credits)</button>
+            </div>
+        </div>
+
+        <!-- Live Preview Panel -->
+        <div class="preview-pane" id="previewPane">
+            <div class="preview-placeholder" id="placeholderText">Your live website preview will appear here once generated.</div>
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="promptInput">Website Description:</label>
-        <textarea id="promptInput" rows="5" placeholder="Describe the website you want to build..."></textarea>
-    </div>
+    <script>
+        async function startBuild() {
+            const subdomain = document.getElementById('subdomainInput').value.trim();
+            const prompt = document.getElementById('promptInput').value.trim();
+            const chatContainer = document.getElementById('chatHistory');
+            const previewPane = document.getElementById('previewPane');
 
-    <div class="form-group">
-        <label for="subdomainInput">Subdomain:</label>
-        <div class="input-group">
-            <input type="text" id="subdomainInput" placeholder="e.g. my-cool-site">
-            <div class="suffix">.textnexus.me</div>
-        </div>
-    </div>
-
-    <button id="deployBtn" onclick="startDeployment()">
-        Build & Deploy Website
-    </button>
-
-    <div id="statusBox"></div>
-</div>
-
-<script>
-    async function startDeployment() {
-        const promptText = document.getElementById("promptInput").value.trim();
-        const subdomainText = document.getElementById("subdomainInput").value.trim();
-        const statusBox = document.getElementById("statusBox");
-        const deployBtn = document.getElementById("deployBtn");
-
-        if (!promptText || !subdomainText) {
-            statusBox.innerHTML = `
-                <div style="background: #18181b; border: 1px solid #27272a; padding: 16px; border-radius: 8px; color: #f87171;">
-                    Please enter both a description and a link.
-                </div>`;
-            return;
-        }
-
-        deployBtn.disabled = true;
-        statusBox.innerHTML = `
-            <div style="background: #18181b; border: 1px solid #27272a; padding: 16px; border-radius: 8px; color: #60a5fa;">
-                Connecting to backend worker...
-            </div>`;
-
-        try {
-            const response = await fetch("https://little-unit-9bae.brodywilliams0226.workers.dev/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: promptText, subdomain: subdomainText })
-            });
-
-            // 1. Capture raw text to trap JSON parsing errors
-            const rawText = await response.text();
-            
-            if (!response.ok) {
-                throw new Error(`HTTP Error ${response.status}: ${rawText}`);
+            if (!subdomain || !prompt) {
+                alert("Please provide both a subdomain and a prompt.");
+                return;
             }
 
-            // 2. Parse JSON safely
-            let data;
+            // Append user message
+            chatContainer.innerHTML += `<div class="message user">${prompt} (Subdomain: ${subdomain})</div>`;
+            chatContainer.innerHTML += `<div class="message assistant" id="loadingMsg">Building your site, configuring Firebase, and updating Cloudflare DNS...</div>`;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
             try {
-                data = JSON.parse(rawText);
+                const response = await fetch('https://little-unit-9bae.brodywilliams0226.workers.dev/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt, subdomain })
+                });
+
+                const data = await response.json();
+                
+                document.getElementById('loadingMsg').remove();
+
+                if (response.ok) {
+                    chatContainer.innerHTML += `<div class="message assistant">Success! Your site is live at <a href="${data.siteUrl}" target="_blank" style="color: #60a5fa;">${data.siteUrl}</a>. (Expires in 7 days).</div>`;
+                    
+                    // Load live preview in iframe
+                    previewPane.innerHTML = `<iframe src="${data.siteUrl}"></iframe>`;
+                } else {
+                    chatContainer.innerHTML += `<div class="message assistant" style="color: #f87171;">Error: ${data.error || 'Build failed.'}</div>`;
+                }
             } catch (err) {
-                throw new Error(`Cloudflare sent invalid JSON: ${rawText}`);
+                document.getElementById('loadingMsg').remove();
+                chatContainer.innerHTML += `<div class="message assistant" style="color: #f87171;">Network error connecting to Worker.</div>`;
             }
-
-            // 3. Success UI
-            statusBox.innerHTML = `
-                <div style="background: #18181b; border: 1px solid #27272a; padding: 16px; border-radius: 8px;">
-                    <div style="color: #4ade80; font-weight: 600; margin-bottom: 8px;">Deployment Started!</div>
-                    Live URL: <a href="${data.siteUrl}" target="_blank" style="color: #60a5fa; text-decoration: none;">${data.siteUrl}</a><br>
-                    <div style="color: #a1a1aa; font-size: 13px; margin-top: 8px;">GitHub Pages takes ~60 seconds to issue SSL. If you get a 404, please refresh in a minute.</div>
-                </div>`;
-
-        } catch (err) {
-            // 4. PRINT REAL ERROR ON SCREEN
-            statusBox.innerHTML = `
-                <div style="background: #18181b; border: 1px solid #27272a; padding: 16px; border-radius: 8px; color: #f87171;">
-                    <strong>Error:</strong> ${err.message}
-                </div>`;
-        } finally {
-            deployBtn.disabled = false;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>
