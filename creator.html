@@ -1,246 +1,157 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Creator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Nexus AI Builder</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #2563eb;
+        }
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        #statusBox {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 6px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        a {
+            color: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Build with Nexus</h1>
+
+    <div class="form-group">
+        <label for="promptInput">Website Description:</label>
+        <textarea id="promptInput" rows="4" placeholder="Describe the website you want to build..."></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="subdomainInput">Subdomain:</label>
+        <input type="text" id="subdomainInput" placeholder="e.g. my-cool-site">
+    </div>
+
+    <button id="deployBtn" onclick="startDeployment()">Build & Deploy Website</button>
+
+    <div id="statusBox"></div>
+
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        background: '#0a0a0a',
-                        surface: '#121212',
-                        surfaceHover: '#1c1c1c',
-                        border: '#262626',
-                        textMain: '#ededed',
-                        textMuted: '#a1a1aa'
-                    }
+        async function startDeployment() {
+            const promptText = document.getElementById("promptInput").value.trim();
+            const subdomainText = document.getElementById("subdomainInput").value.trim();
+            const statusBox = document.getElementById("statusBox");
+            const deployBtn = document.getElementById("deployBtn");
+
+            // Basic validation
+            if (!promptText || !subdomainText) {
+                statusBox.innerHTML = '<div style="color: #f87171; background: rgba(248, 113, 113, 0.1); padding: 12px; border-radius: 6px;">Please enter both a description and a subdomain.</div>';
+                return;
+            }
+
+            try {
+                // Disable button and show loading state
+                deployBtn.disabled = true;
+                statusBox.innerHTML = '<div style="color: #60a5fa; background: rgba(96, 165, 250, 0.1); padding: 12px; border-radius: 6px;">Connecting to backend worker... Please wait.</div>';
+
+                // Call the Cloudflare Worker
+                const response = await fetch("https://little-unit-9bae.brodywilliams0226.workers.dev/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        prompt: promptText,
+                        subdomain: subdomainText
+                    })
+                });
+
+                // 1. Get the raw text first before trying to parse JSON
+                const rawText = await response.text();
+                
+                // 2. Check if the response was an HTTP error
+                if (!response.ok) {
+                    throw new Error(`Server returned ${response.status}: ${rawText}`);
                 }
+
+                // 3. Try parsing the JSON safely
+                let data;
+                try {
+                    data = JSON.parse(rawText);
+                } catch (parseErr) {
+                    throw new Error(`Failed to parse JSON response: ${rawText}`);
+                }
+
+                // Success! Render the links.
+                statusBox.innerHTML = `
+                    <div style="color: #4ade80; background: rgba(74, 222, 128, 0.1); padding: 16px; border-radius: 8px; border: 1px solid rgba(74, 222, 128, 0.2);">
+                        <strong>Deployment Started!</strong><br><br>
+                        Live URL: <a href="${data.siteUrl}" target="_blank">${data.siteUrl}</a><br>
+                        GitHub Repo: <a href="${data.repoUrl}" target="_blank">View Code</a><br><br>
+                        <span style="color: #9ca3af; font-size: 14px;">Note: GitHub Pages takes about 1 to 2 minutes to generate the SSL certificate. If the link shows a 404, refresh in a minute.</span>
+                    </div>
+                `;
+
+            } catch (err) {
+                // This catches the exact local error and displays it
+                statusBox.innerHTML = `
+                    <div style="color: #f87171; background: rgba(248, 113, 113, 0.1); padding: 16px; border-radius: 8px; border: 1px solid rgba(248, 113, 113, 0.2);">
+                        <strong>Error:</strong> ${err.message}
+                    </div>
+                `;
+            } finally {
+                // Re-enable the button
+                deployBtn.disabled = false;
             }
         }
     </script>
-    <style>
-        body { background-color: #0a0a0a; color: #ededed; font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
-    </style>
-</head>
-<body class="p-6 h-screen overflow-hidden">
 
-    <div class="h-full max-w-7xl mx-auto flex gap-6">
-        
-        <!-- LEFT SIDEBAR: CREATED WEBSITES LIST -->
-        <aside class="w-80 bg-surface border border-border rounded-xl flex flex-col overflow-hidden shrink-0">
-            <div class="p-4 border-b border-border flex items-center justify-between bg-surface">
-                <div class="flex items-center gap-2">
-                    <i class="ph ph-globe text-textMuted text-lg"></i>
-                    <h3 class="text-sm font-semibold text-textMain">Your Websites</h3>
-                </div>
-                <span id="site-count-badge" class="text-[10px] bg-border px-2 py-0.5 rounded-full font-mono text-textMuted">0</span>
-            </div>
-
-            <!-- Websites List -->
-            <div id="website-list" class="flex-1 overflow-y-auto p-3 flex flex-col gap-2.5">
-                <p class="text-xs text-textMuted text-center py-8">Log in to view your websites.</p>
-            </div>
-
-            <!-- Extension Notice -->
-            <div class="p-3.5 border-t border-border bg-background/50 text-[11px] text-textMuted flex flex-col gap-1">
-                <span class="font-semibold text-textMain flex items-center gap-1">
-                    <i class="ph ph-clock-afternoon text-amber-400"></i> 7-Day Temporary Hosting
-                </span>
-                <p>Websites auto-expire after 7 days. Need your site up longer?</p>
-                <a href="mailto:Nexus.Web.Solutions@outlook.com?subject=Extend%20Website%20Hosting" class="text-textMain font-mono underline hover:text-amber-400 transition-colors mt-0.5">Nexus.Web.Solutions@outlook.com</a>
-            </div>
-        </aside>
-
-        <!-- MAIN CREATOR FORM -->
-        <main class="flex-1 bg-surface border border-border rounded-xl p-8 flex flex-col overflow-y-auto">
-            <div class="flex items-center justify-between mb-6">
-                <div>
-                    <h2 class="text-2xl font-semibold text-textMain">Nexus AI Website Builder</h2>
-                    <p class="text-textMuted text-sm mt-1">AI generates code and deploys to a live Textnexus.me subdomain.</p>
-                </div>
-                <div class="bg-background border border-border rounded-xl px-4 py-2 flex items-center gap-3">
-                    <i class="ph ph-coins text-amber-400 text-xl"></i>
-                    <div>
-                        <p class="text-[10px] uppercase font-bold text-textMuted tracking-wider">Remaining Credits</p>
-                        <p id="user-credits-display" class="text-base font-mono font-bold text-textMain">5,000</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="flex flex-col gap-5 flex-1">
-                <div>
-                    <label class="block text-sm font-medium mb-1.5 text-textMain">What should the website look like?</label>
-                    <textarea id="site-prompt" rows="5" class="w-full bg-background border border-border rounded-lg p-3 text-textMain text-sm focus:outline-none focus:border-textMuted transition-colors placeholder:text-textMuted/50" placeholder="A modern landing page with dark mode, glowing accents, and pricing sections..."></textarea>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium mb-1.5 text-textMain">Choose your link</label>
-                    <div class="flex items-center">
-                        <input type="text" id="subdomain-name" class="flex-1 bg-background border border-border rounded-l-lg p-3 text-textMain text-sm focus:outline-none focus:border-textMuted transition-colors placeholder:text-textMuted/50" placeholder="my-new-site">
-                        <span class="bg-surface border border-l-0 border-border rounded-r-lg p-3 text-textMuted text-sm font-mono">.textnexus.me</span>
-                    </div>
-                </div>
-
-                <button id="generate-btn" class="w-full bg-textMain text-background font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity mt-2 text-sm flex items-center justify-center gap-2">
-                    <i class="ph ph-magic-wand text-lg"></i> Build & Deploy Website (500 Credits)
-                </button>
-
-                <div id="status-output" class="p-4 rounded-lg bg-background border border-border text-sm whitespace-pre-wrap hidden"></div>
-            </div>
-        </main>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref as dbRef, onValue, update, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
-            authDomain: "nexus-web-development-official.firebaseapp.com",
-            projectId: "nexus-web-development-official",
-            databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com" 
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
-
-        const WORKER_URL = "https://little-unit-9bae.brodywilliams0226.workers.dev";
-        const GENERATION_COST = 500;
-        const DEFAULT_CREDITS = 5000;
-
-        let currentUser = null;
-        let currentCredits = DEFAULT_CREDITS;
-
-        const creditsDisplay = document.getElementById('user-credits-display');
-        const websiteList = document.getElementById('website-list');
-        const siteCountBadge = document.getElementById('site-count-badge');
-        const generateBtn = document.getElementById('generate-btn');
-        const statusOutput = document.getElementById('status-output');
-
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            if (user) {
-                // Listen to User Credits
-                onValue(dbRef(db, `textnexus/users/${user.uid}/credits`), (snapshot) => {
-                    const val = snapshot.val();
-                    if (val === null) {
-                        update(dbRef(db, `textnexus/users/${user.uid}`), { credits: DEFAULT_CREDITS });
-                        currentCredits = DEFAULT_CREDITS;
-                    } else {
-                        currentCredits = val;
-                    }
-                    creditsDisplay.textContent = currentCredits.toLocaleString();
-                });
-
-                // Listen to User Websites
-                onValue(dbRef(db, `textnexus/ai_sites`), (snapshot) => {
-                    const data = snapshot.val();
-                    websiteList.innerHTML = '';
-                    if (!data) {
-                        websiteList.innerHTML = '<p class="text-xs text-textMuted text-center py-8">No created websites yet.</p>';
-                        siteCountBadge.textContent = '0';
-                        return;
-                    }
-
-                    const mySites = Object.keys(data)
-                        .map(k => ({ id: k, ...data[k] }))
-                        .filter(s => s.uid === user.uid)
-                        .sort((a, b) => b.createdAt - a.createdAt);
-
-                    siteCountBadge.textContent = mySites.length;
-
-                    if (mySites.length === 0) {
-                        websiteList.innerHTML = '<p class="text-xs text-textMuted text-center py-8">No created websites yet.</p>';
-                        return;
-                    }
-
-                    mySites.forEach(s => {
-                        const now = Date.now();
-                        const expiresAt = s.createdAt + (7 * 24 * 60 * 60 * 1000);
-                        const daysLeft = Math.max(0, Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24)));
-                        const isExpired = daysLeft === 0;
-
-                        const card = document.createElement('div');
-                        card.className = 'p-3 rounded-lg border border-border bg-background flex flex-col gap-2';
-                        card.innerHTML = `
-                            <div class="flex items-center justify-between">
-                                <span class="font-semibold text-xs text-textMain font-mono truncate">${s.subdomain}.textnexus.me</span>
-                                <span class="text-[10px] px-2 py-0.5 rounded font-medium border ${isExpired ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}">
-                                    ${isExpired ? 'Expired' : daysLeft + 'd left'}
-                                </span>
-                            </div>
-                            <p class="text-[11px] text-textMuted line-clamp-2">${s.prompt}</p>
-                            <a href="https://${s.subdomain}.textnexus.me" target="_blank" class="text-[11px] text-textMain hover:underline flex items-center gap-1 font-medium mt-1">
-                                <i class="ph ph-arrow-square-out"></i> Visit Site
-                            </a>
-                        `;
-                        websiteList.appendChild(card);
-                    });
-                });
-            } else {
-                websiteList.innerHTML = '<p class="text-xs text-textMuted text-center py-8">Log in to view your websites.</p>';
-                creditsDisplay.textContent = '5,000';
-            }
-        });
-
-        generateBtn.addEventListener('click', async () => {
-            if (!currentUser) return alert("Please log in first.");
-            if (currentCredits < GENERATION_COST) return alert("Insufficient credits! Email Nexus.Web.Solutions@outlook.com for more credits.");
-
-            const prompt = document.getElementById('site-prompt').value.trim();
-            const subdomain = document.getElementById('subdomain-name').value.trim();
-
-            if (!prompt || !subdomain) return alert("Please fill out both fields.");
-
-            const cleanSubdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, '');
-            statusOutput.classList.remove('hidden');
-            statusOutput.innerText = "Processing... AI generating website and configuring DNS...";
-
-            try {
-                const response = await fetch(WORKER_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ prompt, subdomain: cleanSubdomain })
-                });
-
-                const result = await response.json();
-
-                if (result.error) {
-                    statusOutput.innerText = `Error: ${result.error}`;
-                } else {
-                    // Deduct Credits
-                    const newCredits = currentCredits - GENERATION_COST;
-                    await update(dbRef(db, `textnexus/users/${currentUser.uid}`), { credits: newCredits });
-
-                    // Record Website Log in Firebase
-                    await push(dbRef(db, 'textnexus/ai_sites'), {
-                        uid: currentUser.uid,
-                        userEmail: currentUser.email,
-                        prompt: prompt,
-                        subdomain: cleanSubdomain,
-                        repoUrl: result.repoUrl,
-                        createdAt: Date.now()
-                    });
-
-                    statusOutput.innerText = `Success! Website created and deployed.\n\nGitHub Repo: ${result.repoUrl}\nLive URL: https://${cleanSubdomain}.textnexus.me\n\nNote: First deployment sync takes 1-3 minutes.`;
-                }
-            } catch (err) {
-                statusOutput.innerText = "Error connecting to backend worker.";
-                console.error(err);
-            }
-        });
-    </script>
 </body>
 </html>
