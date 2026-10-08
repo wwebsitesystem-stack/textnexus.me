@@ -48,7 +48,7 @@
                 <p class="text-xs text-textMuted mt-1">You must be logged in as <span class="text-textMain font-mono">brodywilliams0226@gmail.com</span> to enter the passcode.</p>
             </div>
 
-            <!-- STEP 1: Login Check (Visible when NOT logged in as owner) -->
+            <!-- STEP 1: Login Check -->
             <div id="admin-login-section" class="flex flex-col gap-2.5 mt-2">
                 <button id="admin-login-btn" class="w-full py-2 bg-surfaceHover border border-border text-textMain rounded-lg text-xs font-semibold hover:bg-border transition-colors flex items-center justify-center gap-1.5">
                     <i class="ph ph-google-logo text-sm"></i> Authenticate Account
@@ -56,7 +56,7 @@
                 <p id="auth-error-msg" class="text-[11px] text-red-400 hidden mt-1"></p>
             </div>
 
-            <!-- STEP 2: Passcode Form (Hidden until logged in as owner) -->
+            <!-- STEP 2: Passcode Form -->
             <form id="lock-form" class="flex flex-col gap-2.5 hidden mt-2">
                 <div class="flex items-center justify-center gap-1.5 mb-2 text-[11px] font-medium text-emerald-400 bg-emerald-500/10 py-1.5 rounded-lg border border-emerald-500/20">
                     <i class="ph ph-check-circle"></i> Verified: Owner Account
@@ -110,8 +110,8 @@
     <main class="flex-1 overflow-y-auto p-8 relative">
         <div class="max-w-6xl mx-auto flex flex-col gap-6">
             
-            <!-- Overall System Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Overall System Stats & Owner Credit Editor -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <div class="bg-surface border border-border p-4 rounded-xl flex items-center justify-between">
                     <div>
                         <p class="text-xs text-textMuted font-medium">Total Registered Users</p>
@@ -148,6 +148,17 @@
                         <i class="ph ph-user-minus text-xl"></i>
                     </div>
                 </div>
+                <!-- Owner Direct Credit Control Card -->
+                <div class="bg-surface border border-border p-4 rounded-xl flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <p class="text-xs text-textMuted font-medium">My Credits</p>
+                        <i class="ph ph-coins text-amber-400 text-lg"></i>
+                    </div>
+                    <div class="flex items-center gap-2 mt-2">
+                        <input type="number" id="owner-credit-input" class="w-full bg-background border border-border rounded px-2 py-1 text-sm font-mono text-amber-400 font-bold outline-none focus:border-textMuted" value="5000">
+                        <button id="owner-save-credits-btn" class="px-3 py-1 bg-textMain text-background rounded text-xs font-semibold hover:opacity-90">Save</button>
+                    </div>
+                </div>
             </div>
 
             <!-- TAB 1: USER MANAGEMENT & CREDITS -->
@@ -155,7 +166,7 @@
                 <div class="bg-surface border border-border rounded-xl overflow-hidden shadow-2xl">
                     <div class="p-4 border-b border-border flex items-center justify-between bg-surface">
                         <h3 class="text-sm font-semibold text-textMain">User Directory & Credits</h3>
-                        <span class="text-xs text-textMuted">Manage roles, ban users, reset or grant credits</span>
+                        <span class="text-xs text-textMuted">Manage roles, ban users, customize or reset user credits</span>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -163,7 +174,7 @@
                             <thead class="bg-background text-xs uppercase tracking-wider text-textMuted border-b border-border">
                                 <tr>
                                     <th class="py-3.5 px-6 font-medium">User Profile</th>
-                                    <th class="py-3.5 px-6 font-medium">Credits</th>
+                                    <th class="py-3.5 px-6 font-medium">Credits Control</th>
                                     <th class="py-3.5 px-6 font-medium">Role</th>
                                     <th class="py-3.5 px-6 font-medium">Status</th>
                                     <th class="py-3.5 px-6 font-medium text-right">Actions</th>
@@ -293,7 +304,6 @@
         let currentUser = null;
         let isOwner = false;
 
-        // UI Elements
         const lockScreen = document.getElementById('password-lock-screen');
         const loginSection = document.getElementById('admin-login-section');
         const lockForm = document.getElementById('lock-form');
@@ -302,8 +312,9 @@
         const authErrorMsg = document.getElementById('auth-error-msg');
         const adminLoginBtn = document.getElementById('admin-login-btn');
         const reLockBtn = document.getElementById('re-lock-btn');
+        const ownerCreditInput = document.getElementById('owner-credit-input');
+        const ownerSaveCreditsBtn = document.getElementById('owner-save-credits-btn');
 
-        // Handle Google Login Click
         adminLoginBtn.addEventListener('click', async () => {
             try {
                 if (auth.currentUser) await signOut(auth);
@@ -313,39 +324,39 @@
             }
         });
 
-        // Track Auth State Change
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             isOwner = (user?.email === OWNER_EMAIL);
 
             if (!isOwner) {
-                // Not the owner: Show login button, hide passcode form
                 sessionStorage.removeItem('nexus_admin_unlocked');
                 lockScreen.classList.remove('hidden');
                 lockForm.classList.add('hidden');
                 loginSection.classList.remove('hidden');
 
                 if (user) {
-                    // Logged in, but wrong email
                     authErrorMsg.textContent = `Access Denied: ${user.email} is not authorized.`;
                     authErrorMsg.classList.remove('hidden');
                     adminLoginBtn.innerHTML = `<i class="ph ph-arrows-left-right text-sm"></i> Switch Account`;
                 } else {
-                    // Not logged in at all
                     authErrorMsg.classList.add('hidden');
                     adminLoginBtn.innerHTML = `<i class="ph ph-google-logo text-sm"></i> Authenticate Account`;
                 }
             } else {
-                // Is Owner: Hide login button, SHOW passcode form
                 loginSection.classList.add('hidden');
                 lockForm.classList.remove('hidden');
 
                 if (sessionStorage.getItem('nexus_admin_unlocked') === 'true') {
-                    lockScreen.classList.add('hidden'); // Fully unlock if passcode was already entered this session
+                    lockScreen.classList.add('hidden');
                 }
+
+                // Fetch owner credits
+                onValue(dbRef(db, `textnexus/users/${user.uid}/credits`), (snapshot) => {
+                    const val = snapshot.val();
+                    if (val !== null) ownerCreditInput.value = val;
+                }, { onlyOnce: true });
             }
 
-            // Sync user data to DB if logged in
             if (user) {
                 const userRef = dbRef(db, `textnexus/users/${user.uid}`);
                 await update(userRef, {
@@ -357,25 +368,27 @@
                 });
             }
 
-            // Load Data
             listenToUsers();
             listenToAiSites();
             listenToChats();
             listenToUpdates();
         });
 
-        // Passcode Submission (Only possible if the form is visible, which means isOwner is true)
+        ownerSaveCreditsBtn.addEventListener('click', async () => {
+            if (!currentUser || !isOwner) return;
+            const newCredits = parseInt(ownerCreditInput.value);
+            if (isNaN(newCredits)) return alert("Please enter a valid number.");
+            await update(dbRef(db, `textnexus/users/${currentUser.uid}`), { credits: newCredits });
+            alert("Your credits have been updated!");
+        });
+
         lockForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const inputVal = passInput.value.trim();
-
-            if (inputVal !== ADMIN_PASSCODE) {
+            if (passInput.value.trim() !== ADMIN_PASSCODE) {
                 errorMsg.textContent = "Incorrect passcode.";
                 errorMsg.classList.remove('hidden');
                 return;
             }
-
-            // Success
             sessionStorage.setItem('nexus_admin_unlocked', 'true');
             lockScreen.classList.add('hidden');
             errorMsg.classList.add('hidden');
@@ -393,8 +406,6 @@
             btn.classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
         };
-
-        // --- DATABASE LISTENERS ---
 
         function listenToUsers() {
             onValue(dbRef(db, 'textnexus/users'), (snapshot) => {
@@ -415,7 +426,7 @@
 
                 users.forEach(u => {
                     const isTargetOwner = (u.email === OWNER_EMAIL);
-                    const disableControls = !isOwner || isTargetOwner;
+                    const disableControls = !isOwner;
                     const userCredits = u.credits ?? 5000;
 
                     const row = document.createElement('tr');
@@ -429,10 +440,10 @@
                             </div>
                         </td>
                         <td class="py-4 px-6 font-mono text-xs">
-                            <span class="text-amber-400 font-bold">${userCredits.toLocaleString()}</span>
-                            <div class="flex items-center gap-1 mt-1">
-                                <button onclick="window.addCredits('${u.uid}', ${userCredits}, 5000)" ${disableControls ? 'disabled' : ''} class="px-1.5 py-0.5 rounded text-[10px] bg-surfaceHover border border-border text-textMuted hover:text-textMain disabled:opacity-30">+5k</button>
-                                <button onclick="window.resetCredits('${u.uid}')" ${disableControls ? 'disabled' : ''} class="px-1.5 py-0.5 rounded text-[10px] bg-surfaceHover border border-border text-textMuted hover:text-textMain disabled:opacity-30">Reset</button>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="credits-${u.uid}" value="${userCredits}" class="w-24 bg-background border border-border rounded px-2 py-1 text-amber-400 font-bold outline-none focus:border-textMuted" ${disableControls ? 'disabled' : ''}>
+                                <button onclick="window.saveUserCredits('${u.uid}')" ${disableControls ? 'disabled' : ''} class="px-2 py-1 rounded bg-surfaceHover border border-border text-textMain hover:bg-border disabled:opacity-30">Set</button>
+                                <button onclick="window.resetCredits('${u.uid}')" ${disableControls ? 'disabled' : ''} class="px-2 py-1 rounded bg-surfaceHover border border-border text-textMuted hover:text-textMain disabled:opacity-30">Reset</button>
                             </div>
                         </td>
                         <td class="py-4 px-6">
@@ -546,9 +557,12 @@
             });
         }
 
-        window.addCredits = async (uid, currentVal, amount) => {
+        window.saveUserCredits = async (uid) => {
             if (!isOwner) return;
-            await update(dbRef(db, `textnexus/users/${uid}`), { credits: currentVal + amount });
+            const inputVal = parseInt(document.getElementById(`credits-${uid}`).value);
+            if (isNaN(inputVal)) return alert("Invalid number.");
+            await update(dbRef(db, `textnexus/users/${uid}`), { credits: inputVal });
+            alert("User credits updated!");
         };
 
         window.resetCredits = async (uid) => {
