@@ -1,4 +1,3 @@
-
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") {
@@ -18,23 +17,32 @@ export default {
       const repoName = `nexus-${subdomain}`;
       const githubUsername = "wwebsitesystem-stack";
 
-      // 1. Run Cloudflare AI (Updated to 3.1)
+      // 1. Run Cloudflare AI
       const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
         messages: [
           { role: "system", content: "You are an expert web developer. Return ONLY complete HTML with inline CSS. No markdown." },
           { role: "user", content: prompt }
         ]
       });
-      const generatedCode = aiResponse.response;
+      let generatedCode = aiResponse.response;
 
-      // 2. Create GitHub Repo via Composio
+      // 2. Inject "Powered by Nexus" Watermark Badge
+      const nexusBadge = `<a href="https://textnexus.me" target="_blank" style="position: fixed; bottom: 16px; right: 16px; z-index: 999999; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600; color: #ededed; background-color: rgba(18, 18, 18, 0.9); border: 1px solid #262626; padding: 6px 12px; border-radius: 9999px; text-decoration: none; backdrop-filter: blur(8px); display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">Powered by Nexus • textnexus.me</a>`;
+
+      if (generatedCode.includes('</body>')) {
+        generatedCode = generatedCode.replace('</body>', `${nexusBadge}</body>`);
+      } else {
+        generatedCode += nexusBadge;
+      }
+
+      // 3. Create GitHub Repo via Composio
       await fetch('https://api.composio.dev/api/v1/actions/GITHUB_CREATE_A_REPOSITORY_FOR_THE_AUTHENTICATED_USER/execute', {
         method: 'POST',
         headers: { 'x-api-key': env.COMPOSIO_API_KEY, 'Content-Type': 'application/json' },
         body: JSON.stringify({ input: { name: repoName, private: false } })
       });
 
-      // 3. Upload Code to GitHub via Composio
+      // 4. Upload Code to GitHub via Composio
       const encodedCode = btoa(unescape(encodeURIComponent(generatedCode))); 
       await fetch('https://api.composio.dev/api/v1/actions/GITHUB_CREATE_OR_UPDATE_FILE_CONTENTS/execute', {
         method: 'POST',
@@ -44,7 +52,7 @@ export default {
         })
       });
 
-      // 4. Create Subdomain on Textnexus.me via Cloudflare DNS API
+      // 5. Create Subdomain on Textnexus.me via Cloudflare DNS API
       await fetch(`https://api.cloudflare.com/client/v4/zones/${env.CLOUDFLARE_ZONE_ID}/dns_records`, {
         method: 'POST',
         headers: {
