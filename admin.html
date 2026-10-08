@@ -37,20 +37,20 @@
 </head>
 <body class="w-full h-full flex flex-col overflow-hidden bg-background relative">
 
-    <!-- PASSWORD LOCK OVERLAY -->
+    <!-- PASSWORD & EMAIL STRICT LOCK OVERLAY -->
     <div id="password-lock-screen" class="fixed inset-0 z-50 bg-background/95 backdrop-blur-md flex flex-col items-center justify-center p-4">
         <div class="bg-surface border border-border p-6 rounded-xl shadow-2xl max-w-sm w-full flex flex-col gap-4 text-center">
             <div class="w-12 h-12 rounded-full bg-surfaceHover border border-border flex items-center justify-center mx-auto text-textMain">
                 <i class="ph ph-lock-key text-2xl"></i>
             </div>
             <div>
-                <h3 class="text-base font-semibold text-textMain">Admin Panel Locked</h3>
-                <p class="text-xs text-textMuted mt-1">Enter your admin password to access controls.</p>
+                <h3 class="text-base font-semibold text-textMain">Admin Access Restricted</h3>
+                <p class="text-xs text-textMuted mt-1">Requires admin passcode AND login as <span class="text-textMain font-mono">brodywilliams0226@gmail.com</span>.</p>
             </div>
 
             <form id="lock-form" class="flex flex-col gap-2.5">
-                <input type="password" id="admin-password-input" placeholder="Enter Password..." class="w-full bg-background border border-border rounded-lg px-3.5 py-2 text-sm text-textMain text-center outline-none focus:border-textMuted transition-colors">
-                <p id="lock-error-msg" class="text-[11px] text-red-400 hidden">Incorrect password or unauthorized user.</p>
+                <input type="password" id="admin-password-input" placeholder="Enter Passcode..." class="w-full bg-background border border-border rounded-lg px-3.5 py-2 text-sm text-textMain text-center outline-none focus:border-textMuted transition-colors">
+                <p id="lock-error-msg" class="text-[11px] text-red-400 hidden">Access Denied: Only brodywilliams0226@gmail.com can unlock this panel.</p>
                 <button type="submit" class="w-full py-2 bg-textMain text-background rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5">
                     <i class="ph ph-key text-sm"></i> Unlock Admin Panel
                 </button>
@@ -69,7 +69,7 @@
         </div>
         
         <div class="flex items-center gap-3">
-            <div id="admin-badge" class="hidden items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full font-medium">
+            <div id="admin-badge" class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full font-medium">
                 <i class="ph ph-lock-key-open"></i> System Owner
             </div>
             <button id="re-lock-btn" class="px-2.5 py-1 bg-surfaceHover border border-border text-xs text-textMuted hover:text-textMain rounded-lg transition-colors flex items-center gap-1.5">
@@ -77,11 +77,6 @@
             </button>
         </div>
     </header>
-
-    <!-- Permission Restriction Warning -->
-    <div id="access-denied-banner" class="hidden bg-red-500/10 border-b border-red-500/20 px-8 py-3 text-red-400 text-xs font-medium flex items-center gap-2 shrink-0">
-        <i class="ph ph-warning text-sm"></i> Restricted Access: Only brodywilliams0226@gmail.com can make administrative changes.
-    </div>
 
     <!-- Sub-navigation Tabs -->
     <div class="border-b border-border bg-surface px-8 py-2.5 flex items-center gap-2 shrink-0">
@@ -281,35 +276,46 @@
         const db = getDatabase(app);
 
         const ADMIN_PASSCODE = "022614"; 
+        const OWNER_EMAIL = "brodywilliams0226@gmail.com";
 
+        let currentUser = null;
         let isOwner = false;
 
         const lockScreen = document.getElementById('password-lock-screen');
         const lockForm = document.getElementById('lock-form');
         const passInput = document.getElementById('admin-password-input');
         const errorMsg = document.getElementById('lock-error-msg');
-        const adminBadge = document.getElementById('admin-badge');
-        const accessBanner = document.getElementById('access-denied-banner');
         const reLockBtn = document.getElementById('re-lock-btn');
 
+        // Lock form submit check (Requires Passcode AND Owner Email)
         lockForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            if (passInput.value.trim() === ADMIN_PASSCODE) {
-                sessionStorage.setItem('nexus_admin_unlocked', 'true');
-                lockScreen.classList.add('hidden');
-                errorMsg.classList.add('hidden');
-                passInput.value = '';
-            } else {
+            const inputVal = passInput.value.trim();
+            const activeEmail = auth.currentUser?.email;
+
+            if (inputVal !== ADMIN_PASSCODE) {
+                errorMsg.textContent = "Incorrect passcode.";
                 errorMsg.classList.remove('hidden');
+                return;
             }
+
+            if (!activeEmail || activeEmail !== OWNER_EMAIL) {
+                errorMsg.textContent = `Access Denied: Logged in as (${activeEmail || 'Not Logged In'}). Only ${OWNER_EMAIL} can access this panel.`;
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            // Both passcode and email are valid
+            sessionStorage.setItem('nexus_admin_unlocked', 'true');
+            lockScreen.classList.add('hidden');
+            errorMsg.classList.add('hidden');
+            passInput.value = '';
         });
 
         reLockBtn.addEventListener('click', () => {
             sessionStorage.removeItem('nexus_admin_unlocked');
             lockScreen.classList.remove('hidden');
         });
-
-        if (sessionStorage.getItem('nexus_admin_unlocked') === 'true') lockScreen.classList.add('hidden');
 
         window.switchAdminTab = (tabName, btn) => {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -319,16 +325,24 @@
         };
 
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                isOwner = (user.email === 'brodywilliams0226@gmail.com');
-                if (isOwner) {
-                    adminBadge.classList.replace('hidden', 'flex');
-                    accessBanner.classList.add('hidden');
-                } else {
-                    adminBadge.classList.replace('flex', 'hidden');
-                    accessBanner.classList.remove('hidden');
-                }
+            currentUser = user;
+            isOwner = (user?.email === OWNER_EMAIL);
 
+            if (!isOwner) {
+                // Instantly re-lock screen if user is not system owner
+                sessionStorage.removeItem('nexus_admin_unlocked');
+                lockScreen.classList.remove('hidden');
+                if (user) {
+                    errorMsg.textContent = `Access Denied: Logged in as ${user.email}. Only ${OWNER_EMAIL} is authorized.`;
+                    errorMsg.classList.remove('hidden');
+                }
+            } else {
+                if (sessionStorage.getItem('nexus_admin_unlocked') === 'true') {
+                    lockScreen.classList.add('hidden');
+                }
+            }
+
+            if (user) {
                 const userRef = dbRef(db, `textnexus/users/${user.uid}`);
                 await update(userRef, {
                     uid: user.uid,
@@ -363,7 +377,7 @@
                 document.getElementById('stat-banned').textContent = users.filter(u => u.isBanned).length;
 
                 users.forEach(u => {
-                    const isTargetOwner = (u.email === 'brodywilliams0226@gmail.com');
+                    const isTargetOwner = (u.email === OWNER_EMAIL);
                     const disableControls = !isOwner || isTargetOwner;
                     const userCredits = u.credits ?? 5000;
 
