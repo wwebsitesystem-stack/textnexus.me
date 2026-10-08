@@ -17,13 +17,14 @@ export default {
       const repoName = `nexus-${subdomain}`;
       const githubUsername = "wwebsitesystem-stack";
 
-      // 1. Run Cloudflare AI
-      const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+      // 1. Run Cloudflare AI (Updated to stable Llama 3 8B model)
+      const aiResponse = await env.AI.run('@cf/meta/llama-3-8b-instruct', {
         messages: [
-          { role: "system", content: "You are an expert web developer. Return ONLY complete HTML with inline CSS. No markdown." },
+          { role: "system", content: "You are an expert web developer. Return ONLY complete HTML with inline CSS. No markdown formatting." },
           { role: "user", content: prompt }
         ]
       });
+      
       let generatedCode = aiResponse.response;
 
       // 2. Inject "Powered by Nexus" Watermark Badge
@@ -73,7 +74,7 @@ export default {
       }), { headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } });
 
     } catch (err) {
-      return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { "Access-Control-Allow-Origin": "*" } });
+      return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } });
     }
   }
 };
