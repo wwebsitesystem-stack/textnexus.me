@@ -37,22 +37,34 @@
 </head>
 <body class="w-full h-full flex flex-col overflow-hidden bg-background relative">
 
-    <!-- PASSWORD & EMAIL STRICT LOCK OVERLAY -->
+    <!-- TWO-STEP STRICT LOCK OVERLAY -->
     <div id="password-lock-screen" class="fixed inset-0 z-50 bg-background/95 backdrop-blur-md flex flex-col items-center justify-center p-4">
         <div class="bg-surface border border-border p-6 rounded-xl shadow-2xl max-w-sm w-full flex flex-col gap-4 text-center">
             <div class="w-12 h-12 rounded-full bg-surfaceHover border border-border flex items-center justify-center mx-auto text-textMain">
-                <i class="ph ph-lock-key text-2xl"></i>
+                <i class="ph ph-shield-warning text-2xl"></i>
             </div>
             <div>
                 <h3 class="text-base font-semibold text-textMain">Admin Access Restricted</h3>
-                <p class="text-xs text-textMuted mt-1">Requires admin passcode AND login as <span class="text-textMain font-mono">brodywilliams0226@gmail.com</span>.</p>
+                <p class="text-xs text-textMuted mt-1">You must be logged in as <span class="text-textMain font-mono">brodywilliams0226@gmail.com</span> to enter the passcode.</p>
             </div>
 
-            <form id="lock-form" class="flex flex-col gap-2.5">
-                <input type="password" id="admin-password-input" placeholder="Enter Passcode..." class="w-full bg-background border border-border rounded-lg px-3.5 py-2 text-sm text-textMain text-center outline-none focus:border-textMuted transition-colors">
-                <p id="lock-error-msg" class="text-[11px] text-red-400 hidden">Access Denied: Only brodywilliams0226@gmail.com can unlock this panel.</p>
-                <button type="submit" class="w-full py-2 bg-textMain text-background rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5">
-                    <i class="ph ph-key text-sm"></i> Unlock Admin Panel
+            <!-- STEP 1: Login Check (Visible when NOT logged in as owner) -->
+            <div id="admin-login-section" class="flex flex-col gap-2.5 mt-2">
+                <button id="admin-login-btn" class="w-full py-2 bg-surfaceHover border border-border text-textMain rounded-lg text-xs font-semibold hover:bg-border transition-colors flex items-center justify-center gap-1.5">
+                    <i class="ph ph-google-logo text-sm"></i> Authenticate Account
+                </button>
+                <p id="auth-error-msg" class="text-[11px] text-red-400 hidden mt-1"></p>
+            </div>
+
+            <!-- STEP 2: Passcode Form (Hidden until logged in as owner) -->
+            <form id="lock-form" class="flex flex-col gap-2.5 hidden mt-2">
+                <div class="flex items-center justify-center gap-1.5 mb-2 text-[11px] font-medium text-emerald-400 bg-emerald-500/10 py-1.5 rounded-lg border border-emerald-500/20">
+                    <i class="ph ph-check-circle"></i> Verified: Owner Account
+                </div>
+                <input type="password" id="admin-password-input" placeholder="Enter Admin Passcode..." class="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-sm text-textMain text-center outline-none focus:border-textMuted transition-colors">
+                <p id="lock-error-msg" class="text-[11px] text-red-400 hidden">Incorrect passcode.</p>
+                <button type="submit" class="w-full py-2.5 bg-textMain text-background rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5 mt-1">
+                    <i class="ph ph-lock-key-open text-sm"></i> Unlock Admin Panel
                 </button>
             </form>
         </div>
@@ -70,7 +82,7 @@
         
         <div class="flex items-center gap-3">
             <div id="admin-badge" class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs px-3 py-1 rounded-full font-medium">
-                <i class="ph ph-lock-key-open"></i> System Owner
+                <i class="ph ph-check-circle"></i> System Owner Verified
             </div>
             <button id="re-lock-btn" class="px-2.5 py-1 bg-surfaceHover border border-border text-xs text-textMuted hover:text-textMain rounded-lg transition-colors flex items-center gap-1.5">
                 <i class="ph ph-lock text-xs"></i> Lock Panel
@@ -261,7 +273,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getDatabase, ref as dbRef, onValue, update, remove, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         const firebaseConfig = {
@@ -281,17 +293,81 @@
         let currentUser = null;
         let isOwner = false;
 
+        // UI Elements
         const lockScreen = document.getElementById('password-lock-screen');
+        const loginSection = document.getElementById('admin-login-section');
         const lockForm = document.getElementById('lock-form');
         const passInput = document.getElementById('admin-password-input');
         const errorMsg = document.getElementById('lock-error-msg');
+        const authErrorMsg = document.getElementById('auth-error-msg');
+        const adminLoginBtn = document.getElementById('admin-login-btn');
         const reLockBtn = document.getElementById('re-lock-btn');
 
-        // Lock form submit check (Requires Passcode AND Owner Email)
+        // Handle Google Login Click
+        adminLoginBtn.addEventListener('click', async () => {
+            try {
+                if (auth.currentUser) await signOut(auth);
+                await signInWithPopup(auth, new GoogleAuthProvider());
+            } catch (err) {
+                console.error("Authentication failed", err);
+            }
+        });
+
+        // Track Auth State Change
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            isOwner = (user?.email === OWNER_EMAIL);
+
+            if (!isOwner) {
+                // Not the owner: Show login button, hide passcode form
+                sessionStorage.removeItem('nexus_admin_unlocked');
+                lockScreen.classList.remove('hidden');
+                lockForm.classList.add('hidden');
+                loginSection.classList.remove('hidden');
+
+                if (user) {
+                    // Logged in, but wrong email
+                    authErrorMsg.textContent = `Access Denied: ${user.email} is not authorized.`;
+                    authErrorMsg.classList.remove('hidden');
+                    adminLoginBtn.innerHTML = `<i class="ph ph-arrows-left-right text-sm"></i> Switch Account`;
+                } else {
+                    // Not logged in at all
+                    authErrorMsg.classList.add('hidden');
+                    adminLoginBtn.innerHTML = `<i class="ph ph-google-logo text-sm"></i> Authenticate Account`;
+                }
+            } else {
+                // Is Owner: Hide login button, SHOW passcode form
+                loginSection.classList.add('hidden');
+                lockForm.classList.remove('hidden');
+
+                if (sessionStorage.getItem('nexus_admin_unlocked') === 'true') {
+                    lockScreen.classList.add('hidden'); // Fully unlock if passcode was already entered this session
+                }
+            }
+
+            // Sync user data to DB if logged in
+            if (user) {
+                const userRef = dbRef(db, `textnexus/users/${user.uid}`);
+                await update(userRef, {
+                    uid: user.uid,
+                    name: user.displayName || 'Anonymous',
+                    email: user.email,
+                    photoURL: user.photoURL || 'https://placehold.co/100',
+                    lastLogin: Date.now()
+                });
+            }
+
+            // Load Data
+            listenToUsers();
+            listenToAiSites();
+            listenToChats();
+            listenToUpdates();
+        });
+
+        // Passcode Submission (Only possible if the form is visible, which means isOwner is true)
         lockForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const inputVal = passInput.value.trim();
-            const activeEmail = auth.currentUser?.email;
 
             if (inputVal !== ADMIN_PASSCODE) {
                 errorMsg.textContent = "Incorrect passcode.";
@@ -299,13 +375,7 @@
                 return;
             }
 
-            if (!activeEmail || activeEmail !== OWNER_EMAIL) {
-                errorMsg.textContent = `Access Denied: Logged in as (${activeEmail || 'Not Logged In'}). Only ${OWNER_EMAIL} can access this panel.`;
-                errorMsg.classList.remove('hidden');
-                return;
-            }
-
-            // Both passcode and email are valid
+            // Success
             sessionStorage.setItem('nexus_admin_unlocked', 'true');
             lockScreen.classList.add('hidden');
             errorMsg.classList.add('hidden');
@@ -324,40 +394,7 @@
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
         };
 
-        onAuthStateChanged(auth, async (user) => {
-            currentUser = user;
-            isOwner = (user?.email === OWNER_EMAIL);
-
-            if (!isOwner) {
-                // Instantly re-lock screen if user is not system owner
-                sessionStorage.removeItem('nexus_admin_unlocked');
-                lockScreen.classList.remove('hidden');
-                if (user) {
-                    errorMsg.textContent = `Access Denied: Logged in as ${user.email}. Only ${OWNER_EMAIL} is authorized.`;
-                    errorMsg.classList.remove('hidden');
-                }
-            } else {
-                if (sessionStorage.getItem('nexus_admin_unlocked') === 'true') {
-                    lockScreen.classList.add('hidden');
-                }
-            }
-
-            if (user) {
-                const userRef = dbRef(db, `textnexus/users/${user.uid}`);
-                await update(userRef, {
-                    uid: user.uid,
-                    name: user.displayName || 'Anonymous',
-                    email: user.email,
-                    photoURL: user.photoURL || 'https://placehold.co/100',
-                    lastLogin: Date.now()
-                });
-            }
-
-            listenToUsers();
-            listenToAiSites();
-            listenToChats();
-            listenToUpdates();
-        });
+        // --- DATABASE LISTENERS ---
 
         function listenToUsers() {
             onValue(dbRef(db, 'textnexus/users'), (snapshot) => {
