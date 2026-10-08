@@ -79,17 +79,15 @@
             <nav class="flex-1 px-3 py-5 flex flex-col gap-1 overflow-y-auto">
                 <p class="px-3 mb-2 text-[11px] font-semibold tracking-wider text-textMuted uppercase">Workspace</p>
                 <button onclick="switchTab('home', this)" class="nav-btn active flex items-center gap-3 px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium"><i class="ph ph-house text-lg"></i> Overview</button>
-                <button onclick="switchTab('updates', this)" class="nav-btn flex items-center gap-3 px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium"><i class="ph ph-bell -lg"></i> Updates</button>
+                <button onclick="switchTab('updates', this)" class="nav-btn flex items-center gap-3 px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium"><i class="ph ph-bell text-lg"></i> Updates</button>
                 <button onclick="switchTab('ghostlink', this)" class="nav-btn flex items-center gap-3 px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium"><i class="ph ph-ghost text-lg"></i> Ghostlink</button>
-                <button onclick="switchTab('suggestions', this)" class="nav-btn flex items-center gap-3 px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium"><i class="ph ph-note test-lg"></i> Suggestions</button>
+                <button onclick="switchTab('suggestions', this)" class="nav-btn flex items-center gap-3 px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium"><i class="ph ph-note text-lg"></i> Suggestions</button>
                 <button onclick="switchTab('creator', this)" class="nav-btn flex items-center gap-3 px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium"><i class="ph ph-magic-wand text-lg"></i> AI Creator</button>
                 
                 <p class="px-3 mt-4 mb-2 text-[11px] font-semibold tracking-wider text-textMuted uppercase">Communication</p>
-                <!-- TextNexus Tab -->
                 <button onclick="switchTab('TextNexus', this)" class="nav-btn flex items-center justify-between px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium group">
                     <div class="flex items-center gap-3"><i class="ph ph-chat-teardrop-text text-lg"></i> TextNexus</div>
                 </button>
-                <!-- Notifications Tab -->
                 <button onclick="switchTab('notifications', this)" class="nav-btn flex items-center justify-between px-3 py-2 rounded-lg text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium" id="nav-notifications">
                     <div class="flex items-center gap-3"><i class="ph ph-tray text-lg"></i> Notifications</div>
                 </button>
@@ -138,18 +136,12 @@
 
         onValue(themeRef, (snapshot) => {
             const themeVal = snapshot.val();
-            
             if (themeVal && themeVal !== 'default' && themeVal !== 'none') {
                 let themePath = themeVal.trim();
-                // Ensure correct file path format
-                if (!themePath.endsWith('.css')) {
-                    themePath = `themes/${themePath}.css`;
-                } else if (!themePath.startsWith('themes/')) {
-                    themePath = `themes/${themePath}`;
-                }
+                if (!themePath.endsWith('.css')) themePath = `themes/${themePath}.css`;
+                else if (!themePath.startsWith('themes/')) themePath = `themes/${themePath}`;
                 themeStylesheet.href = themePath;
             } else {
-                // Disable dynamic theme stylesheet
                 themeStylesheet.href = '';
             }
         });
@@ -165,7 +157,18 @@
             }, 1200);
         });
 
-        window.switchTab = (page, btn) => {
+        // Protected Tab Switcher
+        window.switchTab = async (page, btn) => {
+            if ((page === 'creator' || page === 'admin') && !auth.currentUser) {
+                alert("Please log in to access this feature.");
+                try {
+                    await signInWithPopup(auth, new GoogleAuthProvider());
+                } catch (err) {
+                    console.error("Auth required to switch tab", err);
+                    return;
+                }
+            }
+
             if(btn) {
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -204,10 +207,9 @@
         onChildAdded(globalChatRef, (snapshot) => {
             if (initialLoad) {
                 initialLoad = false;
-                return; // Skip the initial fetch on page load
+                return;
             }
             const msg = snapshot.val();
-            // Don't notify if the user sent it themselves
             if (auth.currentUser && msg.email === auth.currentUser.email) return;
 
             const toast = document.createElement('div');
@@ -220,7 +222,7 @@
                 </div>
             `;
             toastContainer.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000); // Remove after animation
+            setTimeout(() => toast.remove(), 4000);
         });
     </script>
 </body>
