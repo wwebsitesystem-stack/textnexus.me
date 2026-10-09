@@ -70,21 +70,41 @@
                 <p>Your live website preview will load here once generated.</p>
             </div>
             <iframe id="previewFrame" class="w-full h-full border-none hidden bg-white"></iframe>
+
+            <!-- Floating AI Edit Bar (Appears after site generation) -->
+            <div id="editBar" class="absolute bottom-6 left-1/2 -translate-x-1/2 w-3/4 max-w-2xl bg-surface border border-border rounded-2xl shadow-2xl hidden flex-col overflow-hidden z-50">
+                <div id="editLoading" class="hidden h-1 text-xs bg-emerald-500 w-full animate-pulse"></div>
+                <div class="flex items-center gap-2 p-2">
+                    <input type="text" id="editPromptInput" placeholder="Ask AI to modify this page..." class="flex-1 bg-transparent border-none text-sm text-textMain px-3 py-2 focus:outline-none placeholder:text-zinc-600">
+                    <button onclick="updateSite()" class="p-2 bg-textMain text-background rounded-xl hover:bg-zinc-200 transition-colors">
+                        <i class="ph ph-paper-plane-right text-lg"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Firebase & Logic Script -->
+    <!-- Firebase & Workspace Logic Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-        const app = initializeApp({
+        const firebaseConfig = {
             apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
             authDomain: "nexus-web-development-official.firebaseapp.com",
             projectId: "nexus-web-development-official",
             databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com"
-        });
+        };
+
+        const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        const WORKER_URL = "https://little-unit-9bae.brodywilliams0226.workers.dev/";
+
+        let activeSubdomain = "";
+        let activeRepo = "";
 
         // Check Authentication & Credits on Load
         onAuthStateChanged(auth, (user) => {
@@ -94,7 +114,6 @@
                 return;
             }
 
-            // Manage local credit storage per user account
             let credits = localStorage.getItem(`nexus_credits_${user.uid}`);
             if (credits === null) {
                 credits = '10000'; // Default starting credit balance
@@ -103,6 +122,7 @@
             document.getElementById('creditDisplay').innerText = `Credits: ${parseInt(credits).toLocaleString()}`;
         });
 
+        // 1. Initial Website Build
         window.startBuild = async () => {
             const user = auth.currentUser;
             if (!user) {
@@ -127,20 +147,19 @@
                 return;
             }
 
-            // Append user prompt to chat
             chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-surface border border-border text-textMain self-end max-w-[85%]">Building: "${prompt}" (${subdomain}.textnexus.me)</div>`;
-            chatContainer.innerHTML += `<div id="loadingMsg" class="p-3 rounded-xl bg-surfaceHover border border-border text-textMuted">Configuring DNS, building repo, and setting up Firebase...</div>`;
+            chatContainer.innerHTML += `<div id="loadingMsg" class="p-3 rounded-xl bg-surfaceHover border border-border text-textMuted">Configuring DNS, building repo, and setting up site...</div>`;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             try {
-                const response = await fetch('https://little-unit-9bae.brodywilliams0226.workers.dev/', {
+                const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ prompt, subdomain, userCredits: credits })
                 });
 
                 const data = await response.json();
-                document.getElementById('loadingMsg').remove();
+                if (document.getElementById('loadingMsg')) document.getElementById('loadingMsg').remove();
 
                 if (response.ok) {
                     // Deduct 1,000 credits
@@ -148,12 +167,31 @@
                     localStorage.setItem(`nexus_credits_${user.uid}`, credits);
                     document.getElementById('creditDisplay').innerText = `Credits: ${credits.toLocaleString()}`;
 
+                    // Save Site Entry to Firebase Realtime Database
+                    const sitesRef = ref(db, `users/${user.uid}/sites`);
+                    const newSiteRef = push(sitesRef);
+                    set(newSiteRef, {
+                        subdomain: subdomain,
+                        url: data.siteUrl,
+                        prompt: prompt,
+                        createdAt: Date.now(),
+                        expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000)
+                    });
+
+                    // Store Active Session Info for Iterative AI Editing
+                    activeSubdomain = subdomain;
+                    activeRepo = `nexus-${subdomain}`;
+
                     chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-surfaceHover border border-border text-textMain">Success! Your site is live at <a href="${data.siteUrl}" target="_blank" class="text-blue-400 underline">${data.siteUrl}</a>.<br><span class="text-xs text-textMuted mt-1 block">Active for 7 days. To renew, email nexus.web.solutions@putlook.com</span></div>`;
 
-                    // Load live preview
+                    // Unhide Live Preview & Edit Bar
                     previewPlaceholder.classList.add('hidden');
                     previewFrame.classList.remove('hidden');
                     previewFrame.src = data.siteUrl;
+
+                    const editBar = document.getElementById('editBar');
+                    editBar.classList.remove('hidden');
+                    editBar.classList.add('flex');
                 } else {
                     chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-red-950/40 border border-red-900/50 text-red-300">Error: ${data.error || 'Build failed.'}</div>`;
                 }
@@ -162,6 +200,50 @@
                 chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-red-950/40 border border-red-900/50 text-red-300">Network connection error.</div>`;
             }
             chatContainer.scrollTop = chatContainer.scrollHeight;
+        };
+
+        // 2. Iterative AI Code Update
+        window.updateSite = async () => {
+            const editPrompt = document.getElementById('editPromptInput').value.trim();
+            if (!editPrompt || !activeSubdomain || !activeRepo) return;
+
+            const editInput = document.getElementById('editPromptInput');
+            const loadingBar = document.getElementById('editLoading');
+            const chatContainer = document.getElementById('chatHistory');
+            
+            editInput.value = '';
+            editInput.disabled = true;
+            loadingBar.classList.remove('hidden');
+            
+            chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-surface border border-border text-textMain self-end max-w-[85%]">Updating: "${editPrompt}"</div>`;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            try {
+                const response = await fetch(`${WORKER_URL}update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        prompt: editPrompt, 
+                        subdomain: activeSubdomain,
+                        repoName: activeRepo 
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-surfaceHover border border-border text-emerald-400">Update successful! Refreshing live preview...</div>`;
+                    document.getElementById('previewFrame').src = `https://${activeSubdomain}.textnexus.me?t=${Date.now()}`;
+                } else {
+                    chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-red-950/40 border border-red-900/50 text-red-300">Update failed: ${data.error || 'Could not update site.'}</div>`;
+                }
+            } catch (err) {
+                chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-red-950/40 border border-red-900/50 text-red-300">Network error during update.</div>`;
+            } finally {
+                editInput.disabled = false;
+                loadingBar.classList.add('hidden');
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
         };
     </script>
 </body>
