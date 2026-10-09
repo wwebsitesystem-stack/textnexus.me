@@ -25,11 +25,41 @@
             }
         }
     </script>
+    <style>
+        /* Startup Animation Keyframes */
+        @keyframes fadeInSlideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes scaleInFade {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .anim-header {
+            animation: fadeInSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        
+        .anim-left-panel {
+            animation: fadeInSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+            opacity: 0;
+        }
+        
+        .anim-right-panel {
+            animation: scaleInFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards;
+            opacity: 0;
+        }
+
+        /* Prevent layout shift during animation */
+        body > div.flex-1 { min-height: 0; }
+    </style>
 </head>
 <body class="h-screen w-screen flex flex-col bg-background text-textMain antialiased overflow-hidden">
 
     <!-- Top Bar -->
-    <header class="h-16 flex items-center justify-between px-6 border-b border-border bg-surface shrink-0">
+    <header class="h-16 flex items-center justify-between px-6 border-b border-border bg-surface shrink-0 anim-header">
         <div class="flex items-center gap-4">
             <a href="https://textnexus.me" class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium">
                 <i class="ph ph-arrow-left text-base"></i> Back to Nexus
@@ -47,7 +77,7 @@
     <div class="flex-1 flex overflow-hidden">
         
         <!-- Left Panel: AI Prompt & Chat History -->
-        <div class="w-96 border-r border-border bg-surface flex flex-col shrink-0">
+        <div class="w-96 border-r border-border bg-surface flex flex-col shrink-0 anim-left-panel">
             <div id="chatHistory" class="flex-1 p-5 overflow-y-auto flex flex-col gap-4 text-sm">
                 <div class="p-3.5 rounded-xl bg-surfaceHover border border-border text-textMuted leading-relaxed">
                     Welcome to the Creator Workspace! Describe your website, enter your subdomain, and generate a custom AI site. Each build costs <span class="text-textMain font-semibold">1,000 credits</span> and remains active for 7 days.
@@ -64,7 +94,7 @@
         </div>
 
         <!-- Right Panel: Live Preview Frame -->
-        <div class="flex-1 bg-background flex items-center justify-center relative">
+        <div class="flex-1 bg-background flex items-center justify-center relative anim-right-panel">
             <div id="previewPlaceholder" class="flex flex-col items-center gap-2 text-textMuted text-sm">
                 <i class="ph ph-globe text-3xl text-zinc-700"></i>
                 <p>Your live website preview will load here once generated.</p>
