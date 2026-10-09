@@ -28,14 +28,14 @@
     </script>
     <style>
         :root { --brand-color: #ededed; }
-        body { background-color: transparent; color: #ededed; font-family: 'Inter', sans-serif; }
+        body { background-color: #0a0a0a; color: #ededed; font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #262626; border-radius: 4px; }
         .tab-btn.active { background-color: #1c1c1c; color: #ededed; border-color: #3f3f46; }
     </style>
 </head>
-<body class="w-full h-full flex flex-col overflow-hidden bg-background relative">
+<body class="w-screen h-screen flex flex-col overflow-hidden bg-background relative">
 
     <!-- TWO-STEP STRICT LOCK OVERLAY -->
     <div id="password-lock-screen" class="fixed inset-0 z-50 bg-background/95 backdrop-blur-md flex flex-col items-center justify-center p-4">
@@ -108,7 +108,7 @@
 
     <!-- Main Scrollable Area -->
     <main class="flex-1 overflow-y-auto p-8 relative">
-        <div class="max-w-6xl mx-auto flex flex-col gap-6">
+        <div class="max-w-6xl mx-auto flex flex-col gap-6 pb-12">
             
             <!-- Overall System Stats & Owner Credit Editor -->
             <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -282,6 +282,7 @@
         </div>
     </main>
 
+    <!-- Firebase & Admin Logic Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -350,7 +351,6 @@
                     lockScreen.classList.add('hidden');
                 }
 
-                // Fetch owner credits
                 onValue(dbRef(db, `textnexus/users/${user.uid}/credits`), (snapshot) => {
                     const val = snapshot.val();
                     if (val !== null) ownerCreditInput.value = val;
@@ -435,7 +435,7 @@
                         <td class="py-4 px-6 flex items-center gap-3">
                             <img src="${u.photoURL || 'https://placehold.co/100'}" class="w-9 h-9 rounded-full object-cover border border-border">
                             <div class="flex flex-col">
-                                <span class="font-medium text-textMain text-sm flex items-center gap-2">${u.name}</span>
+                                <span class="font-medium text-textMain text-sm">${u.name}</span>
                                 <span class="text-xs font-mono text-textMuted">${u.email}</span>
                             </div>
                         </td>
@@ -469,6 +469,30 @@
                 });
             });
         }
+
+        window.saveUserCredits = async (uid) => {
+            if (!isOwner) return;
+            const val = parseInt(document.getElementById(`credits-${uid}`).value);
+            if (isNaN(val)) return alert("Invalid amount.");
+            await update(dbRef(db, `textnexus/users/${uid}`), { credits: val });
+            alert("Credits successfully updated.");
+        };
+
+        window.resetCredits = async (uid) => {
+            if (!isOwner) return;
+            await update(dbRef(db, `textnexus/users/${uid}`), { credits: 10000 });
+            alert("Credits reset to default (10,000).");
+        };
+
+        window.changeRole = async (uid, role) => {
+            if (!isOwner) return;
+            await update(dbRef(db, `textnexus/users/${uid}`), { role });
+        };
+
+        window.toggleBan = async (uid, currentStatus) => {
+            if (!isOwner) return;
+            await update(dbRef(db, `textnexus/users/${uid}`), { isBanned: !currentStatus });
+        };
 
         function listenToAiSites() {
             onValue(dbRef(db, 'textnexus/ai_sites'), (snapshot) => {
@@ -504,6 +528,13 @@
             });
         }
 
+        window.deleteAiSite = async (id) => {
+            if (!isOwner) return;
+            if (confirm("Are you sure you want to delete this AI site record?")) {
+                await remove(dbRef(db, `textnexus/ai_sites/${id}`));
+            }
+        };
+
         function listenToChats() {
             onValue(dbRef(db, 'textnexus/chats'), (snapshot) => {
                 const data = snapshot.val();
@@ -526,7 +557,12 @@
                         <td class="py-4 px-6 text-xs text-textMuted">${chat.createdEmail || 'System'}</td>
                         <td class="py-4 px-6"><span class="px-2 py-0.5 rounded text-[10px] ${chat.disabled ? 'bg-red-500/10 text-red-400' : 'bg-emerald-500/10 text-emerald-400'}">${chat.disabled ? 'Disabled' : 'Active'}</span></td>
                         <td class="py-4 px-6 text-right">
-                            ${chat.id !== 'global' ? `<button onclick="window.deleteChat('${chat.id}')" ${!isOwner ? 'disabled' : ''} class="p-1 rounded bg-surfaceHover text-textMuted hover:text-red-400 disabled:opacity-30"><i class="ph ph-trash"></i></button>` : 'Pinned'}
+                            <button onclick="window.toggleChat('${chat.id}', ${!!chat.disabled})" ${!isOwner ? 'disabled' : ''} class="px-2.5 py-1 rounded text-xs border border-border bg-surfaceHover text-textMain hover:bg-border disabled:opacity-30">
+                                ${chat.disabled ? 'Enable' : 'Disable'}
+                            </button>
+                            <button onclick="window.deleteChat('${chat.id}')" ${!isOwner ? 'disabled' : ''} class="p-1 rounded bg-surfaceHover text-textMuted hover:text-red-400 ml-1 disabled:opacity-30">
+                                <i class="ph ph-trash text-sm"></i>
+                            </button>
                         </td>
                     `;
                     tbody.appendChild(row);
@@ -534,76 +570,70 @@
             });
         }
 
-        function listenToUpdates() {
-            onValue(dbRef(db, 'workspace_updates'), (snapshot) => {
-                const data = snapshot.val();
-                const list = document.getElementById('admin-updates-list');
-                list.innerHTML = '';
-                if (!data) return list.innerHTML = `<p class="text-xs text-textMuted text-center py-4">No updates posted.</p>`;
-
-                Object.keys(data).forEach(k => {
-                    const p = data[k];
-                    const item = document.createElement('div');
-                    item.className = 'p-3 rounded-lg border border-border bg-background flex items-center justify-between gap-4';
-                    item.innerHTML = `
-                        <div>
-                            <h4 class="text-xs font-semibold text-textMain">${p.title}</h4>
-                            <p class="text-[11px] text-textMuted truncate max-w-xl">${p.content}</p>
-                        </div>
-                        <button onclick="window.deleteUpdate('${k}')" ${!isOwner ? 'disabled' : ''} class="p-1.5 rounded bg-surfaceHover text-textMuted hover:text-red-400 disabled:opacity-30"><i class="ph ph-trash text-sm"></i></button>
-                    `;
-                    list.appendChild(item);
-                });
-            });
-        }
-
-        window.saveUserCredits = async (uid) => {
+        window.toggleChat = async (chatId, currentStatus) => {
             if (!isOwner) return;
-            const inputVal = parseInt(document.getElementById(`credits-${uid}`).value);
-            if (isNaN(inputVal)) return alert("Invalid number.");
-            await update(dbRef(db, `textnexus/users/${uid}`), { credits: inputVal });
-            alert("User credits updated!");
-        };
-
-        window.resetCredits = async (uid) => {
-            if (!isOwner) return;
-            await update(dbRef(db, `textnexus/users/${uid}`), { credits: 5000 });
-        };
-
-        window.changeRole = async (uid, role) => {
-            if (!isOwner) return;
-            await update(dbRef(db, `textnexus/users/${uid}`), { role });
-        };
-
-        window.toggleBan = async (uid, isBanned) => {
-            if (!isOwner) return;
-            await update(dbRef(db, `textnexus/users/${uid}`), { isBanned: !isBanned });
-        };
-
-        window.deleteAiSite = async (siteId) => {
-            if (!isOwner) return;
-            if (confirm("Delete this AI site log?")) await remove(dbRef(db, `textnexus/ai_sites/${siteId}`));
+            await update(dbRef(db, `textnexus/chats/${chatId}`), { disabled: !currentStatus });
         };
 
         window.deleteChat = async (chatId) => {
             if (!isOwner) return;
-            if (confirm("Delete chat?")) await remove(dbRef(db, `textnexus/chats/${chatId}`));
-        };
-
-        window.deleteUpdate = async (postId) => {
-            if (!isOwner) return;
-            if (confirm("Delete update?")) await remove(dbRef(db, `workspace_updates/${postId}`));
+            if (confirm("Delete this chat channel?")) {
+                await remove(dbRef(db, `textnexus/chats/${chatId}`));
+            }
         };
 
         document.getElementById('admin-publish-btn').addEventListener('click', async () => {
             if (!isOwner) return;
             const title = document.getElementById('admin-update-title').value.trim();
             const content = document.getElementById('admin-update-content').value.trim();
-            if (!title || !content) return;
-            await push(dbRef(db, 'workspace_updates'), { title, content, timestamp: serverTimestamp() });
+            if (!title || !content) return alert("Please fill out both title and content.");
+
+            await push(dbRef(db, 'textnexus/updates'), {
+                title,
+                content,
+                createdAt: serverTimestamp(),
+                author: currentUser.email
+            });
+
             document.getElementById('admin-update-title').value = '';
             document.getElementById('admin-update-content').value = '';
+            alert("Announcement published!");
         });
+
+        function listenToUpdates() {
+            onValue(dbRef(db, 'textnexus/updates'), (snapshot) => {
+                const data = snapshot.val();
+                const container = document.getElementById('admin-updates-list');
+                container.innerHTML = '';
+                if (!data) {
+                    container.innerHTML = '<p class="text-xs text-textMuted py-4 text-center">No announcements posted yet.</p>';
+                    return;
+                }
+                const updates = Object.keys(data).map(k => ({ id: k, ...data[k] })).reverse();
+                updates.forEach(u => {
+                    const div = document.createElement('div');
+                    div.className = 'p-4 rounded-lg bg-background border border-border flex justify-between items-start gap-4';
+                    div.innerHTML = `
+                        <div class="flex flex-col gap-1">
+                            <h4 class="text-sm font-semibold text-textMain">${u.title}</h4>
+                            <p class="text-xs text-textMuted whitespace-pre-wrap">${u.content}</p>
+                            <span class="text-[10px] text-zinc-500 mt-1">Posted by ${u.author}</span>
+                        </div>
+                        <button onclick="window.deleteUpdate('${u.id}')" ${!isOwner ? 'disabled' : ''} class="p-1 text-textMuted hover:text-red-400 disabled:opacity-30">
+                            <i class="ph ph-trash text-sm"></i>
+                        </button>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+        }
+
+        window.deleteUpdate = async (id) => {
+            if (!isOwner) return;
+            if (confirm("Delete this announcement?")) {
+                await remove(dbRef(db, `textnexus/updates/${id}`));
+            }
+        };
     </script>
 </body>
 </html>
