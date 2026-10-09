@@ -88,7 +88,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getDatabase, ref, push, set, update, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
@@ -105,8 +105,9 @@
 
         let activeSubdomain = "";
         let activeRepo = "";
+        let userCredits = 10000;
 
-        // Check Authentication & Credits on Load
+        // Check Authentication & Real-time Firebase Credits on Load
         onAuthStateChanged(auth, (user) => {
             if (!user) {
                 alert("Please log in from the main Nexus dashboard first.");
@@ -114,12 +115,19 @@
                 return;
             }
 
-            let credits = localStorage.getItem(`nexus_credits_${user.uid}`);
-            if (credits === null) {
-                credits = '10000'; // Default starting credit balance
-                localStorage.setItem(`nexus_credits_${user.uid}`, credits);
-            }
-            document.getElementById('creditDisplay').innerText = `Credits: ${parseInt(credits).toLocaleString()}`;
+            // Sync credits live with Firebase (connected with admin.html)
+            const userRef = ref(db, `textnexus/users/${user.uid}`);
+            onValue(userRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.credits !== undefined) {
+                    userCredits = data.credits;
+                } else {
+                    // Initialize default credits if not set
+                    userCredits = 10000;
+                    update(userRef, { credits: userCredits, email: user.email, name: user.displayName || 'User' });
+                }
+                document.getElementById('creditDisplay').innerText = `Credits: ${userCredits.toLocaleString()}`;
+            });
         });
 
         // 1. Initial Website Build
@@ -141,8 +149,7 @@
                 return;
             }
 
-            let credits = parseInt(localStorage.getItem(`nexus_credits_${user.uid}`) || '0');
-            if (credits < 1000) {
+            if (userCredits < 1000) {
                 alert("Insufficient credits! You need at least 1,000 credits to build a website.");
                 return;
             }
@@ -155,27 +162,35 @@
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt, subdomain, userCredits: credits })
+                    body: JSON.stringify({ prompt, subdomain, userCredits })
                 });
 
                 const data = await response.json();
                 if (document.getElementById('loadingMsg')) document.getElementById('loadingMsg').remove();
 
                 if (response.ok) {
-                    // Deduct 1,000 credits
-                    credits -= 1000;
-                    localStorage.setItem(`nexus_credits_${user.uid}`, credits);
-                    document.getElementById('creditDisplay').innerText = `Credits: ${credits.toLocaleString()}`;
+                    // Deduct 1,000 credits and update Firebase
+                    userCredits -= 1000;
+                    await update(ref(db, `textnexus/users/${user.uid}`), { credits: userCredits });
 
-                    // Save Site Entry to Firebase Realtime Database
-                    const sitesRef = ref(db, `users/${user.uid}/sites`);
-                    const newSiteRef = push(sitesRef);
+                    // Save Site Entry to Firebase Realtime Database (Both user-specific and global ai_sites log for admin)
+                    const userSitesRef = ref(db, `users/${user.uid}/sites`);
+                    const newSiteRef = push(userSitesRef);
                     set(newSiteRef, {
                         subdomain: subdomain,
                         url: data.siteUrl,
                         prompt: prompt,
                         createdAt: Date.now(),
                         expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000)
+                    });
+
+                    // Also log to textnexus/ai_sites so it shows up in admin.html's AI Generated Sites tab
+                    const adminSitesRef = ref(db, 'textnexus/ai_sites');
+                    push(adminSitesRef, {
+                        userEmail: user.email,
+                        subdomain: subdomain,
+                        prompt: prompt,
+                        createdAt: Date.now()
                     });
 
                     // Store Active Session Info for Iterative AI Editing
