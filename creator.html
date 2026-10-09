@@ -1,295 +1,205 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Creator Workspace</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        background: '#0a0a0a',
-                        surface: '#121212',
-                        surfaceHover: '#1c1c1c',
-                        border: '#262626',
-                        textMain: '#ededed',
-                        textMuted: '#a1a1aa',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Startup Animation Keyframes */
-        @keyframes fadeInSlideUp {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes scaleInFade {
-            from { opacity: 0; transform: scale(0.97); }
-            to { opacity: 1; transform: scale(1); }
-        }
+export default {
+  async fetch(request, env, ctx) {
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    };
 
-        .anim-header {
-            animation: fadeInSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
-        }
-        
-        .anim-left-panel {
-            animation: fadeInSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
-            opacity: 0;
-        }
-        
-        .anim-right-panel {
-            animation: scaleInFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards;
-            opacity: 0;
+    if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+    if (request.method !== "POST") return new Response("Send a POST request", { status: 405, headers: corsHeaders });
+
+    const url = new URL(request.url);
+    const targetOrg = "wwebsitesystem-stack";
+
+    const GITHUB_TOKEN = env.GITHUB_TOKEN || "";
+    const CF_ZONE_ID = env.CLOUDFLARE_ZONE_ID || "";
+    const CF_API_TOKEN = env.CLOUDFLARE_API_TOKEN || "";
+
+    const githubHeaders = {
+      'Authorization': 'Bearer ' + GITHUB_TOKEN,
+      'User-Agent': 'Nexus-AI-Builder',
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+
+    // The Injected Google Auth Login Wall
+    const firebaseGoogleAuthGate = '<div id="nx-auth-gate" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#0a0a0a;z-index:2147483647;display:flex;align-items:center;justify-content:center;font-family:sans-serif;color:#ededed;"><div style="background:#121212;border:1px solid #262626;padding:32px;border-radius:12px;width:100%;max-width:360px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.5);"><h2 style="margin:0 0 8px 0;font-size:20px;">Site Locked</h2><p style="margin:0 0 24px 0;font-size:14px;color:#a1a1aa;">Log in with Google to view this website.</p><button id="nx-google" style="width:100%;padding:12px;border-radius:8px;border:1px solid #3f3f46;background:#1c1c1c;color:#fff;font-weight:600;cursor:pointer;transition:background 0.2s;">Sign in with Google</button><p id="nx-err" style="color:#f87171;font-size:12px;margin-top:12px;display:none;"></p></div></div><script type="module">import{initializeApp}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";import{getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";import{getAnalytics}from"https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";const firebaseConfig={apiKey:"AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",authDomain:"nexus-web-development-official.firebaseapp.com",databaseURL:"https://nexus-web-development-official-default-rtdb.firebaseio.com",projectId:"nexus-web-development-official",storageBucket:"nexus-web-development-official.firebasestorage.app",messagingSenderId:"553556577139",appId:"1:553556577139:web:08975da35c210366999306",measurementId:"G-9XR6F5BBWP"};const app=initializeApp(firebaseConfig);const analytics=getAnalytics(app);const auth=getAuth(app);const gate=document.getElementById("nx-auth-gate");const err=document.getElementById("nx-err");onAuthStateChanged(auth,(user)=>{if(user){gate.style.display="none";}else{gate.style.display="flex";}});document.getElementById("nx-google").addEventListener("click",()=>{signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>{err.innerText=e.message;err.style.display="block";});});</script>';
+
+    const bgNexusBanner = '<div style="position: fixed; bottom: 16px; right: 16px; z-index: 999999; font-family: sans-serif; font-size: 11px; font-weight: 600; color: #ededed; background-color: rgba(18, 18, 18, 0.95); border: 1px solid #262626; padding: 10px 14px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 4px;"><div style="display: flex; align-items: center; gap: 6px;"><span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%;"></span><a href="https://textnexus.me" target="_blank" style="color: #ededed; text-decoration: none;">Powered by Nexus • textnexus.me</a></div><div style="font-size: 10px; color: #a1a1aa;">Expires in 7 days. To keep active, email <a href="mailto:nexus.web.solutions@putlook.com" style="color: #60a5fa;">nexus.web.solutions@putlook.com</a></div></div>';
+
+    try {
+      // ==========================================
+      // ROUTE 1: ITERATIVE AI CODE UPDATE (/update)
+      // ==========================================
+      if (url.pathname.endsWith('/update')) {
+        const { prompt, repoName, subdomain } = await request.json();
+
+        if (!prompt || !repoName) {
+          return new Response(JSON.stringify({ error: "Missing prompt or repoName." }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" }
+          });
         }
 
-        /* Prevent layout shift during animation */
-        body > div.flex-1 { min-height: 0; }
-    </style>
-</head>
-<body class="h-screen w-screen flex flex-col bg-background text-textMain antialiased overflow-hidden">
-
-    <!-- Top Bar -->
-    <header class="h-16 flex items-center justify-between px-6 border-b border-border bg-surface shrink-0 anim-header">
-        <div class="flex items-center gap-4">
-            <a href="https://textnexus.me" class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border text-textMuted hover:text-textMain hover:bg-surfaceHover transition-colors text-sm font-medium">
-                <i class="ph ph-arrow-left text-base"></i> Back to Nexus
-            </a>
-            <span class="font-medium text-sm text-textMain">Nexus web Solutions</span>
-        </div>
-        <div class="flex items-center gap-4">
-            <div id="creditDisplay" class="text-xs font-semibold px-3 py-1.5 rounded-full bg-surfaceHover border border-border text-emerald-400">
-                Credits: Loading...
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Workspace Split View -->
-    <div class="flex-1 flex overflow-hidden">
-        
-        <!-- Left Panel: AI Prompt & Chat History -->
-        <div class="w-96 border-r border-border bg-surface flex flex-col shrink-0 anim-left-panel">
-            <div id="chatHistory" class="flex-1 p-5 overflow-y-auto flex flex-col gap-4 text-sm">
-                <div class="p-3.5 rounded-xl bg-surfaceHover border border-border text-textMuted leading-relaxed">
-                    Welcome to the Creator Workspace! Describe your website, enter your subdomain, and generate a custom AI site. Each build costs <span class="text-textMain font-semibold">1,000 credits</span> and remains active for 7 days.
-                </div>
-            </div>
-
-            <div class="p-4 border-t border-border bg-background flex flex-col gap-3">
-                <input type="text" id="subdomainInput" placeholder="Subdomain (e.g. mysite)" class="w-full bg-surface border border-border rounded-lg px-3.5 py-2.5 text-sm text-textMain focus:outline-none focus:border-zinc-500 placeholder:text-zinc-600">
-                <textarea id="promptInput" rows="3" placeholder="What kind of website do you want to build?" class="w-full bg-surface border border-border rounded-lg px-3.5 py-2.5 text-sm text-textMain focus:outline-none focus:border-zinc-500 placeholder:text-zinc-600 resize-none"></textarea>
-                <button onclick="startBuild()" class="w-full bg-textMain text-background font-semibold py-2.5 rounded-lg text-sm hover:bg-zinc-200 transition-colors">
-                    Build Website (1,000 Credits)
-                </button>
-            </div>
-        </div>
-
-        <!-- Right Panel: Live Preview Frame -->
-        <div class="flex-1 bg-background flex items-center justify-center relative anim-right-panel">
-            <div id="previewPlaceholder" class="flex flex-col items-center gap-2 text-textMuted text-sm">
-                <i class="ph ph-globe text-3xl text-zinc-700"></i>
-                <p>Your live website preview will load here once generated.</p>
-            </div>
-            <iframe id="previewFrame" class="w-full h-full border-none hidden bg-white"></iframe>
-
-            <!-- Floating AI Edit Bar (Appears after site generation) -->
-            <div id="editBar" class="absolute bottom-6 left-1/2 -translate-x-1/2 w-3/4 max-w-2xl bg-surface border border-border rounded-2xl shadow-2xl hidden flex-col overflow-hidden z-50">
-                <div id="editLoading" class="hidden h-1 text-xs bg-emerald-500 w-full animate-pulse"></div>
-                <div class="flex items-center gap-2 p-2">
-                    <input type="text" id="editPromptInput" placeholder="Ask AI to modify this page..." class="flex-1 bg-transparent border-none text-sm text-textMain px-3 py-2 focus:outline-none placeholder:text-zinc-600">
-                    <button onclick="updateSite()" class="p-2 bg-textMain text-background rounded-xl hover:bg-zinc-200 transition-colors">
-                        <i class="ph ph-paper-plane-right text-lg"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Firebase & Workspace Logic Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref, push, set, update, onValue } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
-            authDomain: "nexus-web-development-official.firebaseapp.com",
-            projectId: "nexus-web-development-official",
-            databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
-
-        const WORKER_URL = "https://little-unit-9bae.brodywilliams0226.workers.dev/";
-
-        let activeSubdomain = "";
-        let activeRepo = "";
-        let userCredits = 10000;
-
-        // Check Authentication & Real-time Firebase Credits on Load
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                alert("Please log in from the main Nexus dashboard first.");
-                window.location.href = "index.html";
-                return;
-            }
-
-            // Sync credits live with Firebase (connected with admin.html)
-            const userRef = ref(db, `textnexus/users/${user.uid}`);
-            onValue(userRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data && data.credits !== undefined) {
-                    userCredits = data.credits;
-                } else {
-                    // Initialize default credits if not set
-                    userCredits = 10000;
-                    update(userRef, { credits: userCredits, email: user.email, name: user.displayName || 'User' });
-                }
-                document.getElementById('creditDisplay').innerText = `Credits: ${userCredits.toLocaleString()}`;
-            });
+        const fileRes = await fetch('https://api.github.com/repos/' + targetOrg + '/' + repoName + '/contents/index.html', {
+          headers: githubHeaders
         });
 
-        // 1. Initial Website Build
-        window.startBuild = async () => {
-            const user = auth.currentUser;
-            if (!user) {
-                alert("You must be logged in.");
-                return;
+        if (!fileRes.ok) throw new Error("Could not fetch existing repository code from GitHub.");
+
+        const fileData = await fileRes.json();
+        const existingSha = fileData.sha;
+        const existingCode = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ''))));
+
+        const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fast', {
+          messages: [
+            { 
+              role: "system", 
+              content: "You are an expert web developer modifying existing HTML code. Return ONLY valid, complete updated single-file HTML code with CSS inside <style> tags. Do not include markdown code blocks." 
+            },
+            { 
+              role: "user", 
+              content: "Here is the existing website HTML:\n\n" + existingCode + "\n\nUser request for changes:\n" + prompt 
             }
+          ],
+          max_tokens: 2000
+        });
 
-            const subdomain = document.getElementById('subdomainInput').value.trim();
-            const prompt = document.getElementById('promptInput').value.trim();
-            const chatContainer = document.getElementById('chatHistory');
-            const previewPlaceholder = document.getElementById('previewPlaceholder');
-            const previewFrame = document.getElementById('previewFrame');
+        let updatedCode = (aiResponse.response || existingCode).replace(/```html/gi, '').replace(/```/g, '').trim();
 
-            if (!subdomain || !prompt) {
-                alert("Please provide both a subdomain and an AI prompt.");
-                return;
+        // Inject the Auth Gate AND the Nexus Banner if missing
+        if (!updatedCode.includes('nx-auth-gate')) {
+          updatedCode = updatedCode.includes('</body>') ? updatedCode.replace('</body>', firebaseGoogleAuthGate + bgNexusBanner + '</body>') : updatedCode + firebaseGoogleAuthGate + bgNexusBanner;
+        }
+
+        const encodedUpdatedCode = btoa(unescape(encodeURIComponent(updatedCode)));
+
+        const updateRes = await fetch('https://api.github.com/repos/' + targetOrg + '/' + repoName + '/contents/index.html', {
+          method: 'PUT',
+          headers: githubHeaders,
+          body: JSON.stringify({
+            message: 'AI Edit: ' + prompt.substring(0, 50),
+            content: encodedUpdatedCode,
+            sha: existingSha
+          })
+        });
+
+        if (!updateRes.ok) throw new Error("GitHub update commit failed.");
+
+        return new Response(JSON.stringify({ status: "success", message: "Site code updated successfully!" }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+
+      // ==========================================
+      // ROUTE 2: INITIAL WEBSITE BUILD (/)
+      // ==========================================
+      const { prompt, subdomain, userCredits } = await request.json();
+      
+      const COST_PER_BUILD = 1000;
+      if (userCredits !== undefined && userCredits < COST_PER_BUILD) {
+        return new Response(
+          JSON.stringify({ error: "Insufficient credits. Generating a website costs " + COST_PER_BUILD + " credits." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      if (!CF_ZONE_ID || !CF_API_TOKEN) throw new Error("SYSTEM ERROR: Cloudflare Variables Missing.");
+
+      const cleanSubdomain = (subdomain || "site").toLowerCase().replace(".textnexus.me", "").replace(/[^a-z0-9-]/g, "").trim();
+      const repoName = 'nexus-' + cleanSubdomain;
+      const fullSubdomain = cleanSubdomain + '.textnexus.me';
+
+      const cfHeaders = {
+        'Authorization': 'Bearer ' + CF_API_TOKEN,
+        'Content-Type': 'application/json'
+      };
+
+      const targetHost = targetOrg + '.github.io';
+      const dnsPayload = { type: "CNAME", name: cleanSubdomain, content: targetHost, proxied: false };
+
+      const createUrl = "https://api.cloudflare.com/client/v4/zones/" + CF_ZONE_ID + "/dns_records";
+      let dnsRes = await fetch(createUrl, { method: 'POST', headers: cfHeaders, body: JSON.stringify(dnsPayload) });
+
+      if (!dnsRes.ok) {
+        const checkUrl = "https://api.cloudflare.com/client/v4/zones/" + CF_ZONE_ID + "/dns_records?name=" + fullSubdomain;
+        const checkRes = await fetch(checkUrl, { headers: cfHeaders });
+        const checkData = await checkRes.json();
+        if (checkData.result && checkData.result.length > 0) {
+          const updateUrl = "https://api.cloudflare.com/client/v4/zones/" + CF_ZONE_ID + "/dns_records/" + checkData.result[0].id;
+          await fetch(updateUrl, { method: 'PUT', headers: cfHeaders, body: JSON.stringify(dnsPayload) });
+        }
+      }
+
+      const earlyResponse = new Response(JSON.stringify({
+        status: "processing",
+        message: "DNS Verified & Created!",
+        repoName: repoName,
+        siteUrl: 'https://' + cleanSubdomain + '.textnexus.me'
+      }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
+      // Background Worker Execution
+      ctx.waitUntil((async () => {
+        try {
+          let repoRes = await fetch('https://api.github.com/orgs/' + targetOrg + '/repos', {
+            method: 'POST', headers: githubHeaders, body: JSON.stringify({ name: repoName, private: false, auto_init: false })
+          });
+
+          let actualOwner = targetOrg;
+          if (!repoRes.ok && repoRes.status !== 422) {
+            repoRes = await fetch('https://api.github.com/user/repos', {
+              method: 'POST', headers: githubHeaders, body: JSON.stringify({ name: repoName, private: false, auto_init: false })
+            });
+            const userRes = await fetch('https://api.github.com/user', { headers: githubHeaders });
+            if (userRes.ok) {
+              const userData = await userRes.json();
+              actualOwner = userData.login;
             }
+          }
 
-            if (userCredits < 1000) {
-                alert("Insufficient credits! You need at least 1,000 credits to build a website.");
-                return;
-            }
+          const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fast', {
+            messages: [
+              { role: "system", content: "You are an expert web developer. Return ONLY valid complete single-file HTML code with CSS inside <style> tags. No markdown formatting." },
+              { role: "user", content: prompt }
+            ],
+            max_tokens: 1500
+          });
 
-            chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-surface border border-border text-textMain self-end max-w-[85%]">Building: "${prompt}" (${subdomain}.textnexus.me)</div>`;
-            chatContainer.innerHTML += `<div id="loadingMsg" class="p-3 rounded-xl bg-surfaceHover border border-border text-textMuted">Configuring DNS, building repo, and setting up site...</div>`;
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+          let generatedCode = (aiResponse.response || "<h1>Website Created</h1>").replace(/```html/gi, '').replace(/```/g, '').trim();
+          
+          // Inject the Auth Gate AND the Nexus Banner automatically
+          generatedCode = generatedCode.includes('</body>') ? generatedCode.replace('</body>', firebaseGoogleAuthGate + bgNexusBanner + '</body>') : generatedCode + firebaseGoogleAuthGate + bgNexusBanner;
 
-            try {
-                const response = await fetch(WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt, subdomain, userCredits })
-                });
+          const encodedCode = btoa(unescape(encodeURIComponent(generatedCode)));
 
-                const data = await response.json();
-                if (document.getElementById('loadingMsg')) document.getElementById('loadingMsg').remove();
+          await fetch('https://api.github.com/repos/' + actualOwner + '/' + repoName + '/contents/index.html', {
+            method: 'PUT', headers: githubHeaders, body: JSON.stringify({ message: "Initial commit", content: encodedCode })
+          });
 
-                if (response.ok) {
-                    // Deduct 1,000 credits and update Firebase
-                    userCredits -= 1000;
-                    await update(ref(db, `textnexus/users/${user.uid}`), { credits: userCredits });
+          const encodedCNAME = btoa(cleanSubdomain + '.textnexus.me');
+          await fetch('https://api.github.com/repos/' + actualOwner + '/' + repoName + '/contents/CNAME', {
+            method: 'PUT', headers: githubHeaders, body: JSON.stringify({ message: "Add CNAME", content: encodedCNAME })
+          });
 
-                    // Save Site Entry to Firebase Realtime Database (Both user-specific and global ai_sites log for admin)
-                    const userSitesRef = ref(db, `users/${user.uid}/sites`);
-                    const newSiteRef = push(userSitesRef);
-                    set(newSiteRef, {
-                        subdomain: subdomain,
-                        url: data.siteUrl,
-                        prompt: prompt,
-                        createdAt: Date.now(),
-                        expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000)
-                    });
+          await fetch('https://api.github.com/repos/' + actualOwner + '/' + repoName + '/pages', {
+            method: 'POST', headers: { ...githubHeaders, 'Accept': 'application/vnd.github.mysterio-preview+json' },
+            body: JSON.stringify({ source: { branch: 'main', path: '/' } })
+          });
 
-                    // Also log to textnexus/ai_sites so it shows up in admin.html's AI Generated Sites tab
-                    const adminSitesRef = ref(db, 'textnexus/ai_sites');
-                    push(adminSitesRef, {
-                        userEmail: user.email,
-                        subdomain: subdomain,
-                        prompt: prompt,
-                        createdAt: Date.now()
-                    });
+          await fetch('https://api.github.com/repos/' + actualOwner + '/' + repoName + '/pages', {
+            method: 'PUT', headers: { ...githubHeaders, 'Accept': 'application/vnd.github+json' },
+            body: JSON.stringify({ cname: cleanSubdomain + '.textnexus.me' })
+          });
 
-                    // Store Active Session Info for Iterative AI Editing
-                    activeSubdomain = subdomain;
-                    activeRepo = `nexus-${subdomain}`;
+        } catch (bgError) {
+          console.error("Background build error:", bgError);
+        }
+      })());
 
-                    chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-surfaceHover border border-border text-textMain">Success! Your site is live at <a href="${data.siteUrl}" target="_blank" class="text-blue-400 underline">${data.siteUrl}</a>.<br><span class="text-xs text-textMuted mt-1 block">Active for 7 days. To renew, email nexus.web.solutions@putlook.com</span></div>`;
+      return earlyResponse;
 
-                    // Unhide Live Preview & Edit Bar
-                    previewPlaceholder.classList.add('hidden');
-                    previewFrame.classList.remove('hidden');
-                    previewFrame.src = data.siteUrl;
-
-                    const editBar = document.getElementById('editBar');
-                    editBar.classList.remove('hidden');
-                    editBar.classList.add('flex');
-                } else {
-                    chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-red-950/40 border border-red-900/50 text-red-300">Error: ${data.error || 'Build failed.'}</div>`;
-                }
-            } catch (err) {
-                if (document.getElementById('loadingMsg')) document.getElementById('loadingMsg').remove();
-                chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-red-950/40 border border-red-900/50 text-red-300">Network connection error.</div>`;
-            }
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        };
-
-        // 2. Iterative AI Code Update
-        window.updateSite = async () => {
-            const editPrompt = document.getElementById('editPromptInput').value.trim();
-            if (!editPrompt || !activeSubdomain || !activeRepo) return;
-
-            const editInput = document.getElementById('editPromptInput');
-            const loadingBar = document.getElementById('editLoading');
-            const chatContainer = document.getElementById('chatHistory');
-            
-            editInput.value = '';
-            editInput.disabled = true;
-            loadingBar.classList.remove('hidden');
-            
-            chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-surface border border-border text-textMain self-end max-w-[85%]">Updating: "${editPrompt}"</div>`;
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-
-            try {
-                const response = await fetch(`${WORKER_URL}update`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        prompt: editPrompt, 
-                        subdomain: activeSubdomain,
-                        repoName: activeRepo 
-                    })
-                });
-
-                const data = await response.json();
-                
-                if (response.ok) {
-                    chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-surfaceHover border border-border text-emerald-400">Update successful! Refreshing live preview...</div>`;
-                    document.getElementById('previewFrame').src = `https://${activeSubdomain}.textnexus.me?t=${Date.now()}`;
-                } else {
-                    chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-red-950/40 border border-red-900/50 text-red-300">Update failed: ${data.error || 'Could not update site.'}</div>`;
-                }
-            } catch (err) {
-                chatContainer.innerHTML += `<div class="p-3 rounded-xl bg-red-950/40 border border-red-900/50 text-red-300">Network error during update.</div>`;
-            } finally {
-                editInput.disabled = false;
-                loadingBar.classList.add('hidden');
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-        };
-    </script>
-</body>
-</html>
+    } catch (err) {
+      return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+  }
+};
