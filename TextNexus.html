@@ -105,11 +105,30 @@
                 <i class="ph ph-lock-key"></i> This chat has been disabled by the owner.
             </div>
 
-            <div id="input-wrapper" class="max-w-4xl mx-auto relative flex items-center">
-                <input type="text" id="message-input" placeholder="Type a message..." disabled class="w-full bg-surface border border-border rounded-xl py-3 pl-4 pr-12 outline-none text-sm text-textMain focus:border-textMuted transition-colors disabled:opacity-50">
-                <button id="send-btn" disabled class="absolute right-2 w-8 h-8 bg-textMain text-background rounded-lg flex items-center justify-center disabled:opacity-50 hover:opacity-90 transition-opacity">
-                    <i class="ph ph-paper-plane-right text-sm"></i>
-                </button>
+            <div id="input-wrapper" class="max-w-4xl mx-auto relative flex flex-col gap-2">
+                <!-- File Preview Area -->
+                <div id="file-preview-area" class="hidden flex items-center gap-2 bg-surface border border-border rounded-lg p-2 w-fit">
+                    <img id="preview-img" src="" alt="Preview" class="hidden w-12 h-12 object-cover rounded-md border border-border">
+                    <div id="preview-file-info" class="hidden flex items-center gap-2 text-xs text-textMuted">
+                        <i class="ph ph-file text-lg text-textMain"></i>
+                        <span id="preview-file-name" class="max-w-[150px] truncate font-medium text-textMain"></span>
+                    </div>
+                    <button onclick="clearAttachment()" class="ml-2 text-textMuted hover:text-red-400 transition-colors">
+                        <i class="ph ph-x text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Input Row -->
+                <div class="relative flex items-center">
+                    <input type="file" id="file-input" class="hidden" accept="image/*,application/pdf,.txt,.doc,.docx,.zip,.rar,.csv,.json,.xml,.mp3,.mp4">
+                    <button id="attach-btn" type="button" class="absolute left-2 w-8 h-8 flex items-center justify-center text-textMuted hover:text-textMain transition-colors z-10">
+                        <i class="ph ph-paperclip text-lg"></i>
+                    </button>
+                    <input type="text" id="message-input" placeholder="Type a message..." disabled class="w-full bg-surface border border-border rounded-xl py-3 pl-11 pr-12 outline-none text-sm text-textMain focus:border-textMuted transition-colors disabled:opacity-50">
+                    <button id="send-btn" disabled class="absolute right-2 w-8 h-8 bg-textMain text-background rounded-lg flex items-center justify-center disabled:opacity-50 hover:opacity-90 transition-opacity">
+                        <i class="ph ph-paper-plane-right text-sm"></i>
+                    </button>
+                </div>
             </div>
             <p id="login-warning" class="text-center text-[11px] text-textMuted mt-2 hidden">You must log in from the sidebar to send messages.</p>
         </div>
@@ -166,22 +185,26 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getDatabase, ref as dbRef, push, set, onValue, serverTimestamp, off, update, remove, get } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
             authDomain: "nexus-web-development-official.firebaseapp.com",
             projectId: "nexus-web-development-official",
-            databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com" 
+            databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com",
+            storageBucket: "nexus-web-development-official.appspot.com"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
+        const storage = getStorage(app);
 
         let currentUser = null;
         let activeChatId = 'global';
         let currentChatData = null;
         let currentMessagesListener = null;
+        let pendingFile = null;
 
         const messagesContainer = document.getElementById('messages-container');
         const messageInput = document.getElementById('message-input');
@@ -194,10 +217,53 @@
         const chatList = document.getElementById('chat-list');
         const disabledNotice = document.getElementById('disabled-notice');
         const inputWrapper = document.getElementById('input-wrapper');
+        const fileInput = document.getElementById('file-input');
+        const attachBtn = document.getElementById('attach-btn');
+        const filePreviewArea = document.getElementById('file-preview-area');
+        const previewImg = document.getElementById('preview-img');
+        const previewFileInfo = document.getElementById('preview-file-info');
+        const previewFileName = document.getElementById('preview-file-name');
 
         // Modal Helpers
         window.openModal = (id) => document.getElementById(id).classList.remove('opacity-0', 'pointer-events-none');
         window.closeModal = (id) => document.getElementById(id).classList.add('opacity-0', 'pointer-events-none');
+
+        // File Attachment Handling
+        attachBtn.addEventListener('click', () => {
+            if (!currentUser) return alert('Please log in first.');
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            pendingFile = file;
+
+            filePreviewArea.classList.remove('hidden');
+            previewImg.classList.add('hidden');
+            previewFileInfo.classList.add('hidden');
+
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    previewImg.src = ev.target.result;
+                    previewImg.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewFileName.textContent = file.name;
+                previewFileInfo.classList.remove('hidden');
+            }
+        });
+
+        window.clearAttachment = () => {
+            pendingFile = null;
+            fileInput.value = '';
+            filePreviewArea.classList.add('hidden');
+            previewImg.src = '';
+            previewImg.classList.add('hidden');
+            previewFileInfo.classList.add('hidden');
+        };
 
         // Check Auth Status
         onAuthStateChanged(auth, (user) => {
@@ -212,6 +278,7 @@
                 sendBtn.disabled = true;
                 loginWarning.classList.remove('hidden');
                 messageInput.placeholder = "Log in from sidebar to chat";
+                clearAttachment();
             }
             listenToUserChats();
         });
@@ -316,6 +383,33 @@
 
                         const msgDiv = document.createElement('div');
                         msgDiv.className = `flex items-start gap-3 max-w-2xl ${isMe ? 'ml-auto flex-row-reverse' : ''}`;
+                        
+                        let attachmentHtml = '';
+                        if (msg.fileUrl) {
+                            if (msg.fileType && msg.fileType.startsWith('image/')) {
+                                attachmentHtml = `
+                                    <a href="${msg.fileUrl}" target="_blank" rel="noopener noreferrer" class="block mt-2">
+                                        <img src="${msg.fileUrl}" alt="Uploaded image" class="max-w-full max-h-64 rounded-lg border border-border object-contain cursor-pointer hover:opacity-90 transition-opacity">
+                                    </a>
+                                `;
+                            } else {
+                                const iconClass = getFileIcon(msg.fileName);
+                                attachmentHtml = `
+                                    <a href="${msg.fileUrl}" target="_blank" rel="noopener noreferrer" download="${msg.fileName}" class="mt-2 flex items-center gap-3 bg-surface border border-border rounded-lg px-4 py-3 hover:bg-surfaceHover transition-colors group/file">
+                                        <i class="${iconClass} text-2xl text-textMuted group-hover/file:text-textMain transition-colors"></i>
+                                        <div class="flex flex-col overflow-hidden">
+                                            <span class="text-xs font-medium text-textMain truncate max-w-[200px]">${msg.fileName || 'Download File'}</span>
+                                            <span class="text-[10px] text-textMuted">Click to download</span>
+                                        </div>
+                                        <i class="ph ph-download-simple text-textMuted ml-auto group-hover/file:text-textMain transition-colors"></i>
+                                    </a>
+                                `;
+                            }
+                        }
+
+                        const bubbleBg = isMe ? 'bg-textMain text-background' : 'bg-background border border-border text-textMain';
+                        const bubbleRadius = isMe ? 'rounded-2xl rounded-tr-sm' : 'rounded-2xl rounded-tl-sm';
+
                         msgDiv.innerHTML = `
                             <img src="${msg.photoURL || 'https://placehold.co/100'}" class="w-8 h-8 rounded-full object-cover shrink-0 border border-border">
                             <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
@@ -324,9 +418,8 @@
                                     ${!isMe ? badgeHtml : ''}
                                     <span class="text-[10px] text-textMuted">${time}</span>
                                 </div>
-                                <div class="bg-${isMe ? 'textMain text-background' : 'background border border-border text-textMain'} px-4 py-2 rounded-2xl ${isMe ? 'rounded-tr-sm' : 'rounded-tl-sm'} text-sm leading-relaxed">
-                                    ${msg.text}
-                                </div>
+                                ${msg.text ? `<div class="${bubbleBg} px-4 py-2 ${bubbleRadius} text-sm leading-relaxed">${escapeHtml(msg.text)}</div>` : ''}
+                                ${attachmentHtml}
                             </div>
                         `;
                         messagesContainer.appendChild(msgDiv);
@@ -336,24 +429,96 @@
             });
         };
 
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function getFileIcon(fileName) {
+            if (!fileName) return 'ph ph-file';
+            const ext = fileName.split('.').pop().toLowerCase();
+            const icons = {
+                pdf: 'ph ph-file-pdf text-red-400',
+                doc: 'ph ph-file-doc text-blue-400',
+                docx: 'ph ph-file-doc text-blue-400',
+                xls: 'ph ph-file-xls text-green-400',
+                xlsx: 'ph ph-file-xls text-green-400',
+                ppt: 'ph ph-file-ppt text-orange-400',
+                pptx: 'ph ph-file-ppt text-orange-400',
+                zip: 'ph ph-file-zip text-yellow-400',
+                rar: 'ph ph-file-zip text-yellow-400',
+                mp3: 'ph ph-file-audio text-purple-400',
+                wav: 'ph ph-file-audio text-purple-400',
+                mp4: 'ph ph-file-video text-pink-400',
+                mov: 'ph ph-file-video text-pink-400',
+                txt: 'ph ph-file-text text-textMuted',
+                json: 'ph ph-file-code text-yellow-300',
+                js: 'ph ph-file-js text-yellow-300',
+                html: 'ph ph-file-html text-orange-400',
+                css: 'ph ph-file-css text-blue-400',
+            };
+            return icons[ext] || 'ph ph-file text-textMuted';
+        }
+
         // Send Message
         const sendMessage = async () => {
             const text = messageInput.value.trim();
-            if (!text || !currentUser) return;
+            if ((!text && !pendingFile) || !currentUser) return;
             if (currentChatData && currentChatData.disabled) return;
 
-            messageInput.value = '';
-            messageInput.focus();
+            const originalPlaceholder = messageInput.placeholder;
+            messageInput.disabled = true;
+            sendBtn.disabled = true;
+            attachBtn.classList.add('opacity-50', 'pointer-events-none');
 
-            const msgRef = dbRef(db, `textnexus/chats/${activeChatId}/messages`);
-            await push(msgRef, {
-                text: text,
-                uid: currentUser.uid,
-                email: currentUser.email,
-                name: currentUser.displayName?.split(' ')[0] || 'User',
-                photoURL: currentUser.photoURL,
-                timestamp: serverTimestamp()
-            });
+            let fileUrl = null;
+            let fileName = null;
+            let fileType = null;
+
+            try {
+                if (pendingFile) {
+                    messageInput.placeholder = 'Uploading file...';
+                    const safeName = `${Date.now()}_${pendingFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                    const path = `textnexus/uploads/${activeChatId}/${currentUser.uid}/${safeName}`;
+                    const fileRef = storageRef(storage, path);
+                    
+                    await uploadBytes(fileRef, pendingFile);
+                    fileUrl = await getDownloadURL(fileRef);
+                    fileName = pendingFile.name;
+                    fileType = pendingFile.type;
+                }
+
+                const msgData = {
+                    uid: currentUser.uid,
+                    email: currentUser.email,
+                    name: currentUser.displayName?.split(' ')[0] || 'User',
+                    photoURL: currentUser.photoURL,
+                    timestamp: serverTimestamp()
+                };
+
+                if (text) msgData.text = text;
+                if (fileUrl) {
+                    msgData.fileUrl = fileUrl;
+                    msgData.fileName = fileName;
+                    msgData.fileType = fileType;
+                }
+
+                const msgRef = dbRef(db, `textnexus/chats/${activeChatId}/messages`);
+                await push(msgRef, msgData);
+
+                messageInput.value = '';
+                clearAttachment();
+            } catch (error) {
+                console.error('Error sending message:', error);
+                alert('Failed to send message or upload file. Please try again.');
+            } finally {
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                attachBtn.classList.remove('opacity-50', 'pointer-events-none');
+                messageInput.placeholder = originalPlaceholder;
+                messageInput.focus();
+            }
         };
 
         sendBtn.addEventListener('click', sendMessage);
