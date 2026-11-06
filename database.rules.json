@@ -2,7 +2,6 @@
   "rules": {
     ".read": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
     ".write": false,
-
     "maintenance": {
       ".read": true,
       ".write": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
@@ -10,7 +9,6 @@
         ".validate": "newData.isNumber() && newData.val() > 0"
       }
     },
-
     "system": {
       ".read": true,
       ".write": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
@@ -18,7 +16,6 @@
         ".validate": "newData.isString() && newData.val().length <= 200"
       }
     },
-
     "workspace_updates": {
       ".read": true,
       ".write": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
@@ -26,7 +23,6 @@
         ".validate": "newData.hasChildren(['title', 'content']) && newData.child('title').isString() && newData.child('title').val().length <= 200 && newData.child('content').isString() && newData.child('content').val().length <= 20000"
       }
     },
-
     "users": {
       ".read": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
       ".write": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
@@ -35,11 +31,9 @@
         ".write": "auth != null && auth.uid === $uid"
       }
     },
-
     "nexus": {
       ".read": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
       ".write": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
-
       "system": {
         ".read": true,
         "maintenance": {
@@ -49,19 +43,16 @@
           ".validate": "newData.isBoolean()"
         }
       },
-
       "updates": {
         "$updateId": {
           ".validate": "newData.hasChildren(['title', 'content']) && newData.child('title').isString() && newData.child('title').val().length <= 200 && newData.child('content').isString() && newData.child('content').val().length <= 20000"
         }
       },
-
       "audit_logs": {
         "$logId": {
           ".validate": "newData.hasChildren(['action', 'adminEmail', 'timestamp']) && newData.child('adminEmail').val() === auth.token.email && newData.child('action').isString() && newData.child('action').val().length <= 100 && newData.child('timestamp').isNumber()"
         }
       },
-
       "users": {
         "$uid": {
           ".read": "auth != null && auth.uid === $uid",
@@ -96,7 +87,6 @@
           }
         }
       },
-
       "ai_sites": {
         ".read": "auth != null",
         "$siteId": {
@@ -104,18 +94,15 @@
           ".validate": "newData.hasChildren(['subdomain', 'prompt', 'userId', 'userEmail']) && newData.child('subdomain').isString() && newData.child('subdomain').val().length <= 63 && newData.child('prompt').isString() && newData.child('prompt').val().length <= 5000 && newData.child('userEmail').val() === auth.token.email"
         }
       },
-
       "chats": {
         "$chatId": {
           ".validate": "newData.hasChildren(['name']) && newData.child('name').isString() && newData.child('name').val().length <= 100"
         }
       }
     },
-
     "textnexus": {
       ".read": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
       ".write": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
-
       "users": {
         "$uid": {
           ".read": "auth != null && auth.uid === $uid",
@@ -150,7 +137,6 @@
           }
         }
       },
-
       "ai_sites": {
         ".read": "auth != null",
         "$siteId": {
@@ -158,7 +144,6 @@
           ".validate": "newData.hasChildren(['subdomain', 'prompt', 'userId', 'userEmail']) && newData.child('subdomain').isString() && newData.child('subdomain').val().length <= 63 && newData.child('prompt').isString() && newData.child('prompt').val().length <= 5000 && newData.child('userEmail').val() === auth.token.email"
         }
       },
-
       "chats": {
         ".read": "auth != null",
         "$chatId": {
@@ -190,18 +175,15 @@
         }
       }
     },
-
     "textylabs": {
       ".read": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
       ".write": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
-
       "users": {
         "$uid": {
           ".read": "auth != null && auth.uid === $uid",
           ".write": "auth != null && auth.uid === $uid"
         }
       },
-
       "chats": {
         ".read": "auth != null",
         "$chatId": {
@@ -217,11 +199,9 @@
         }
       }
     },
-
     "pinkping": {
       ".read": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
       ".write": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
-
       "squads": {
         ".read": "auth != null",
         "$squadId": {
@@ -229,7 +209,6 @@
           ".write": "auth != null && (!data.exists() || data.child('ownerId').val() === auth.uid)"
         }
       },
-
       "users": {
         "$uid": {
           ".read": "auth != null && auth.uid === $uid",
@@ -241,7 +220,6 @@
           }
         }
       },
-
       "messages": {
         "$squadId": {
           ".read": "auth != null",
@@ -252,7 +230,6 @@
         }
       }
     },
-
     "pinkping_groups": {
       ".read": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
       ".write": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
@@ -261,13 +238,80 @@
         ".write": "auth != null && (!data.exists() || data.child('ownerId').val() === auth.uid)"
       }
     },
-
     "pinkping_messages": {
       ".read": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
       ".write": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
       "$groupId": {
         ".read": "auth != null",
         ".write": "auth != null && root.child('pinkping_groups').child($groupId).child('isDisabled').val() !== true"
+      }
+    },
+    "tenants": {
+      ".read": false,
+      ".write": false,
+      "$tenant": {
+        ".read": "auth != null && auth.token.email_verified === true && (($tenant === 'textnexus' && auth.token.email === 'brodywilliams0226@gmail.com') || ($tenant === 'leo' && auth.token.email === 'lrosasaamot001@stpaul.k12.mn.us') || ($tenant === 'javier' && auth.token.email === 'jcruz016@stpaul.k12.mn.us'))",
+        "site": {
+          ".read": true,
+          ".write": "auth != null && auth.token.email_verified === true && (($tenant === 'textnexus' && auth.token.email === 'brodywilliams0226@gmail.com') || ($tenant === 'leo' && auth.token.email === 'lrosasaamot001@stpaul.k12.mn.us') || ($tenant === 'javier' && auth.token.email === 'jcruz016@stpaul.k12.mn.us'))",
+          "headline": {
+            ".validate": "newData.isString() && newData.val().length <= 160"
+          },
+          "announcement": {
+            "text": {
+              ".validate": "newData.isString() && newData.val().length <= 200"
+            },
+            "link": {
+              ".validate": "newData.isString() && newData.val().length <= 300"
+            },
+            "enabled": {
+              ".validate": "newData.isBoolean()"
+            }
+          }
+        },
+        "members": {
+          "$uid": {
+            ".read": "auth != null && (auth.uid === $uid || (auth != null && auth.token.email_verified === true && (($tenant === 'textnexus' && auth.token.email === 'brodywilliams0226@gmail.com') || ($tenant === 'leo' && auth.token.email === 'lrosasaamot001@stpaul.k12.mn.us') || ($tenant === 'javier' && auth.token.email === 'jcruz016@stpaul.k12.mn.us'))))",
+            ".write": "auth != null && ((auth.uid === $uid && !data.exists() && newData.child('email').val() === auth.token.email && newData.child('status').val() === 'active') || (auth != null && auth.token.email_verified === true && (($tenant === 'textnexus' && auth.token.email === 'brodywilliams0226@gmail.com') || ($tenant === 'leo' && auth.token.email === 'lrosasaamot001@stpaul.k12.mn.us') || ($tenant === 'javier' && auth.token.email === 'jcruz016@stpaul.k12.mn.us'))))",
+            "email": {
+              ".validate": "newData.isString() && newData.val() === auth.token.email"
+            },
+            "name": {
+              ".validate": "newData.isString() && newData.val().length <= 80"
+            },
+            "tenant": {
+              ".validate": "newData.val() === $tenant"
+            },
+            "status": {
+              ".validate": "newData.val() === 'active' || newData.val() === 'removed'"
+            },
+            "provider": {
+              ".validate": "newData.isString() && newData.val().length <= 20"
+            },
+            "createdAt": {
+              ".validate": "newData.isNumber()"
+            },
+            "removedAt": {
+              ".validate": "newData.isNumber()"
+            },
+            "removedBy": {
+              ".validate": "newData.isString() && newData.val().length <= 254"
+            },
+            "restoredAt": {
+              ".validate": "newData.isNumber()"
+            },
+            "restoredBy": {
+              ".validate": "newData.isString() && newData.val().length <= 254"
+            }
+          }
+        },
+        "audit": {
+          "$entry": {
+            ".read": "auth != null && auth.token.email_verified === true && (($tenant === 'textnexus' && auth.token.email === 'brodywilliams0226@gmail.com') || ($tenant === 'leo' && auth.token.email === 'lrosasaamot001@stpaul.k12.mn.us') || ($tenant === 'javier' && auth.token.email === 'jcruz016@stpaul.k12.mn.us'))",
+            ".write": "auth != null && auth.token.email_verified === true && (($tenant === 'textnexus' && auth.token.email === 'brodywilliams0226@gmail.com') || ($tenant === 'leo' && auth.token.email === 'lrosasaamot001@stpaul.k12.mn.us') || ($tenant === 'javier' && auth.token.email === 'jcruz016@stpaul.k12.mn.us')) && newData.child('actorEmail').val() === auth.token.email",
+            ".validate": "newData.hasChildren(['action','actorEmail','timestamp']) && newData.child('action').isString() && newData.child('action').val().length <= 60 && newData.child('actorEmail').isString() && newData.child('timestamp').isNumber()"
+          }
+        }
       }
     }
   }

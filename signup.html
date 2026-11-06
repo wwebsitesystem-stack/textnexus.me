@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Create your TextNexus account</title>
+  <meta name="description" content="Create a TextNexus account to join a private workspace.">
+  <link rel="icon" href="/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000; --surface: #0a0a0a; --surface-2: #111;
+      --line: rgba(255,255,255,.09); --text: #fff; --muted: #8a8a8a;
+      --ok: #4ade80; --bad: #f87171; --accent: #60a5fa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+      font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+      display: flex; align-items: center; justify-content: center; padding: 28px 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { width: 100%; max-width: 400px; }
+    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; font-weight: 600; }
+    .brand img { width: 26px; height: 26px; }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 26px; }
+    h1 { font-size: 19px; margin: 0 0 6px; letter-spacing: -.01em; }
+    .sub { font-size: 13px; color: var(--muted); margin: 0 0 18px; line-height: 1.55; }
+    .tabs { display: flex; gap: 6px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 4px; margin-bottom: 18px; }
+    .tabs button {
+      flex: 1; padding: 8px; font-size: 13px; font-weight: 600; border: 0; border-radius: 7px;
+      background: transparent; color: var(--muted); cursor: pointer; font-family: inherit;
+    }
+    .tabs button[aria-selected="true"] { background: #fff; color: #000; }
+    label { display: block; font-size: 12px; color: var(--muted); margin: 12px 0 6px; }
+    input, select {
+      width: 100%; padding: 10px 12px; background: var(--surface-2);
+      border: 1px solid var(--line); border-radius: 9px; color: var(--text);
+      font-family: inherit; font-size: 14px;
+    }
+    input:focus, select:focus { outline: none; border-color: rgba(96,165,250,.55); }
+    button.submit {
+      width: 100%; margin-top: 18px; padding: 11px; border-radius: 9px; border: 0;
+      background: #fff; color: #000; font-weight: 600; font-size: 14px; cursor: pointer; font-family: inherit;
+    }
+    button.submit:disabled { opacity: .5; cursor: not-allowed; }
+    button.google {
+      width: 100%; margin-top: 10px; padding: 10px; border-radius: 9px;
+      background: transparent; color: var(--text); border: 1px solid var(--line);
+      font-family: inherit; font-size: 13.5px; font-weight: 500; cursor: pointer;
+    }
+    button.google:hover { border-color: rgba(255,255,255,.25); }
+    #msg { font-size: 12.5px; line-height: 1.5; margin-top: 14px; min-height: 18px; }
+    #msg.ok { color: var(--ok); }
+    #msg.err { color: var(--bad); }
+    .foot { font-size: 11.5px; color: #555; text-align: center; margin-top: 18px; line-height: 1.7; }
+    .foot a { color: var(--muted); }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="brand"><img src="/logo.svg" alt=""><span>TextNexus</span></div>
+    <div class="card">
+      <h1 id="title">Create your account</h1>
+      <p class="sub" id="subtitle">One account, your private workspace. We email you a confirmation right away.</p>
+
+      <div class="tabs" role="tablist">
+        <button id="tabCreate" role="tab" aria-selected="true">Create account</button>
+        <button id="tabSignin" role="tab" aria-selected="false">Sign in</button>
+      </div>
+
+      <div id="createForm">
+        <label for="name">Display name</label>
+        <input id="name" type="text" autocomplete="name" maxlength="80" placeholder="Ada Lovelace">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="new-password" placeholder="At least 6 characters">
+        <label for="tenant">Workspace</label>
+        <select id="tenant">
+          <option value="textnexus">TextNexus</option>
+          <option value="leo">Leo</option>
+          <option value="javier">Javier</option>
+        </select>
+        <button class="submit" id="createBtn">Create account</button>
+      </div>
+
+      <div id="signinForm" class="hidden">
+        <label for="emailIn">Email</label>
+        <input id="emailIn" type="email" autocomplete="username" placeholder="you@example.com">
+        <label for="passwordIn">Password</label>
+        <input id="passwordIn" type="password" autocomplete="current-password" placeholder="Your password">
+        <button class="submit" id="signinBtn">Sign in</button>
+      </div>
+
+      <button class="google" id="googleBtn">Continue with Google</button>
+      <div id="msg"></div>
+    </div>
+    <p class="foot">
+      Have an owner account? <a href="/adminpanel/">Open the admin panel</a>.<br>
+      <a href="/home.html">Back to TextNexus</a>
+    </p>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+      updateProfile, sendEmailVerification, GoogleAuthProvider, signInWithPopup
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getDatabase, ref, set, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
+      authDomain: "nexus-web-development-official.firebaseapp.com",
+      projectId: "nexus-web-development-official",
+      databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com"
+    };
+
+    const TENANTS = {
+      textnexus: { label: "TextNexus", panel: "textnexus", owners: ["brodywilliams0226@gmail.com"] },
+      leo: { label: "Leo", panel: "leo", owners: ["lrosasaamot001@stpaul.k12.mn.us"] },
+      javier: { label: "Javier", panel: "javier", owners: ["jcruz016@stpaul.k12.mn.us"] }
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const $ = (id) => document.getElementById(id);
+    const msg = (text, kind = "") => { const m = $("msg"); m.textContent = text; m.className = kind; };
+
+    // Hostname decides the workspace when it is one of the tenant domains.
+    const hostMap = { "leo.textnexus.me": "leo", "javier.textnexus.me": "javier" };
+    const params = new URLSearchParams(location.search);
+    const preselected = params.get("tenant") || hostMap[location.hostname.toLowerCase()];
+    if (preselected && TENANTS[preselected]) {
+      $("tenant").value = preselected;
+      $("subtitle").textContent = `Create your account for the ${TENANTS[preselected].label} workspace.`;
+    }
+
+    $("tenant").addEventListener("change", () => {
+      $("subtitle").textContent = `Create your account for the ${TENANTS[$("tenant").value].label} workspace.`;
+    });
+
+    $("tabCreate").addEventListener("click", () => switchTab("create"));
+    $("tabSignin").addEventListener("click", () => switchTab("signin"));
+
+    function switchTab(which) {
+      const creating = which === "create";
+      $("createForm").classList.toggle("hidden", !creating);
+      $("signinForm").classList.toggle("hidden", creating);
+      $("tabCreate").setAttribute("aria-selected", String(creating));
+      $("tabSignin").setAttribute("aria-selected", String(!creating));
+      $("title").textContent = creating ? "Create your account" : "Welcome back";
+      msg("");
+    }
+
+    function friendly(error) {
+      const code = error?.code || "";
+      if (code.includes("email-already-in-use")) return "That email already has an account — sign in instead.";
+      if (code.includes("invalid-email")) return "That email address is not valid.";
+      if (code.includes("weak-password")) return "Use at least 6 characters.";
+      if (code.includes("invalid-credential") || code.includes("wrong-password")) return "Wrong email or password.";
+      if (code.includes("user-not-found")) return "No account with that email.";
+      if (code.includes("popup-closed")) return "Google sign-in was closed.";
+      if (code.includes("unauthorized-domain")) return "This domain is not authorised for Google sign-in in Firebase.";
+      if (code.includes("operation-not-allowed")) return "Email/password sign-in is disabled in the Firebase console.";
+      if (code.includes("too-many-requests")) return "Too many attempts — try again in a minute.";
+      return error?.message || "Something went wrong.";
+    }
+
+    async function registerMember(user, tenantId, provider) {
+      const record = {
+        email: user.email || "",
+        name: user.displayName || ($("name")?.value || "").trim(),
+        tenant: tenantId,
+        status: "active",
+        provider,
+        createdAt: Date.now()
+      };
+      await set(ref(db, `tenants/${tenantId}/members/${user.uid}`), record);
+      try {
+        await update(ref(db, `nexus/users/${user.uid}`), {
+          uid: user.uid,
+          email: record.email,
+          name: record.name,
+          lastLogin: Date.now()
+        });
+      } catch {
+        /* profile mirror is best-effort */
+      }
+      return record;
+    }
+
+    async function sendWelcome(user, tenantId) {
+      try {
+        const idToken = await user.getIdToken();
+        const res = await fetch("/api/welcome", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken, tenant: tenantId })
+        });
+        return res.ok;
+      } catch {
+        return false;
+      }
+    }
+
+    function destinationFor(email, tenantId) {
+      const tenant = TENANTS[tenantId];
+      if (tenant && tenant.owners.includes((email || "").toLowerCase())) {
+        return `/adminpanel/${tenant.panel}.html`;
+      }
+      return "/home.html";
+    }
+
+    $("createBtn").addEventListener("click", async () => {
+      const name = $("name").value.trim();
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      const tenantId = $("tenant").value;
+
+      if (!name) return msg("Add a display name.", "err");
+      if (!email) return msg("Add your email.", "err");
+      if (password.length < 6) return msg("Password needs at least 6 characters.", "err");
+
+      $("createBtn").disabled = true;
+      msg("Creating your account…");
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(cred.user, { displayName: name });
+
+        try {
+          await registerMember(cred.user, tenantId, "password");
+        } catch (err) {
+          msg(`Account created, but saving your workspace record failed (${err.code || err.message}). The database rules may not be published yet.`, "err");
+        }
+
+        await sendEmailVerification(cred.user).catch(() => {});
+        const welcomeSent = await sendWelcome(cred.user, tenantId);
+
+        msg(welcomeSent
+          ? "Account created. Check your inbox for the welcome and verification emails."
+          : "Account created. Firebase sent your verification email. The welcome email needs the Brevo key on Cloudflare Pages.", "ok");
+
+        setTimeout(() => location.assign(destinationFor(cred.user.email, tenantId)), 1600);
+      } catch (err) {
+        msg(friendly(err), "err");
+      } finally {
+        $("createBtn").disabled = false;
+      }
+    });
+
+    $("signinBtn").addEventListener("click", async () => {
+      const email = $("emailIn").value.trim();
+      const password = $("passwordIn").value;
+      if (!email || !password) return msg("Email and password are required.", "err");
+      $("signinBtn").disabled = true;
+      msg("Signing in…");
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const tenantId = preselected && TENANTS[preselected] ? preselected : "textnexus";
+        msg("Signed in. Opening your workspace…", "ok");
+        setTimeout(() => location.assign(destinationFor(cred.user.email, tenantId)), 700);
+      } catch (err) {
+        msg(friendly(err), "err");
+      } finally {
+        $("signinBtn").disabled = false;
+      }
+    });
+
+    $("googleBtn").addEventListener("click", async () => {
+      const tenantId = $("tenant").value || "textnexus";
+      $("googleBtn").disabled = true;
+      msg("Opening Google…");
+      try {
+        const cred = await signInWithPopup(auth, new GoogleAuthProvider());
+        try { await registerMember(cred.user, tenantId, "google"); } catch { /* rules may be unpublished */ }
+        msg("Signed in. Opening your workspace…", "ok");
+        setTimeout(() => location.assign(destinationFor(cred.user.email, tenantId)), 700);
+      } catch (err) {
+        msg(friendly(err), "err");
+      } finally {
+        $("googleBtn").disabled = false;
+      }
+    });
+
+    [$("password"), $("passwordIn")].forEach((input) =>
+      input.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter") return;
+        (input.id === "password" ? $("createBtn") : $("signinBtn")).click();
+      })
+    );
+  </script>
+</body>
+</html>

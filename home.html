@@ -78,6 +78,12 @@
                     <a href="admin.html" onclick="return openInShell(event, 'admin.html')" class="flex items-center gap-3 text-sm text-textMuted p-2 rounded-lg bg-background border border-border hover:border-textMuted transition-colors">
                         <i class="ph ph-shield-check text-lg"></i> Open the Admin Panel.
                     </a>
+                    <a href="signup.html" class="flex items-center gap-3 text-sm text-textMuted p-2 rounded-lg bg-background border border-border hover:border-textMuted transition-colors">
+                        <i class="ph ph-user-plus text-lg"></i> Create an account.
+                    </a>
+                    <a href="adminpanel/" class="flex items-center gap-3 text-sm text-textMuted p-2 rounded-lg bg-background border border-border hover:border-textMuted transition-colors">
+                        <i class="ph ph-buildings text-lg"></i> Workspace admin panels.
+                    </a>
                 </div>
             </div>
             
@@ -135,5 +141,46 @@
             }
         });
     </script>
+
+<!-- Announcement bar: text comes from tenants/textnexus/site/announcement -->
+<div id="tn-announce" hidden style="position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;align-items:center;justify-content:center;gap:10px;padding:9px 44px 9px 16px;background:#fff;color:#000;font:600 13px/1.4 'Inter',-apple-system,sans-serif;text-align:center">
+  <span id="tn-announce-text"></span>
+  <a id="tn-announce-link" href="/updates.html" style="color:#000;text-decoration:underline">Learn more</a>
+  <button id="tn-announce-close" aria-label="Dismiss" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:transparent;font-size:17px;line-height:1;cursor:pointer;color:#000">×</button>
+</div>
+<script type="module">
+  (async () => {
+    const bar = document.getElementById('tn-announce');
+    if (!bar || sessionStorage.getItem('tn-announce-dismissed') === '1') return;
+    const show = (text, link) => {
+      if (!text) return;
+      document.getElementById('tn-announce-text').textContent = text;
+      if (link) document.getElementById('tn-announce-link').href = link;
+      bar.hidden = false;
+    };
+    show('A new update lands tomorrow.', '/updates.html');
+    try {
+      const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js');
+      const { getDatabase, ref, onValue } = await import('https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js');
+      const app = getApps().length ? getApps()[0] : initializeApp({
+        apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
+        authDomain: "nexus-web-development-official.firebaseapp.com",
+        projectId: "nexus-web-development-official",
+        databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com"
+      });
+      onValue(ref(getDatabase(app), 'tenants/textnexus/site/announcement'), (snap) => {
+        const a = snap.val();
+        if (!a) return;
+        if (a.enabled === false) { bar.hidden = true; return; }
+        show(a.text || 'A new update lands tomorrow.', a.link || '/updates.html');
+      });
+    } catch { /* rules unpublished: keep the default banner */ }
+    document.getElementById('tn-announce-close').addEventListener('click', () => {
+      bar.hidden = true;
+      sessionStorage.setItem('tn-announce-dismissed', '1');
+    });
+    document.body.style.paddingTop = bar.offsetHeight + 'px';
+  })();
+</script>
 </body>
 </html>

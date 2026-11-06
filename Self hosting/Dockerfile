@@ -28,6 +28,7 @@ COPY \
     settings.html \
     notifications.html \
     suggestions.html \
+    signup.html \
     email-manager.html \
     jeoweb.html \
     secret1.html \
@@ -41,6 +42,8 @@ COPY \
     bareworker.js \
     database.rules.json \
     ./
+
+COPY adminpanel ./adminpanel
 
 COPY ["Self hosting/nginx.conf", "/etc/nginx/conf.d/default.conf"]
 

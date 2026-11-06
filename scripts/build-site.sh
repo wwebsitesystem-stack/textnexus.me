@@ -22,6 +22,7 @@ FILES=(
     settings.html
     notifications.html
     suggestions.html
+    signup.html
     email-manager.html
     jeoweb.html
     secret1.html
@@ -55,5 +56,7 @@ if [ "$missing" -ne 0 ]; then
     echo "build failed: expected site files are missing" >&2
     exit 1
 fi
+
+cp -r adminpanel dist/adminpanel
 
 echo "staged $(find dist -type f | wc -l) files in dist/"

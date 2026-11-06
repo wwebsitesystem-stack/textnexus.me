@@ -30,3 +30,33 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 **Built with ❤️ by the TextNexus Team.**  
 *Nexus OS // Edition X — Where Systems Meet Simplicity.*
+
+
+## Accounts, owner panels and email
+
+Sign-up lives at `/signup.html` (email/password and Google via Firebase Auth). A new
+account writes a record to `tenants/<tenant>/members/<uid>` and receives a Firebase
+verification email. The branded welcome email is sent by `functions/api/welcome.js`,
+which calls Brevo server-side so the API key never reaches the browser.
+
+| Panel | URL | Owner account |
+| --- | --- | --- |
+| TextNexus | `/adminpanel/textnexus.html` | brodywilliams0226@gmail.com |
+| Leo | `/adminpanel/leo.html` (leo.textnexus.me) | lrosasaamot001@stpaul.k12.mn.us |
+| Javier | `/adminpanel/javier.html` (javier.textnexus.me) | jcruz016@stpaul.k12.mn.us |
+
+The owner allowlists are duplicated in `database.rules.json`, which is what actually
+enforces access. The panel also reads `tenants/<tenant>/site` for the announcement bar
+shown on the home page.
+
+### Required setup
+
+1. Publish the rules: `firebase deploy --only database --project nexus-web-development-official`.
+2. On Cloudflare Pages, add encrypted environment variables `BREVO_API_KEY` and
+   `BREVO_SENDER` (a sender verified in Brevo). Optional: `BREVO_SENDER_NAME`,
+   `BREVO_REPLY_TO`, `APP_ORIGIN`, `FIREBASE_API_KEY`.
+3. Functional login needs the site served from Cloudflare Pages (or any host with
+   `/api/welcome`); GitHub Pages serves the pages but not the email function.
+4. In Firebase Authentication, enable the Email/Password and Google providers and add
+   `textnexus.me`, `leo.textnexus.me` and `javier.textnexus.me` to Authorized domains.
+5. Create DNS records for `www`, `leo` and `javier` (CNAME to `textnexus.me`, proxied).
