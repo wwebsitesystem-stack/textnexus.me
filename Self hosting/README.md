@@ -36,7 +36,7 @@ docker compose -f "Self hosting/docker-compose.yml" down
 Copy the site files and the server block into place:
 
 ```bash
-sudo cp index.html home.html updates.html ghostlink.html TextNexus.html \
+sudo cp index.html 404.html home.html updates.html ghostlink.html TextNexus.html \
         countdown_timer.html admin.html owner.html creator.html settings.html \
         notifications.html suggestions.html email-manager.html jeoweb.html \
         secret1.html nexus_maintenance.html system_analytics_health.html \
@@ -59,6 +59,11 @@ service-worker pages (Ghostlink, Jeoweb) will not behave correctly.
 | `docker-compose.yml` | Builds the image from the repo root and publishes port 8080 |
 | `nginx.conf` | Server block: gzip, cache headers, baseline security headers |
 | `README.md` | This document |
+
+The site also ships `404.html` at the repository root. GitHub Pages serves it
+automatically for unknown paths, and `nginx.conf` wires it up with
+`error_page 404 /404.html;` so nginx returns the same page with a real 404
+status.
 
 ## Firebase
 

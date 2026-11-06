@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>404 — Route not found | TextNexus</title>
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --line: rgba(255, 255, 255, 0.09);
+            --text: #ededed;
+            --muted: #a1a1aa;
+        }
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow: hidden;
+        }
+        /* Ambient glow */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 18% 16%, rgba(96, 165, 250, 0.12), transparent 45%),
+                radial-gradient(circle at 82% 74%, rgba(139, 92, 246, 0.12), transparent 45%);
+            pointer-events: none;
+        }
+        /* Faint grid, faded at the edges */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+            background-size: 56px 56px;
+            -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 28%, transparent 76%);
+            mask-image: radial-gradient(circle at 50% 50%, #000 28%, transparent 76%);
+            pointer-events: none;
+        }
+        .card {
+            position: relative;
+            width: 100%;
+            max-width: 560px;
+            padding: 48px 40px;
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            backdrop-filter: blur(12px);
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+        .brand img { width: 26px; height: 26px; }
+        .brand span {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 11px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .code {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: clamp(72px, 18vw, 118px);
+            font-weight: 500;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            margin: 0 0 10px;
+            background: linear-gradient(180deg, #ffffff, rgba(255, 255, 255, 0.32));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        h1 { font-size: 20px; font-weight: 600; margin: 0 0 10px; }
+        p.message {
+            margin: 0 auto 32px;
+            max-width: 40ch;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--muted);
+        }
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        a.btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+        }
+        a.btn:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.22);
+            transform: translateY(-1px);
+        }
+        a.btn.primary {
+            background: rgba(96, 165, 250, 0.14);
+            border-color: rgba(96, 165, 250, 0.35);
+            color: #bfdbfe;
+        }
+        a.btn.primary:hover { background: rgba(96, 165, 250, 0.22); }
+        footer {
+            margin-top: 34px;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #52525b;
+        }
+        @media (max-width: 480px) {
+            .card { padding: 36px 22px; }
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <div class="brand">
+            <img src="/logo.svg" alt="">
+            <span>Nexus OS // Edition X</span>
+        </div>
+        <p class="code">404</p>
+        <h1>Route not found</h1>
+        <p class="message">The page you asked for isn't part of Nexus OS. It may have moved, been renamed, or never existed.</p>
+        <div class="actions">
+            <a class="btn primary" href="/">Back to Overview</a>
+            <a class="btn" href="/updates.html">Updates</a>
+            <a class="btn" href="/TextNexus.html">TextNexus</a>
+        </div>
+        <footer>TextNexus // Status 404</footer>
+    </main>
+</body>
+</html>

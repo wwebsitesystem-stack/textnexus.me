@@ -16,6 +16,7 @@ WORKDIR /usr/share/nginx/html
 # folder never end up in the image.
 COPY \
     index.html \
+    404.html \
     home.html \
     updates.html \
     ghostlink.html \
