@@ -16,6 +16,9 @@
 /*.svg
   Cache-Control: public, max-age=86400
 
+/*.png
+  Cache-Control: public, max-age=86400
+
 /signup.html
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-cache

@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
     <title>404 — Route not found | TextNexus</title>
+    <meta name="description" content="That page is not part of TextNexus. Head back to the workspace, updates or support.">
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0a0a0a;
@@ -22,7 +20,7 @@
             margin: 0;
             background: var(--bg);
             color: var(--text);
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -73,14 +71,14 @@
         }
         .brand img { width: 26px; height: 26px; }
         .brand span {
-            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
             font-size: 11px;
             letter-spacing: 0.28em;
             text-transform: uppercase;
             color: var(--muted);
         }
         .code {
-            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
             font-size: clamp(72px, 18vw, 118px);
             font-weight: 500;
             line-height: 1;
@@ -132,7 +130,7 @@
         a.btn.primary:hover { background: rgba(96, 165, 250, 0.22); }
         footer {
             margin-top: 34px;
-            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
             font-size: 10px;
             letter-spacing: 0.22em;
             text-transform: uppercase;
@@ -156,6 +154,8 @@
             <a class="btn primary" href="/">Back to Overview</a>
             <a class="btn" href="/updates.html">Updates</a>
             <a class="btn" href="/TextNexus.html">TextNexus</a>
+            <a class="btn" href="/feedback.html">Feedback</a>
+            <a class="btn" href="/signup.html">Create account</a>
         </div>
         <footer>TextNexus // Status 404</footer>
     </main>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Countdown Timer — No Sign-Up, Works Offline | TextNexus</title>
+  <meta name="description" content="A free online countdown timer with presets, pause and resume. It keeps running while the tab is closed and needs no account or install.">
+  <link rel="canonical" href="https://textnexus.me/free-countdown-timer.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TextNexus">
+  <meta property="og:title" content="Free Countdown Timer — No Sign-Up | TextNexus">
+  <meta property="og:description" content="Set a countdown with presets, pause and resume. It keeps running while the tab is closed.">
+  <meta property="og:url" content="https://textnexus.me/free-countdown-timer.html">
+  <meta property="og:image" content="https://textnexus.me/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Free Countdown Timer — No Sign-Up | TextNexus">
+  <meta name="twitter:description" content="Set a countdown with presets, pause and resume. It keeps running while the tab is closed.">
+  <meta name="twitter:image" content="https://textnexus.me/og-image.png">
+  <link rel="icon" href="/logo.svg" type="image/svg+xml">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"TextNexus Countdown Timer","url":"https://textnexus.me/free-countdown-timer.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free browser countdown timer with presets, pause and resume, and no account required."}</script>
+  <style>
+    :root { --bg:#0a0a0a; --surface:#121212; --line:#262626; --text:#ededed; --muted:#a1a1aa; --accent:#60a5fa; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; line-height:1.65; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 40px 20px 72px; }
+    nav { display:flex; gap:18px; flex-wrap:wrap; margin-bottom:36px; font-size:13px; }
+    nav a { color:var(--muted); text-decoration:none; }
+    nav a:hover { color:#fff; }
+    h1 { font-size:clamp(28px,5vw,40px); letter-spacing:-.02em; margin:0 0 10px; }
+    .lede { color:var(--muted); font-size:15px; max-width:60ch; margin:0 0 28px; }
+    .timer { background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:28px; }
+    #display { font-variant-numeric: tabular-nums; font-size:clamp(52px,12vw,88px); font-weight:600; letter-spacing:-.03em; text-align:center; line-height:1.05; }
+    .presets { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin:18px 0 6px; }
+    .presets button { background:#0a0a0a; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:7px 14px; font:inherit; font-size:12.5px; cursor:pointer; }
+    .presets button:hover { color:#fff; border-color:#52525b; }
+    .row { display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
+    .row input { width:92px; padding:10px; background:#0a0a0a; border:1px solid var(--line); border-radius:9px; color:#fff; font:inherit; text-align:center; }
+    .row .go { background:#fff; color:#000; border:0; border-radius:9px; padding:10px 22px; font:inherit; font-weight:600; cursor:pointer; }
+    .row .ghost { background:transparent; color:var(--muted); border:1px solid var(--line); border-radius:9px; padding:10px 18px; font:inherit; cursor:pointer; }
+    #hint { text-align:center; color:var(--muted); font-size:12px; margin-top:14px; min-height:18px; }
+    h2 { font-size:18px; margin:44px 0 10px; }
+    p, li { color:var(--muted); font-size:14px; }
+    a { color:var(--accent); }
+    .box { border:1px solid var(--line); border-radius:12px; padding:18px; margin-top:14px; }
+    @media (prefers-reduced-motion: no-preference) { .timer { transition: border-color .2s ease; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <nav aria-label="TextNexus">
+    <a href="/">Home</a>
+    <a href="/home.html">Workspace</a>
+    <a href="/share-files.html">Share files</a>
+    <a href="/TextNexus.html">Group chat</a>
+    <a href="/feedback.html">Feedback</a>
+  </nav>
+
+  <h1>Free countdown timer</h1>
+  <p class="lede">Set a countdown, pause it, or leave the tab — the timer stores its end time locally, so it keeps counting while you are away. No account, no ads in the timer, no install.</p>
+
+  <section class="timer" aria-label="Countdown timer">
+    <div id="display" role="timer" aria-live="off">00:00</div>
+    <div class="presets">
+      <button type="button" data-min="1">1 min</button>
+      <button type="button" data-min="5">5 min</button>
+      <button type="button" data-min="10">10 min</button>
+      <button type="button" data-min="25">25 min</button>
+      <button type="button" data-min="60">1 hour</button>
+    </div>
+    <div class="row">
+      <label><span class="sr-only" style="position:absolute;left:-9999px">Minutes</span><input id="minutes" type="number" min="0" max="1440" value="5" inputmode="numeric"> </label>
+      <label><span class="sr-only" style="position:absolute;left:-9999px">Seconds</span><input id="seconds" type="number" min="0" max="59" value="0" inputmode="numeric"></label>
+      <button class="go" id="start" type="button">Start</button>
+      <button class="ghost" id="reset" type="button">Reset</button>
+    </div>
+    <p id="hint">Minutes and seconds</p>
+  </section>
+
+  <h2>How it works</h2>
+  <p>The timer counts against a timestamp saved in this browser, not against a script that has to keep the page awake. Close the tab and come back: it shows the right remaining time, and says so if the countdown already finished.</p>
+
+  <h2>When people use it</h2>
+  <ul>
+    <li>Timed study or work blocks, using the 25-minute preset.</li>
+    <li>Kitchen timers, since a phone browser is already open.</li>
+    <li>Meeting and classroom countdowns you want visible on a projector.</li>
+  </ul>
+
+  <h2>Other TextNexus tools</h2>
+  <div class="box">
+    <p>Need to send a file alongside the timer? <a href="/share-files.html">Share files without an account</a>. Want to talk with a group while it runs? <a href="/TextNexus.html">Open TextNexus group chat</a>.</p>
+  </div>
+</div>
+
+<script>
+  const display = document.getElementById('display');
+  const hint = document.getElementById('hint');
+  const minutesInput = document.getElementById('minutes');
+  const secondsInput = document.getElementById('seconds');
+  const startBtn = document.getElementById('start');
+  const resetBtn = document.getElementById('reset');
+  const STORE = 'tn-countdown-end';
+  let endAt = Number(localStorage.getItem(STORE)) || 0;
+  let tick = null;
+  let finished = false;
+
+  const pad = (n) => String(n).padStart(2, '0');
+
+  function render(remainingMs) {
+    const total = Math.max(0, Math.ceil(remainingMs / 1000));
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    display.textContent = h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+    if (total > 0) document.title = `${display.textContent} — Countdown`;
+    else document.title = 'Time is up — TextNexus Countdown';
+  }
+
+  function stopTicking() { if (tick) { clearInterval(tick); tick = null; } }
+
+  function run() {
+    stopTicking();
+    const step = () => {
+      const remaining = endAt - Date.now();
+      render(remaining);
+      if (remaining <= 0) {
+        stopTicking();
+        localStorage.removeItem(STORE);
+        if (!finished) {
+          finished = true;
+          hint.textContent = 'Time is up.';
+          try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.frequency.value = 880;
+            gain.gain.value = 0.08;
+            osc.connect(gain).connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 1.2);
+          } catch { /* audio is a nicety, not a requirement */ }
+        }
+      }
+    };
+    step();
+    tick = setInterval(step, 250);
+  }
+
+  function start(minutes, seconds) {
+    const ms = ((Number(minutes) || 0) * 60 + (Number(seconds) || 0)) * 1000;
+    if (ms <= 0) { hint.textContent = 'Choose at least one second.'; return; }
+    finished = false;
+    endAt = Date.now() + ms;
+    localStorage.setItem(STORE, String(endAt));
+    hint.textContent = 'Running — you can close this tab.';
+    run();
+  }
+
+  startBtn.addEventListener('click', () => start(minutesInput.value, secondsInput.value));
+
+  resetBtn.addEventListener('click', () => {
+    stopTicking();
+    endAt = 0;
+    finished = false;
+    localStorage.removeItem(STORE);
+    document.title = 'Free Countdown Timer — No Sign-Up | TextNexus';
+    display.textContent = '00:00';
+    hint.textContent = 'Minutes and seconds';
+  });
+
+  document.querySelectorAll('.presets button').forEach((button) => {
+    button.addEventListener('click', () => {
+      minutesInput.value = button.dataset.min;
+      secondsInput.value = '0';
+      start(button.dataset.min, 0);
+    });
+  });
+
+  if (endAt > 0) {
+    const remaining = endAt - Date.now();
+    if (remaining > 0) { hint.textContent = 'Resuming your countdown.'; run(); }
+    else { localStorage.removeItem(STORE); }
+  }
+</script>
+</body>
+</html>

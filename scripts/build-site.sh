@@ -16,6 +16,8 @@ FILES=(
     ghostlink.html
     TextNexus.html
     feedback.html
+    free-countdown-timer.html
+    share-files.html
     admin.html
     owner.html
     creator.html
@@ -32,6 +34,7 @@ FILES=(
     404.html
     Style.css
     logo.svg
+    og-image.png
     sw.js
     app.js
     bareworker.js
@@ -55,6 +58,12 @@ done
 if [ "$missing" -ne 0 ]; then
     echo "build failed: expected site files are missing" >&2
     exit 1
+fi
+
+# Cloudflare Web Analytics is injected only when the build supplies a token,
+# so the value never lives in the repository.
+if [ -n "${CF_ANALYTICS_TOKEN:-}" ]; then
+    python3 scripts/inject-analytics.py dist "$CF_ANALYTICS_TOKEN"
 fi
 
 echo "staged $(find dist -type f | wc -l) files in dist/"

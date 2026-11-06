@@ -22,6 +22,8 @@ COPY \
     ghostlink.html \
     TextNexus.html \
     feedback.html \
+    free-countdown-timer.html \
+    share-files.html \
     admin.html \
     owner.html \
     creator.html \
@@ -37,6 +39,7 @@ COPY \
     nexus_admin_control_center.html \
     Style.css \
     logo.svg \
+    og-image.png \
     sw.js \
     app.js \
     bareworker.js \

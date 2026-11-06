@@ -52,3 +52,18 @@ which calls Brevo server-side so the API key never reaches the browser.
 4. In Firebase Authentication, enable the Email/Password and Google providers and add
    `textnexus.me` to Authorized domains.
 5. Create a DNS record for `www` (CNAME to `textnexus.me`, proxied).
+
+### Performance and analytics
+
+`index.html` renders its workspace immediately; the old boot/splash/Turnstile gate no
+longer blocks paint. `home.html` uses plain CSS and inline SVG instead of the Tailwind
+browser compiler, the Phosphor icon bundle and Google Fonts.
+
+Set `CF_ANALYTICS_TOKEN` when running `scripts/build-site.sh` (or as a CI secret) to
+inject Cloudflare Web Analytics into every staged page. With no token, no beacon is
+added, and nothing analytics-related is committed.
+
+The AI builder Worker (`worker.js`) now checks the request origin, rate limits by IP,
+and requires a Firebase ID token before it creates GitHub repos or Cloudflare DNS
+records. Optional environment: `ALLOWED_ORIGINS` (comma-separated), `FIREBASE_API_KEY`.
+Deploy it separately with `wrangler deploy`.
