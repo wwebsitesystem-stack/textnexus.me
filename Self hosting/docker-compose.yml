@@ -1,0 +1,11 @@
+services:
+  site:
+    build:
+      # The site files live one level up, so the build context is the repo root.
+      context: ..
+      dockerfile: Self hosting/Dockerfile
+    image: textnexus-site:latest
+    container_name: textnexus-site
+    ports:
+      - "8080:80"
+    restart: unless-stopped
