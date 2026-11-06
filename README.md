@@ -2,9 +2,12 @@
 Visit `http://localhost:8000` to see the boot sequence and interface. Note that API calls to the Cloudflare Worker may require CORS configuration or direct deployment testing.
 
 ### Deploying Changes
-1. Push changes to your fork or branch.
-2. Ensure `wrangler.toml` is configured correctly for your Cloudflare account if modifying backend logic.
-3. Merge to `main` to trigger GitHub Pages deployment automatically.
+1. Push changes to `main` (or open a pull request).
+2. The **Deploy to Cloudflare Pages** workflow stages the served files with
+   `scripts/build-site.sh` and publishes them to the `textnexus` Pages project,
+   so the repository itself stays private.
+3. Add the repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`
+   once; without them the workflow cannot publish.
 
 ## 🔒 Security & Privacy
 *   **Turnstile Integration:** All critical access points are protected against automated scripts.

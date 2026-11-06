@@ -5,6 +5,16 @@ instead of GitHub Pages. The site is a static front end: HTML, CSS and
 JavaScript that talk to Firebase directly from the browser. There is no build
 step and no application server to keep running.
 
+## Hosting model
+
+The site is published on **Cloudflare Pages** (project `textnexus`), not on
+GitHub Pages. `.github/workflows/deploy-cloudflare-pages.yml` stages the served
+files with `scripts/build-site.sh` into `dist/` and uploads them, which keeps the
+repository private while the output stays public.
+
+This folder is still the way to run the same files on your own server: the Docker
+and plain-nginx instructions below work unchanged.
+
 ## Requirements
 
 - Docker 24+ with Compose v2 (recommended), **or** nginx 1.24+ if you install it yourself.
