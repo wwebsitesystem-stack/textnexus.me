@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Create your TextNexus account</title>
-  <meta name="description" content="Create a TextNexus account to join a private workspace.">
+  <meta name="description" content="Create a free TextNexus account with your email address.">
   <link rel="icon" href="/logo.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,12 +36,12 @@
     }
     .tabs button[aria-selected="true"] { background: #fff; color: #000; }
     label { display: block; font-size: 12px; color: var(--muted); margin: 12px 0 6px; }
-    input, select {
+    input {
       width: 100%; padding: 10px 12px; background: var(--surface-2);
       border: 1px solid var(--line); border-radius: 9px; color: var(--text);
       font-family: inherit; font-size: 14px;
     }
-    input:focus, select:focus { outline: none; border-color: rgba(96,165,250,.55); }
+    input:focus { outline: none; border-color: rgba(96,165,250,.55); }
     button.submit {
       width: 100%; margin-top: 18px; padding: 11px; border-radius: 9px; border: 0;
       background: #fff; color: #000; font-weight: 600; font-size: 14px; cursor: pointer; font-family: inherit;
@@ -66,7 +66,7 @@
     <div class="brand"><img src="/logo.svg" alt=""><span>TextNexus</span></div>
     <div class="card">
       <h1 id="title">Create your account</h1>
-      <p class="sub" id="subtitle">One account, your private workspace. We email you a confirmation right away.</p>
+      <p class="sub" id="subtitle">One account for TextNexus. We email you a confirmation right away.</p>
 
       <div class="tabs" role="tablist">
         <button id="tabCreate" role="tab" aria-selected="true">Create account</button>
@@ -80,12 +80,6 @@
         <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
         <label for="password">Password</label>
         <input id="password" type="password" autocomplete="new-password" placeholder="At least 6 characters">
-        <label for="tenant">Workspace</label>
-        <select id="tenant">
-          <option value="textnexus">TextNexus</option>
-          <option value="leo">Leo</option>
-          <option value="javier">Javier</option>
-        </select>
         <button class="submit" id="createBtn" type="submit">Create account</button>
       </form>
 
@@ -97,11 +91,10 @@
         <button class="submit" id="signinBtn" type="submit">Sign in</button>
       </form>
 
-      <button class="google" id="googleBtn">Continue with Google</button>
+      <button class="google" id="googleBtn" type="button">Continue with Google</button>
       <div id="msg"></div>
     </div>
     <p class="foot">
-      Have an owner account? <a href="/adminpanel/">Open the admin panel</a>.<br>
       <a href="/home.html">Back to TextNexus</a>
     </p>
   </main>
@@ -112,7 +105,7 @@
       getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
       updateProfile, sendEmailVerification, GoogleAuthProvider, signInWithPopup
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getDatabase, ref, set, update } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
@@ -121,31 +114,12 @@
       databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com"
     };
 
-    const TENANTS = {
-      textnexus: { label: "TextNexus", panel: "textnexus", owners: ["brodywilliams0226@gmail.com"] },
-      leo: { label: "Leo", panel: "leo", owners: ["lrosasaamot001@stpaul.k12.mn.us"] },
-      javier: { label: "Javier", panel: "javier", owners: ["jcruz016@stpaul.k12.mn.us"] }
-    };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
 
     const $ = (id) => document.getElementById(id);
     const msg = (text, kind = "") => { const m = $("msg"); m.textContent = text; m.className = kind; };
-
-    // Hostname decides the workspace when it is one of the tenant domains.
-    const hostMap = { "leo.textnexus.me": "leo", "javier.textnexus.me": "javier" };
-    const params = new URLSearchParams(location.search);
-    const preselected = params.get("tenant") || hostMap[location.hostname.toLowerCase()];
-    if (preselected && TENANTS[preselected]) {
-      $("tenant").value = preselected;
-      $("subtitle").textContent = `Create your account for the ${TENANTS[preselected].label} workspace.`;
-    }
-
-    $("tenant").addEventListener("change", () => {
-      $("subtitle").textContent = `Create your account for the ${TENANTS[$("tenant").value].label} workspace.`;
-    });
 
     $("tabCreate").addEventListener("click", () => switchTab("create"));
     $("tabSignin").addEventListener("click", () => switchTab("signin"));
@@ -157,6 +131,9 @@
       $("tabCreate").setAttribute("aria-selected", String(creating));
       $("tabSignin").setAttribute("aria-selected", String(!creating));
       $("title").textContent = creating ? "Create your account" : "Welcome back";
+      $("subtitle").textContent = creating
+        ? "One account for TextNexus. We email you a confirmation right away."
+        : "Sign in to pick up where you left off.";
       msg("");
     }
 
@@ -174,36 +151,26 @@
       return error?.message || "Something went wrong.";
     }
 
-    async function registerMember(user, tenantId, provider) {
+    // The sign-in user may only write their own node; database.rules.json enforces that.
+    async function saveProfile(user, provider) {
       const record = {
+        uid: user.uid,
         email: user.email || "",
         name: user.displayName || ($("name")?.value || "").trim(),
-        tenant: tenantId,
-        status: "active",
         provider,
         createdAt: Date.now()
       };
-      await set(ref(db, `tenants/${tenantId}/members/${user.uid}`), record);
-      try {
-        await update(ref(db, `nexus/users/${user.uid}`), {
-          uid: user.uid,
-          email: record.email,
-          name: record.name,
-          lastLogin: Date.now()
-        });
-      } catch {
-        /* profile mirror is best-effort */
-      }
+      await set(ref(db, `users/${user.uid}`), record);
       return record;
     }
 
-    async function sendWelcome(user, tenantId) {
+    async function sendWelcome(user) {
       try {
         const idToken = await user.getIdToken();
         const res = await fetch("/api/welcome", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idToken, tenant: tenantId })
+          body: JSON.stringify({ idToken })
         });
         return res.ok;
       } catch {
@@ -211,20 +178,11 @@
       }
     }
 
-    function destinationFor(email, tenantId) {
-      const tenant = TENANTS[tenantId];
-      if (tenant && tenant.owners.includes((email || "").toLowerCase())) {
-        return `/adminpanel/${tenant.panel}.html`;
-      }
-      return "/home.html";
-    }
-
     $("createForm").addEventListener("submit", async (event) => {
       event.preventDefault();
       const name = $("name").value.trim();
       const email = $("email").value.trim();
       const password = $("password").value;
-      const tenantId = $("tenant").value;
 
       if (!name) return msg("Add a display name.", "err");
       if (!email) return msg("Add your email.", "err");
@@ -237,19 +195,19 @@
         await updateProfile(cred.user, { displayName: name });
 
         try {
-          await registerMember(cred.user, tenantId, "password");
+          await saveProfile(cred.user, "password");
         } catch (err) {
-          msg(`Account created, but saving your workspace record failed (${err.code || err.message}). The database rules may not be published yet.`, "err");
+          msg(`Account created, but saving your profile failed (${err.code || err.message}). The database rules may not be published yet.`, "err");
         }
 
         await sendEmailVerification(cred.user).catch(() => {});
-        const welcomeSent = await sendWelcome(cred.user, tenantId);
+        const welcomeSent = await sendWelcome(cred.user);
 
         msg(welcomeSent
           ? "Account created. Check your inbox for the welcome and verification emails."
           : "Account created. Firebase sent your verification email. The welcome email needs the Brevo key on Cloudflare Pages.", "ok");
 
-        setTimeout(() => location.assign(destinationFor(cred.user.email, tenantId)), 1600);
+        setTimeout(() => location.assign("/home.html"), 1600);
       } catch (err) {
         msg(friendly(err), "err");
       } finally {
@@ -265,10 +223,9 @@
       $("signinBtn").disabled = true;
       msg("Signing in…");
       try {
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        const tenantId = preselected && TENANTS[preselected] ? preselected : "textnexus";
-        msg("Signed in. Opening your workspace…", "ok");
-        setTimeout(() => location.assign(destinationFor(cred.user.email, tenantId)), 700);
+        await signInWithEmailAndPassword(auth, email, password);
+        msg("Signed in. Opening TextNexus…", "ok");
+        setTimeout(() => location.assign("/home.html"), 700);
       } catch (err) {
         msg(friendly(err), "err");
       } finally {
@@ -277,14 +234,13 @@
     });
 
     $("googleBtn").addEventListener("click", async () => {
-      const tenantId = $("tenant").value || "textnexus";
       $("googleBtn").disabled = true;
       msg("Opening Google…");
       try {
         const cred = await signInWithPopup(auth, new GoogleAuthProvider());
-        try { await registerMember(cred.user, tenantId, "google"); } catch { /* rules may be unpublished */ }
-        msg("Signed in. Opening your workspace…", "ok");
-        setTimeout(() => location.assign(destinationFor(cred.user.email, tenantId)), 700);
+        try { await saveProfile(cred.user, "google"); } catch { /* rules may be unpublished */ }
+        msg("Signed in. Opening TextNexus…", "ok");
+        setTimeout(() => location.assign("/home.html"), 700);
       } catch (err) {
         msg(friendly(err), "err");
       } finally {

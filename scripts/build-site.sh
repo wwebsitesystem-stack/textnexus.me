@@ -57,6 +57,4 @@ if [ "$missing" -ne 0 ]; then
     exit 1
 fi
 
-cp -r adminpanel dist/adminpanel
-
 echo "staged $(find dist -type f | wc -l) files in dist/"

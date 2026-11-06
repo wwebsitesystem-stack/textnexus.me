@@ -43,8 +43,6 @@ COPY \
     database.rules.json \
     ./
 
-COPY adminpanel ./adminpanel
-
 COPY ["Self hosting/nginx.conf", "/etc/nginx/conf.d/default.conf"]
 
 EXPOSE 80

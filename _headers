@@ -16,10 +16,6 @@
 /*.svg
   Cache-Control: public, max-age=86400
 
-/adminpanel/*
-  X-Robots-Tag: noindex, nofollow
-  Cache-Control: no-store
-
 /signup.html
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-cache

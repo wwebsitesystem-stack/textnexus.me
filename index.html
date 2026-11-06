@@ -916,7 +916,7 @@
         });
     </script>
 
-<!-- Announcement bar: text comes from tenants/textnexus/site/announcement -->
+<!-- Announcement bar: text comes from system/announcement -->
 <div id="tn-announce" hidden style="position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;align-items:center;justify-content:center;gap:10px;padding:9px 44px 9px 16px;background:#fff;color:#000;font:600 13px/1.4 'Inter',-apple-system,sans-serif;text-align:center">
   <span id="tn-announce-text"></span>
   <a id="tn-announce-link" href="/updates.html" style="color:#000;text-decoration:underline">Learn more</a>
@@ -942,7 +942,7 @@
         projectId: "nexus-web-development-official",
         databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com"
       });
-      onValue(ref(getDatabase(app), 'tenants/textnexus/site/announcement'), (snap) => {
+      onValue(ref(getDatabase(app), 'system/announcement'), (snap) => {
         const a = snap.val();
         if (!a) return;
         if (a.enabled === false) { bar.hidden = true; return; }
