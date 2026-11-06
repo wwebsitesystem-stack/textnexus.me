@@ -809,7 +809,7 @@
       if (link) document.getElementById('tn-announce-link').href = link;
       bar.hidden = false;
     };
-    show('A new update lands tomorrow.', '/updates.html');
+    show('A new version of Nexus is coming out tonight.', '/updates.html');
     try {
       const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js');
       const { getDatabase, ref, onValue } = await import('https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js');
@@ -823,7 +823,7 @@
         const a = snap.val();
         if (!a) return;
         if (a.enabled === false) { bar.hidden = true; return; }
-        show(a.text || 'A new update lands tomorrow.', a.link || '/updates.html');
+        show(a.text || 'A new version of Nexus is coming out tonight.', a.link || '/updates.html');
       });
     } catch { /* rules unpublished: keep the default banner */ }
     document.getElementById('tn-announce-close').addEventListener('click', () => {

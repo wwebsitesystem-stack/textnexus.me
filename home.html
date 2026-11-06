@@ -4,19 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workspace Overview | TextNexus</title>
-    <meta name="description" content="Your Nexus workspace overview: chat, Ghostlink file sharing, updates, tools and feedback.">
+    <meta name="description" content="Your Nexus workspace overview: group chat, Ghostlink file sharing and the latest updates.">
     <link rel="canonical" href="https://textnexus.me/home.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="TextNexus">
     <meta property="og:title" content="Workspace Overview | TextNexus">
-    <meta property="og:description" content="Your Nexus workspace overview: chat, Ghostlink file sharing, updates, tools and feedback.">
+    <meta property="og:description" content="Your Nexus workspace overview: group chat, Ghostlink file sharing and the latest updates.">
     <meta property="og:url" content="https://textnexus.me/home.html">
     <meta property="og:image" content="https://textnexus.me/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Workspace Overview | TextNexus">
-    <meta name="twitter:description" content="Your Nexus workspace overview: chat, Ghostlink file sharing, updates, tools and feedback.">
+    <meta name="twitter:description" content="Your Nexus workspace overview: group chat, Ghostlink file sharing and the latest updates.">
     <meta name="twitter:image" content="https://textnexus.me/og-image.png">
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <style>
@@ -55,27 +55,17 @@
         .link.static { cursor: default; }
         .link.static:hover { border-color: var(--border); color: var(--muted); }
         .span-2 { grid-column: 1 / -1; }
-        .tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-        @media (max-width: 560px) { .tools { grid-template-columns: 1fr; } }
-        .tool {
-            padding: 14px; border: 1px solid var(--border); border-radius: 11px;
-            background: var(--bg); color: var(--text); text-decoration: none;
-            display: flex; flex-direction: column; gap: 6px;
-        }
-        .tool strong { font-size: 13px; font-weight: 600; }
-        .tool span { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
-        .tool:hover { border-color: #52525b; }
-    </style>
+            </style>
 </head>
 <body>
     <main class="page">
         <h1>Overview</h1>
-        <p class="lede">TextNexus is a private workspace for real-time group chat, secure file sharing through Ghostlink, and small utilities like the countdown timer. Everything runs in your browser — no installs.</p>
+        <p class="lede">TextNexus is a private workspace for real-time group chat and secure file sharing through Ghostlink. Everything runs in your browser — no installs.</p>
 
         <div class="grid">
             <section class="card">
                 <h2>Workspace status</h2>
-                <p>Your session is active. Chat, file sharing and the tools below are available right away.</p>
+                <p>Your session is active. Chat and file sharing are ready to go.</p>
                 <div class="status"><span class="dot"></span><span>System online</span></div>
             </section>
 
@@ -93,25 +83,6 @@
                     <a class="link" href="updates.html">
                         <svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
                         Read the latest updates
-                    </a>
-                </div>
-            </section>
-
-
-            <section class="card span-2">
-                <h2>Account and support</h2>
-                <div class="links">
-                    <a class="link" href="signup.html">
-                        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
-                        Create an account or sign in
-                    </a>
-                    <a class="link" href="admin.html" onclick="return openInShell(event, 'admin.html')">
-                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-                        Open the admin panel
-                    </a>
-                    <a class="link" href="feedback.html">
-                        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>
-                        Send feedback
                     </a>
                 </div>
             </section>
@@ -146,7 +117,7 @@
                     bar.hidden = false;
                     document.body.style.paddingTop = bar.offsetHeight + 'px';
                 };
-                show('A new update lands tomorrow.', '/updates.html');
+                show('A new version of Nexus is coming out tonight.', '/updates.html');
                 document.getElementById('tn-announce-close').addEventListener('click', () => {
                     bar.hidden = true;
                     sessionStorage.setItem('tn-announce-dismissed', '1');
@@ -170,7 +141,7 @@
                         const a = snap.val();
                         if (!a) return;
                         if (a.enabled === false) { bar.hidden = true; return; }
-                        document.getElementById('tn-announce-text').textContent = a.text || 'A new update lands tomorrow.';
+                        document.getElementById('tn-announce-text').textContent = a.text || 'A new version of Nexus is coming out tonight.';
                         document.getElementById('tn-announce-link').href = a.link || '/updates.html';
                         bar.hidden = false;
                         document.body.style.paddingTop = bar.offsetHeight + 'px';

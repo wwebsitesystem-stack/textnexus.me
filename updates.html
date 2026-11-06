@@ -86,9 +86,27 @@
             <!-- Empty State (Hidden by default) -->
             <div id="empty-state" class="hidden flex-col items-center justify-center py-20 text-textMuted gap-3 text-center border border-dashed border-border rounded-xl bg-surface/50">
                 <i class="ph ph-envelope-simple-open text-4xl mb-2 opacity-50"></i>
-                <h3 class="text-sm font-semibold text-textMain">No Updates Yet</h3>
-                <p class="text-xs">Check back later for official announcements and patch notes.</p>
+                <h3 class="text-sm font-semibold text-textMain">You're all caught up</h3>
+                <p class="text-xs">Tonight's Nexus release is the latest announcement. Check back for patch notes.</p>
             </div>
+
+            <!-- Pinned release announcement -->
+            <article class="update-card bg-surface border border-border rounded-xl p-6 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-[var(--brand-color)] opacity-80"></div>
+                <div class="flex items-start justify-between gap-4 mb-4">
+                    <h3 class="text-base font-bold text-textMain leading-tight">A new version of Nexus is coming out tonight</h3>
+                    <span class="shrink-0 text-[10px] font-mono text-textMuted bg-surfaceHover px-2 py-1 rounded border border-border flex items-center gap-1.5">
+                        <i class="ph ph-clock"></i> Tonight
+                    </span>
+                </div>
+                <div class="text-sm text-textMuted leading-relaxed whitespace-pre-wrap mb-6 border-l-2 border-border pl-4">The next Nexus release lands tonight: a faster workspace, a cleaner home page, and the new feedback flow. Refresh once it goes live.</div>
+                <div class="flex items-center gap-2 border-t border-border pt-4">
+                    <div class="w-6 h-6 rounded-full bg-surfaceHover border border-border flex items-center justify-center text-textMuted">
+                        <i class="ph ph-user text-xs"></i>
+                    </div>
+                    <p class="text-xs text-textMuted font-medium">Posted by <span class="text-textMain">Nexus Team</span></p>
+                </div>
+            </article>
 
             <!-- Posts inject here dynamically -->
             <div id="posts-list" class="flex flex-col gap-6"></div>
