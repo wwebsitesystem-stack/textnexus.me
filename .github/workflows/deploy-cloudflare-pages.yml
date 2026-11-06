@@ -1,8 +1,6 @@
 name: Deploy to Cloudflare Pages
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -16,20 +14,31 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Check Cloudflare credentials
+        run: |
+          if [ -z "$CF_API_TOKEN" ]; then
+            echo "::notice title=Cloudflare deploy skipped::Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets to enable publishing."
+          else
+            echo "Cloudflare credentials present."
+          fi
+
       - name: Ensure Pages project exists
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        if: env.CF_API_TOKEN != ''
         run: npx --yes wrangler@3 pages project create textnexus --production-branch=main || true
 
       - name: Stage site files
+        if: env.CF_API_TOKEN != ''
         run: bash scripts/build-site.sh
 
       - name: Publish to Cloudflare Pages
+        if: env.CF_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
