@@ -73,7 +73,7 @@
         <button id="tabSignin" role="tab" aria-selected="false">Sign in</button>
       </div>
 
-      <div id="createForm">
+      <form id="createForm" novalidate>
         <label for="name">Display name</label>
         <input id="name" type="text" autocomplete="name" maxlength="80" placeholder="Ada Lovelace">
         <label for="email">Email</label>
@@ -86,16 +86,16 @@
           <option value="leo">Leo</option>
           <option value="javier">Javier</option>
         </select>
-        <button class="submit" id="createBtn">Create account</button>
-      </div>
+        <button class="submit" id="createBtn" type="submit">Create account</button>
+      </form>
 
-      <div id="signinForm" class="hidden">
+      <form id="signinForm" class="hidden" novalidate>
         <label for="emailIn">Email</label>
         <input id="emailIn" type="email" autocomplete="username" placeholder="you@example.com">
         <label for="passwordIn">Password</label>
         <input id="passwordIn" type="password" autocomplete="current-password" placeholder="Your password">
-        <button class="submit" id="signinBtn">Sign in</button>
-      </div>
+        <button class="submit" id="signinBtn" type="submit">Sign in</button>
+      </form>
 
       <button class="google" id="googleBtn">Continue with Google</button>
       <div id="msg"></div>
@@ -219,7 +219,8 @@
       return "/home.html";
     }
 
-    $("createBtn").addEventListener("click", async () => {
+    $("createForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
       const name = $("name").value.trim();
       const email = $("email").value.trim();
       const password = $("password").value;
@@ -256,7 +257,8 @@
       }
     });
 
-    $("signinBtn").addEventListener("click", async () => {
+    $("signinForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
       const email = $("emailIn").value.trim();
       const password = $("passwordIn").value;
       if (!email || !password) return msg("Email and password are required.", "err");
@@ -289,13 +291,6 @@
         $("googleBtn").disabled = false;
       }
     });
-
-    [$("password"), $("passwordIn")].forEach((input) =>
-      input.addEventListener("keydown", (e) => {
-        if (e.key !== "Enter") return;
-        (input.id === "password" ? $("createBtn") : $("signinBtn")).click();
-      })
-    );
   </script>
 </body>
 </html>

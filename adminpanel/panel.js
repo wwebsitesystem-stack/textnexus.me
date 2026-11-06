@@ -95,7 +95,11 @@ function renderShell() {
     )
   );
 
-  const gate = el("div", { class: "gate card", id: "gate" },
+  const gate = el("form", {
+    class: "gate card",
+    id: "gate",
+    onsubmit: (event) => { event.preventDefault(); signIn(); }
+  },
     el("h1", { text: `${tenant.label} admin` }),
     el("p", { text: "Sign in with the owner account for this panel. Access is enforced by the database rules, not by this page." }),
     el("label", { for: "email", text: "Email" }),
@@ -104,7 +108,7 @@ function renderShell() {
     el("input", { type: "password", id: "password", autocomplete: "current-password" }),
     el("div", { class: "row end", style: "margin-top:14px" },
       el("button", { class: "ghost", id: "reset", text: "Reset password" }),
-      el("button", { class: "primary", id: "signin", text: "Sign in" })
+      el("button", { class: "primary", id: "signin", type: "submit", text: "Sign in" })
     ),
     el("p", { class: "note", style: "margin-top:16px" },
       "No account? ", el("a", { href: "/signup.html", text: "Create one" }), ".")
@@ -116,8 +120,6 @@ function renderShell() {
   root.append(header, gate, status, panel);
 
   $("#signout").addEventListener("click", () => signOut(auth));
-  $("#signin").addEventListener("click", signIn);
-  $("#password").addEventListener("keydown", (e) => { if (e.key === "Enter") signIn(); });
   $("#reset").addEventListener("click", async () => {
     const email = $("#email").value.trim();
     if (!email) return setStatus("Enter your email first.", "err");
