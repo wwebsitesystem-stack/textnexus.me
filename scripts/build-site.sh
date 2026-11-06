@@ -36,6 +36,9 @@ FILES=(
     bareworker.js
     database.rules.json
     _headers
+    robots.txt
+    sitemap.xml
+    site.webmanifest
 )
 
 missing=0

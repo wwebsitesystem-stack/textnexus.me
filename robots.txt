@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin.html
+Disallow: /owner.html
+Disallow: /creator.html
+Disallow: /settings.html
+Disallow: /secret1.html
+Disallow: /email-manager.html
+Disallow: /system_analytics_health.html
+Disallow: /nexus_admin_control_center.html
+Disallow: /notifications.html
+
+Sitemap: https://textnexus.me/sitemap.xml

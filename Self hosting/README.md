@@ -51,7 +51,7 @@ sudo cp index.html 404.html home.html updates.html ghostlink.html TextNexus.html
         notifications.html suggestions.html email-manager.html jeoweb.html \
         secret1.html nexus_maintenance.html system_analytics_health.html \
         nexus_admin_control_center.html Style.css logo.svg sw.js app.js \
-        bareworker.js /var/www/textnexus/
+        bareworker.js robots.txt sitemap.xml site.webmanifest /var/www/textnexus/
 sudo cp "Self hosting/nginx.conf" /etc/nginx/sites-available/textnexus
 sudo ln -s /etc/nginx/sites-available/textnexus /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
