@@ -4,19 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Feedback | TextNexus</title>
-  <meta name="description" content="Send bug reports, ideas and feedback straight to the TextNexus inbox.">
+  <meta name="description" content="Tell us what TextNexus should build next: usability, integrations, AI and design. Your feedback goes straight to our inbox.">
   <link rel="canonical" href="https://textnexus.me/feedback.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="TextNexus">
   <meta property="og:title" content="Feedback | TextNexus">
-  <meta property="og:description" content="Send bug reports, ideas and feedback straight to the TextNexus inbox.">
+  <meta property="og:description" content="Tell us what TextNexus should build next: usability, integrations, AI and design. Your feedback goes straight to our inbox.">
   <meta property="og:url" content="https://textnexus.me/feedback.html">    <meta name="twitter:card" content="summary_large_image">
     <meta property="og:image" content="https://textnexus.me/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:image" content="https://textnexus.me/og-image.png">
     <meta name="twitter:title" content="Feedback | TextNexus">
-  <meta name="twitter:description" content="Send bug reports, ideas and feedback straight to the TextNexus inbox.">
+  <meta name="twitter:description" content="Tell us what TextNexus should build next: usability, integrations, AI and design. Your feedback goes straight to our inbox.">
   <link rel="icon" href="/logo.svg" type="image/svg+xml">
   <style>
     :root {
@@ -60,6 +60,14 @@
     #status a { color: var(--text); }
     .alt { font-size: 11.5px; color: #666; margin: 14px 0 0; line-height: 1.6; }
     .alt a { color: var(--muted); }
+    .prompts { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 8px; }
+    .prompts li { position: relative; padding-left: 15px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+    .prompts li::before {
+      content: ""; position: absolute; left: 0; top: .58em;
+      width: 4px; height: 4px; border-radius: 50%; background: #52525b;
+    }
+    .prompts strong { color: var(--text); font-weight: 600; }
+    .sub.last { margin-bottom: 18px; }
   </style>
 </head>
 <body>
@@ -67,7 +75,15 @@
     <div class="brand"><img src="/logo.svg" alt=""><span>TextNexus</span></div>
     <div class="card">
       <h1>Send feedback</h1>
-      <p class="sub">Found a bug, want something changed, or have an idea? This goes straight to the TextNexus inbox.</p>
+      <p class="sub">TextNexus.me is designed to be your go-to platform for seamless writing, coding, and AI collaboration. To make it even better, we’d love your input!</p>
+      <p class="sub">What’s one feature, improvement, or experience you wish TextNexus.me offered? Think about:</p>
+      <ul class="prompts">
+        <li><strong>Usability</strong> &mdash; Are there workflows that feel clunky or missing?</li>
+        <li><strong>Integration</strong> &mdash; What tools or platforms would you love to see connected?</li>
+        <li><strong>Innovation</strong> &mdash; Any cutting-edge capabilities (e.g., AI, automation) you’d prioritize?</li>
+        <li><strong>Aesthetics</strong> &mdash; Does the design or UX need refinement?</li>
+      </ul>
+      <p class="sub last">Be as detailed as possible &mdash; your ideas shape the future of TextNexus!</p>
 
       <form id="feedbackForm" novalidate>
         <div class="row">
@@ -90,7 +106,7 @@
         </select>
 
         <label for="message">Message</label>
-        <textarea id="message" name="message" maxlength="4000" placeholder="Tell us what happened, or what you would like to see…"></textarea>
+        <textarea id="message" name="message" maxlength="4000" placeholder="Describe your idea, the workflow it improves, and why it matters…"></textarea>
 
         <input id="website" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
 
