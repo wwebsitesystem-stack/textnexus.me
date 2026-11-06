@@ -106,13 +106,14 @@ function renderShell() {
       el("button", { class: "ghost", id: "reset", text: "Reset password" }),
       el("button", { class: "primary", id: "signin", text: "Sign in" })
     ),
-    el("div", { id: "status" }),
     el("p", { class: "note", style: "margin-top:16px" },
       "No account? ", el("a", { href: "/signup.html", text: "Create one" }), ".")
   );
 
   const panel = el("div", { id: "panel", class: "hidden" });
-  root.append(header, gate, panel);
+  // Single status element shared by the sign-in gate, the panel and every action.
+  const status = el("div", { id: "status", class: "statusbar" });
+  root.append(header, gate, status, panel);
 
   $("#signout").addEventListener("click", () => signOut(auth));
   $("#signin").addEventListener("click", signIn);
@@ -181,8 +182,7 @@ function membersCard(user) {
         el("th", { text: "" })
       )),
       tbody
-    ),
-    el("div", { id: "status" })
+    )
   );
 
   const render = () => {
@@ -294,7 +294,6 @@ async function emailMember(user, member) {
 }
 
 function announcementCard(user) {
-  const enabled = el("input", { type: "text", id: "annText" });
   const text = el("input", { type: "text", id: "annText", maxlength: "200" });
   const link = el("input", { type: "text", id: "annLink", placeholder: "/updates.html" });
   const headline = el("input", { type: "text", id: "siteHeadline", placeholder: "Private chat, file sharing & AI sites" });
