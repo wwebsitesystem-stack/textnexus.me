@@ -45,7 +45,8 @@ which calls Brevo server-side so the API key never reaches the browser.
 1. Publish the rules: `firebase deploy --only database --project nexus-web-development-official`.
 2. On Cloudflare Pages, add encrypted environment variables `BREVO_API_KEY` and
    `BREVO_SENDER` (a sender verified in Brevo). Optional: `BREVO_SENDER_NAME`,
-   `BREVO_REPLY_TO`, `APP_ORIGIN`, `FIREBASE_API_KEY`.
+   `BREVO_REPLY_TO`, `FEEDBACK_TO`, `APP_ORIGIN`, `FIREBASE_API_KEY`. Feedback from
+   `/feedback.html` is emailed to `FEEDBACK_TO` (default `brodywilliams0226@gmail.com`).
 3. The email function needs Cloudflare Pages (or any host that runs `/api/*`); GitHub
    Pages serves the pages but not the function.
 4. In Firebase Authentication, enable the Email/Password and Google providers and add

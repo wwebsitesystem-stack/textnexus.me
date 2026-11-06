@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback | TextNexus</title>
+  <meta name="description" content="Send bug reports, ideas and feedback straight to the TextNexus inbox.">
+  <link rel="canonical" href="https://textnexus.me/feedback.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="TextNexus">
+  <meta property="og:title" content="Feedback | TextNexus">
+  <meta property="og:description" content="Send bug reports, ideas and feedback straight to the TextNexus inbox.">
+  <meta property="og:url" content="https://textnexus.me/feedback.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Feedback | TextNexus">
+  <meta name="twitter:description" content="Send bug reports, ideas and feedback straight to the TextNexus inbox.">
+  <link rel="icon" href="/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0a; --surface: #121212; --surface-2: #0f0f0f;
+      --line: #262626; --text: #ededed; --muted: #a1a1aa;
+      --ok: #4ade80; --bad: #f87171;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+      font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+      display: flex; align-items: center; justify-content: center; padding: 32px 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { width: 100%; max-width: 560px; }
+    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-weight: 600; }
+    .brand img { width: 26px; height: 26px; }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 28px; }
+    h1 { font-size: 21px; margin: 0 0 6px; letter-spacing: -.01em; }
+    .sub { font-size: 13px; color: var(--muted); margin: 0 0 22px; line-height: 1.6; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
+    label { display: block; font-size: 12px; color: var(--muted); margin: 14px 0 6px; }
+    input, select, textarea {
+      width: 100%; padding: 10px 12px; background: var(--surface-2);
+      border: 1px solid var(--line); border-radius: 9px; color: var(--text);
+      font-family: inherit; font-size: 14px;
+    }
+    textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: rgba(161,161,170,.6); }
+    .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+    button {
+      width: 100%; margin-top: 20px; padding: 11px; border-radius: 9px; border: 0;
+      background: #fff; color: #000; font-weight: 600; font-size: 14px;
+      cursor: pointer; font-family: inherit;
+    }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    #status { font-size: 13px; line-height: 1.55; margin-top: 14px; min-height: 20px; }
+    #status.ok { color: var(--ok); }
+    #status.err { color: var(--bad); }
+    #status a { color: var(--text); }
+    .alt { font-size: 11.5px; color: #666; margin: 14px 0 0; line-height: 1.6; }
+    .alt a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="brand"><img src="/logo.svg" alt=""><span>TextNexus</span></div>
+    <div class="card">
+      <h1>Send feedback</h1>
+      <p class="sub">Found a bug, want something changed, or have an idea? This goes straight to the TextNexus inbox.</p>
+
+      <form id="feedbackForm" novalidate>
+        <div class="row">
+          <div>
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" autocomplete="name" maxlength="80" placeholder="Ada Lovelace">
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com">
+          </div>
+        </div>
+
+        <label for="category">What is it about?</label>
+        <select id="category" name="category">
+          <option value="Bug">Something is broken</option>
+          <option value="Idea">An idea or feature</option>
+          <option value="Content">Content or wording</option>
+          <option value="Other">Something else</option>
+        </select>
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" maxlength="4000" placeholder="Tell us what happened, or what you would like to see…"></textarea>
+
+        <input id="website" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <button id="sendBtn" type="submit">Send feedback</button>
+        <div id="status" role="status" aria-live="polite"></div>
+        <p class="alt">Prefer your own mail app? <a id="mailtoLink" href="mailto:brodywilliams0226@gmail.com">Email it directly</a>.</p>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    const OWNER_EMAIL = 'brodywilliams0226@gmail.com';
+    const form = document.getElementById('feedbackForm');
+    const btn = document.getElementById('sendBtn');
+    const statusEl = document.getElementById('status');
+    const mailtoLink = document.getElementById('mailtoLink');
+
+    const setStatus = (html, kind = '') => {
+      statusEl.innerHTML = html;
+      statusEl.className = kind;
+    };
+
+    const value = (id) => document.getElementById(id).value.trim();
+
+    function mailtoHref() {
+      const subject = `[Feedback] ${value('category') || 'Other'} from ${value('name') || 'a visitor'}`;
+      const body = [
+        `Name: ${value('name')}`,
+        `Email: ${value('email')}`,
+        `Category: ${value('category')}`,
+        '',
+        value('message'),
+        '',
+        `Page: ${location.href}`
+      ].join('\n');
+      return `mailto:${OWNER_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    function refreshMailto() {
+      mailtoLink.href = mailtoHref();
+    }
+
+    ['name', 'email', 'category', 'message'].forEach((id) => {
+      document.getElementById(id).addEventListener('input', refreshMailto);
+    });
+    refreshMailto();
+
+    function fallback(message) {
+      setStatus(`${message} Your mail app can send it instead — <a href="${mailtoHref()}">open the message</a>.`, 'err');
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const payload = {
+        name: value('name'),
+        email: value('email'),
+        category: value('category'),
+        message: value('message'),
+        page: location.href,
+        website: value('website')
+      };
+
+      if (!payload.name) return setStatus('Add your name so we know who to reply to.', 'err');
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(payload.email)) return setStatus('Add a valid email address.', 'err');
+      if (payload.message.length < 5) return setStatus('Tell us a little more — at least a sentence.', 'err');
+
+      btn.disabled = true;
+      setStatus('Sending…');
+
+      let res;
+      try {
+        res = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch {
+        btn.disabled = false;
+        return fallback('The feedback endpoint could not be reached.');
+      }
+
+      let data = {};
+      try { data = await res.json(); } catch { /* non-JSON host response */ }
+
+      btn.disabled = false;
+
+      if (res.ok && data.ok) {
+        form.reset();
+        refreshMailto();
+        setStatus('Thanks — your feedback is on its way to the TextNexus inbox.', 'ok');
+        return;
+      }
+
+      if (res.status === 503) {
+        return fallback(data.error || 'Email sending is not configured on this deployment.');
+      }
+      return fallback(data.error || `The send failed (HTTP ${res.status}).`);
+    });
+  </script>
+</body>
+</html>

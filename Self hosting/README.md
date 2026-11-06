@@ -47,7 +47,7 @@ Copy the site files and the server block into place:
 
 ```bash
 sudo cp index.html 404.html home.html updates.html ghostlink.html TextNexus.html \
-        countdown_timer.html admin.html owner.html creator.html settings.html \
+        feedback.html admin.html owner.html creator.html settings.html \
         notifications.html suggestions.html email-manager.html jeoweb.html \
         secret1.html nexus_maintenance.html system_analytics_health.html \
         nexus_admin_control_center.html Style.css logo.svg sw.js app.js \

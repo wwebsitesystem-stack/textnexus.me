@@ -15,7 +15,7 @@ FILES=(
     updates.html
     ghostlink.html
     TextNexus.html
-    countdown_timer.html
+    feedback.html
     admin.html
     owner.html
     creator.html
