@@ -113,6 +113,6 @@ export async function onRequestPost({ request, env }) {
   return json({ ok: true, messageId: result.messageId || null, to: to.email });
 }
 
-export async function onGet() {
+export async function onRequestGet() {
   return json({ error: "POST only." }, 405);
 }
