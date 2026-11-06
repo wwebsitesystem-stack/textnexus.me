@@ -22,8 +22,6 @@ COPY \
     ghostlink.html \
     TextNexus.html \
     feedback.html \
-    free-countdown-timer.html \
-    share-files.html \
     admin.html \
     owner.html \
     creator.html \

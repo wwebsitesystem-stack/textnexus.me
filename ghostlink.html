@@ -7501,30 +7501,57 @@
             });
         }
 
-        function openZone(file) {
+        // A few catalog wrappers are incomplete. Google Baseball (id 257) ships only
+        // Google's localization fragment and never loads july4th19.js, so point it at
+        // the full doodle page. The original URL stays as a fallback.
+        const GAME_SOURCE_OVERRIDES = {
+            257: "https://cdn.jsdelivr.net/gh/bubblfan/google-doodles@main/baseball/july4th19.html"
+        };
+
+        async function fetchGameHtml(file) {
+            const original = file.url.replace("{COVER_URL}", coverURL).replace("{HTML_URL}", htmlURL);
+            const candidates = [GAME_SOURCE_OVERRIDES[file.id], original].filter(Boolean);
+            let lastError;
+            for (const candidate of candidates) {
+                try {
+                    const response = await fetch(candidate + "?t=" + Date.now());
+                    if (!response.ok) throw new Error("HTTP " + response.status);
+                    const html = await response.text();
+                    if (html.length < 1000) throw new Error("Empty game page");
+                    return html;
+                } catch (error) {
+                    lastError = error;
+                }
+            }
+            throw lastError || new Error("Could not load game");
+        }
+
+        async function openZone(file) {
             if (file.name === "[!] GHOSTLINK DISCORD .gg/D4c9VFYWyU") {
                 window.open("https://discord.com/invite/dKs2sUNUXd", "_blank");
                 return;
             }
             if (file.url.startsWith("http")) {
                 window.open(file.url, "_blank");
-            } else {
-                const url = file.url.replace("{COVER_URL}", coverURL).replace("{HTML_URL}", htmlURL);
-                fetch(url + "?t=" + Date.now()).then(response => response.text()).then(html => {
-                    html = cleanHTML(html);
-                    if (!zoneFrame || zoneFrame.contentDocument === null) {
-                        zoneFrame = document.createElement("iframe");
-                        zoneFrame.id = "zoneFrame";
-                        zoneViewer.appendChild(zoneFrame);
-                    }
-                    zoneFrame.contentDocument.open();
-                    zoneFrame.contentDocument.write(html);
-                    zoneFrame.contentDocument.close();
-                    document.getElementById('zoneName').textContent = file.name;
-                    zoneViewer.dataset.zoneId = file.id;
-                    zoneViewer.style.display = "flex";
-                    zoneViewer.hidden = false;
-                }).catch(error => alert("Failed to load zone: " + error));
+                return;
+            }
+            try {
+                let html = await fetchGameHtml(file);
+                html = cleanHTML(html);
+                if (!zoneFrame || zoneFrame.contentDocument === null) {
+                    zoneFrame = document.createElement("iframe");
+                    zoneFrame.id = "zoneFrame";
+                    zoneViewer.appendChild(zoneFrame);
+                }
+                zoneFrame.contentDocument.open();
+                zoneFrame.contentDocument.write(html);
+                zoneFrame.contentDocument.close();
+                document.getElementById('zoneName').textContent = file.name;
+                zoneViewer.dataset.zoneId = file.id;
+                zoneViewer.style.display = "flex";
+                zoneViewer.hidden = false;
+            } catch (error) {
+                alert("Failed to load zone: " + error.message);
             }
         }
 
