@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 	<title>Jeo Unblocked Games — Play 500+ Free Games, No Downloads</title>
 	<meta name="description" content="Jeo is a free unblocked games site with 500+ browser, Flash, and retro games. No downloads, no sign-ups — just play instantly at school or anywhere." />
-	<link rel="canonical" href="https://jeoweb.app/" />
+	<link rel="canonical" href="https://textnexus.me/jeoweb.html" />
 	<meta name="theme-color" content="#0c0b14" />
 
 	<!-- Optional serverless backend (see backend/README.md). Leave these
@@ -19,9 +19,9 @@
 	<meta name="jeo-vapid-key" content="REPLACE_WITH_YOUR_VAPID_PUBLIC_KEY" />
 
 	<!-- PWA: makes the site installable to the home screen. -->
-	<link rel="manifest" href="manifest.json" />
-	<link rel="icon" href="icon.svg" type="image/svg+xml" />
-	<link rel="apple-touch-icon" href="icon.svg" />
+	<link rel="manifest" href="site.webmanifest" />
+	<link rel="icon" href="logo.svg" type="image/svg+xml" />
+	<link rel="apple-touch-icon" href="logo.svg" />
 
 	<!-- Open Graph / Twitter: rich link previews when the site is shared. -->
 	<meta property="og:type" content="website" />
@@ -46,19 +46,13 @@
 	}
 	</script>
 
-	<link rel="preload" href="/games_catalog.json" as="fetch" crossorigin>
 	<link rel="preload" href="/app.js" as="script">
-	<link rel="preload" href="/styles.css" as="style">
 
 	<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 	<!-- Design tokens shared with the Astro tree (src/styles/tokens.css). -->
 	<!-- Loaded before styles.css so legacy selectors build on the same tokens. -->
-	<link rel="stylesheet" href="/styles/tokens.css" />
-	<link rel="stylesheet" href="/styles/dashboard.css" />
-	<link rel="stylesheet" href="/styles/skeletons.css" />
-	<link rel="stylesheet" href="styles.css" />
 
 	<!-- Pick initial theme from OS preference if user hasn't set one. Run in <head>
 	     before any paint to avoid a dark-then-light flash on light-mode users.
@@ -100,8 +94,6 @@
 		gtag('js', new Date());
 		gtag('config', 'G-WQHYZ04776');
 	</script>
-	<script src="analytics.js" defer></script>
-	<link rel="stylesheet" href="styles/account-and-reset.css">
 </head>
 
 <body class="theme-dark">
@@ -181,11 +173,11 @@
 				</svg>
 				<div class="brand-text">jeo</div>
 			</a>
-			<a href="flash.html" class="header-nav-link">Flash</a>
-			<a href="retro.html" class="header-nav-link">Retro</a>
-			<a href="logs.html" class="header-nav-link">Logs</a>
-			<a href="links.html" class="header-nav-link">Links</a>
-			<a href="make-your-own.html" class="header-nav-link header-nav-cta">Host your own</a>
+			<a class="header-nav-link">Flash</a>
+			<a class="header-nav-link">Retro</a>
+			<a class="header-nav-link">Logs</a>
+			<a class="header-nav-link">Links</a>
+			<a class="header-nav-link header-nav-cta">Host your own</a>
 			<a href="https://forms.gle/HgkCSEzaF5iULyfv8" target="_blank" rel="noopener noreferrer" class="header-nav-link feedback-link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Send feedback</a>
 		</div>
 		<div class="header-right">
@@ -270,7 +262,7 @@
 				<button id="settingsBtn" class="header-btn" aria-label="Settings">⚙️</button>
 			</div>
 			<div class="jeo-header-account" id="jeoAccountSlot">
-				<a href="login.html" class="jeo-header-signin">Sign in</a>
+				<a class="jeo-header-signin">Sign in</a>
 			</div>
 		</div>
 	</header>
@@ -292,12 +284,12 @@
 					<div class="stat-label">WebGL Games</div>
 				</div>
 				<div class="stat-divider"></div>
-				<a href="flash.html" class="stat-card stat-card-link">
+				<a class="stat-card stat-card-link">
 					<div class="stat-number stat-flash" id="flashCount">0</div>
 					<div class="stat-label">⚡ Flash Games</div>
 				</a>
 				<div class="stat-divider"></div>
-				<a href="retro.html" class="stat-card stat-card-link">
+				<a class="stat-card stat-card-link">
 					<div class="stat-number stat-retro" id="retroCount">0</div>
 					<div class="stat-label">🎮 Retro Games</div>
 				</a>
@@ -494,7 +486,7 @@
 					<h2 class="carousel-title">Newly Added</h2>
 					<span id="newlyAddedCount" class="carousel-count">0</span>
 				</div>
-				<a href="new.html" class="carousel-view-all">See what's new →</a>
+				<a class="carousel-view-all">See what's new →</a>
 			</div>
 			<div class="carousel-track-wrap">
 				<button class="carousel-arrow carousel-arrow-left" data-target="newlyAddedTrack" aria-label="Scroll left">‹</button>
@@ -511,7 +503,7 @@
 					<h2 class="carousel-title">Requested Games</h2>
 					<span id="requestedCount" class="carousel-count">0</span>
 				</div>
-				 <a href="requested.html" class="carousel-view-all">Browse all requested -></a>
+				 <a class="carousel-view-all">Browse all requested -></a>
 			</div>
 			<div class="carousel-track-wrap">
 				<button class="carousel-arrow carousel-arrow-left" data-target="requestedTrack" aria-label="Scroll left">‹</button>
@@ -815,7 +807,7 @@
 					<div id="morePopover" class="more-popover hidden" role="menu" aria-hidden="true">
 						<a href="https://forms.gle/HgkCSEzaF5iULyfv8" target="_blank" rel="noopener" class="more-popover-row">➕ Request a game</a>
 						<a href="https://forms.gle/HgkCSEzaF5iULyfv8" target="_blank" rel="noopener" class="more-popover-row">🐛 Not working? Report it</a>
-						<a href="make-your-own.html" target="_blank" rel="noopener" class="more-popover-row">🚀 Host your own</a>
+						<a target="_blank" rel="noopener" class="more-popover-row">🚀 Host your own</a>
 					</div>
 				</div>
 				<button id="closeModal" class="modal-close-btn" aria-label="Close">✕</button>
@@ -997,36 +989,7 @@
 			});
 		})();
 	</script>
-	<script src="theme-manager.js" defer></script>
-	<script src="account-system.js" defer></script>
-	<script src="jeo-backend.js" defer></script>
-	<script src="save-manager.js" defer></script>
-	<script src="playtime.js" defer></script>
-	<script src="toast.js" defer></script>
-	<script src="ratings.js" defer></script>
-	<script src="playlists.js" defer></script>
-	<script src="achievements.js" defer></script>
-	<script src="confetti.js" defer></script>
-	<script src="sounds.js" defer></script>
-	<script src="swr-loader.js" defer></script>
-	<script src="lazy-loader.js" defer></script>
-	<script src="profile-db.js" defer></script>
-	<script src="save-backup.js" defer></script>
-	<script src="about-blank-spawner.js" defer></script>
-	<script src="proxy-router.js" defer></script>
-	<script src="share-session.js" defer></script>
-	<script src="whats-new.js" defer></script>
-	<script src="surprise-me.js" defer></script>
-	<script src="stats.js" defer></script>
-	<script src="avatars.js" defer></script>
-	<script src="seasonal-themes.js" defer></script>
-	<script src="command-palette.js" defer></script>
-	<script src="streaks.js" defer></script>
-	<script src="daily-challenge.js" defer></script>
-	<script src="leaderboard.js" defer></script>
-	<script src="notifications.js" defer></script>
-	<script src="reset-progress.js" defer></script>
-	<script>
+																														<script>
 	document.addEventListener('DOMContentLoaded', function() {
 	(function () {
 		const slot = document.getElementById('jeoAccountSlot');
