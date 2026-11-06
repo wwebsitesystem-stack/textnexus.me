@@ -56,7 +56,7 @@
             </div>
 
             <!-- Quick Links / Info Widget -->
-            <div class="bg-surface border border-border p-6 rounded-xl h-48 flex flex-col gap-4">
+            <div class="bg-surface border border-border p-6 rounded-xl h-auto flex flex-col gap-4">
                 <h2 class="text-sm font-medium text-textMain">Quick Access</h2>
                 <div class="flex flex-col gap-2">
                     <div class="flex items-center gap-3 text-sm text-textMuted p-2 rounded-lg bg-background border border-border">
@@ -65,6 +65,9 @@
                     <div class="flex items-center gap-3 text-sm text-textMuted p-2 rounded-lg bg-background border border-border">
                         <i class="ph ph-ghost text-lg"></i> Secure your files in Ghostlink.
                     </div>
+                    <a href="admin.html" onclick="return openInShell(event, 'admin.html')" class="flex items-center gap-3 text-sm text-textMuted p-2 rounded-lg bg-background border border-border hover:border-textMuted transition-colors">
+                        <i class="ph ph-shield-check text-lg"></i> Open the Admin Panel.
+                    </a>
                 </div>
             </div>
             
@@ -101,6 +104,17 @@
                 themeStylesheet.href = '';
             }
         });
+
+        // Open a route in the Nexus shell when embedded, otherwise navigate directly
+        window.openInShell = function (event, route) {
+            const shell = window.parent;
+            if (shell && shell !== window && typeof shell.loadRoute === 'function') {
+                shell.loadRoute(route);
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        };
 
         // Brand Color Listener
         const savedColor = localStorage.getItem('nexus-brand-color');
