@@ -108,23 +108,6 @@
         }
 
         afterPaint(async () => {
-            const bar = document.getElementById('tn-announce');
-            if (bar && sessionStorage.getItem('tn-announce-dismissed') !== '1') {
-                const show = (text, link) => {
-                    if (!text) return;
-                    document.getElementById('tn-announce-text').textContent = text;
-                    if (link) document.getElementById('tn-announce-link').href = link;
-                    bar.hidden = false;
-                    document.body.style.paddingTop = bar.offsetHeight + 'px';
-                };
-                show('A new version of Nexus is coming out tonight.', '/updates.html');
-                document.getElementById('tn-announce-close').addEventListener('click', () => {
-                    bar.hidden = true;
-                    sessionStorage.setItem('tn-announce-dismissed', '1');
-                    document.body.style.paddingTop = '';
-                });
-            }
-
             try {
                 const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js');
                 const { getDatabase, ref, onValue } = await import('https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js');
@@ -135,18 +118,6 @@
                     databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com"
                 });
                 const db = getDatabase(app);
-
-                if (bar) {
-                    onValue(ref(db, 'system/announcement'), (snap) => {
-                        const a = snap.val();
-                        if (!a) return;
-                        if (a.enabled === false) { bar.hidden = true; return; }
-                        document.getElementById('tn-announce-text').textContent = a.text || 'A new version of Nexus is coming out tonight.';
-                        document.getElementById('tn-announce-link').href = a.link || '/updates.html';
-                        bar.hidden = false;
-                        document.body.style.paddingTop = bar.offsetHeight + 'px';
-                    });
-                }
 
                 const themeStylesheet = document.getElementById('theme-stylesheet');
                 if (themeStylesheet) {
@@ -173,10 +144,5 @@
         });
     </script>
 
-<div id="tn-announce" hidden style="position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;align-items:center;justify-content:center;gap:10px;padding:9px 44px 9px 16px;background:#fff;color:#000;font:600 13px/1.4 system-ui,sans-serif;text-align:center">
-  <span id="tn-announce-text"></span>
-  <a id="tn-announce-link" href="/updates.html" style="color:#000;text-decoration:underline">Learn more</a>
-  <button id="tn-announce-close" aria-label="Dismiss" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:transparent;font-size:17px;line-height:1;cursor:pointer;color:#000">×</button>
-</div>
 </body>
 </html>
