@@ -13,6 +13,9 @@
  * between route pages inside the Nexus viewport.
  */
 (function () {
+    /* Bump when christmas.css changes so the edge cache cannot serve the
+       previous pack to returning visitors. */
+    var PACK_VERSION = '2026-12-01';
     var root = document.documentElement;
     var params = new URLSearchParams(window.location.search);
     var forced = (params.get('season') || '').toLowerCase();
@@ -64,7 +67,7 @@
             pack = document.createElement('link');
             pack.id = 'season-pack';
             pack.rel = 'stylesheet';
-            pack.href = 'christmas.css';
+            pack.href = 'christmas.css?v=' + PACK_VERSION;
             var base = document.querySelector('link[href*="thanksgiving.css"]');
             if (base && base.parentNode) {
                 base.parentNode.insertBefore(pack, base.nextSibling);
