@@ -1,203 +1,84 @@
 <!DOCTYPE html>
-<html lang="en" class="dark" data-season="thanksgiving">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Games | TextNexus</title>
-  <meta name="description" content="The Nexus games table: browse CrazyGames and Hooda Math's unblocked games from one warm, simple directory.">
-  <link rel="canonical" href="https://textnexus.me/games.html">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="TextNexus">
-  <meta property="og:title" content="Games | TextNexus">
-  <meta property="og:description" content="Browse CrazyGames and Hooda Math's unblocked games from the Nexus games table.">
-  <meta property="og:url" content="https://textnexus.me/games.html">
-  <meta property="og:image" content="https://textnexus.me/og-image.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="TextNexus — private chat, file sharing and AI with Lofin.dev">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta property="twitter:title" content="Games | TextNexus">
-  <meta name="twitter:description" content="Browse CrazyGames and Hooda Math's unblocked games from the Nexus games table.">
-  <meta name="twitter:image" content="https://textnexus.me/og-image.png">
+  <meta name="robots" content="noindex, follow">
+  <title>Games has moved | TextNexus</title>
+  <meta name="description" content="The games table is no longer part of TextNexus. Continue to the workspace home.">
+  <link rel="canonical" href="https://textnexus.me/home.html">
+  <meta http-equiv="refresh" content="0; url=/home.html">
   <link rel="icon" href="/logo.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0a0a0a">
   <style>
-    :root { color-scheme: dark; }
+    :root {
+      --bg: #0a0a0a;
+      --line: rgba(255, 255, 255, 0.09);
+      --text: #ededed;
+      --muted: #a1a1aa;
+    }
     * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
       margin: 0;
-      min-height: 100vh;
-      padding: 42px 24px 54px;
-      color: #f8ead8;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
     }
-    .games-page { width: 100%; max-width: 980px; margin: 0 auto; }
-    .games-back {
+    main {
+      width: 100%;
+      max-width: 430px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #121212;
+      padding: 30px 28px;
+      text-align: center;
+    }
+    .badge {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      margin-bottom: 30px;
-      color: #c4ad94;
-      font-size: 12px;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .games-back:hover { color: #e8b15c; }
-    .games-header { max-width: 680px; margin-bottom: 28px; }
-    .games-header h1 {
-      margin: 9px 0 12px;
-      color: #fff4e5;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(34px, 6vw, 52px);
-      font-weight: 500;
-      letter-spacing: -.045em;
-      line-height: 1.04;
-    }
-    .games-header h1 em { color: #e8b15c; font-weight: 400; }
-    .games-header p {
-      max-width: 58ch;
-      margin: 0;
-      color: #c4ad94;
-      font-size: 13.5px;
-      line-height: 1.7;
-    }
-    .portal-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-      margin: 28px 0 16px;
-    }
-    .portal-card {
-      display: flex;
-      flex-direction: column;
-      gap: 13px;
-      padding: 24px;
-      border: 1px solid rgba(232, 177, 92, .18);
-      border-radius: 16px;
-      background:
-        radial-gradient(circle at 100% 0%, rgba(217, 122, 63, .12), transparent 38%),
-        linear-gradient(155deg, rgba(38, 21, 12, .94), rgba(24, 13, 8, .97));
-      box-shadow: 0 16px 36px rgba(0, 0, 0, .22);
-    }
-    .portal-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .portal-mark {
-      display: grid;
-      place-items: center;
-      width: 42px;
-      height: 42px;
-      border: 1px solid rgba(232, 177, 92, .3);
-      border-radius: 12px;
-      background: rgba(217, 122, 63, .12);
-      color: #e8b15c;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 17px;
-      font-weight: 700;
-      letter-spacing: -.04em;
-    }
-    .portal-kind {
-      color: #927b63;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
       font-size: 9px;
-      font-weight: 600;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-    .portal-card h2 {
-      margin: 0;
-      color: #f8ead8;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 25px;
-      font-weight: 500;
-      letter-spacing: -.025em;
-    }
-    .portal-card p { margin: 0; color: #c4ad94; font-size: 12.5px; line-height: 1.65; }
-    .portal-links { display: grid; gap: 5px; margin: 2px 0 6px; padding: 0; list-style: none; }
-    .portal-links a {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 8px 10px;
-      border: 1px solid rgba(232, 177, 92, .13);
-      border-radius: 8px;
-      color: #e6d2ba;
-      font-size: 12px;
-      text-decoration: none;
-      transition: background .18s ease, border-color .18s ease, color .18s ease;
-    }
-    .portal-links a:hover { background: rgba(217, 122, 63, .1); border-color: rgba(232, 177, 92, .32); color: #fff4e5; }
-    .portal-links a span { color: #927b63; font-size: 13px; }
-    .portal-card .tg-btn { align-self: flex-start; margin-top: auto; }
-    .games-note {
-      margin-top: 16px;
-      padding: 20px 22px;
-      border: 1px solid rgba(232, 177, 92, .18);
-      border-radius: 14px;
-      background: rgba(28, 16, 10, .72);
-    }
-    .games-note h2 {
-      margin: 0 0 6px;
-      color: #e8b15c;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 10px;
       font-weight: 700;
-      letter-spacing: .14em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
     }
-    .games-note p { max-width: 75ch; margin: 0; color: #c4ad94; font-size: 12.5px; line-height: 1.7; }
-    @media (max-width: 700px) {
-      body { padding: 28px 16px 40px; }
-      .portal-grid { grid-template-columns: 1fr; }
-      .games-header h1 { font-size: clamp(32px, 10vw, 44px); }
+    h1 { margin: 0 0 8px; font-size: 19px; line-height: 1.3; letter-spacing: -0.01em; }
+    p { margin: 0 0 20px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+    a.btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      border-radius: 9px;
+      background: var(--text);
+      color: #000;
+      padding: 11px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
     }
+    a.btn:hover { opacity: 0.9; }
+    a.plain { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
   </style>
-  <link rel="stylesheet" href="thanksgiving.css">
-  <script src="season.js?v=2026-12-01"></script>
 </head>
 <body>
-  <main class="games-page">
-    <header class="games-header">
-      <a class="games-back" href="home.html">&larr; Back to Nexus</a>
-      <span class="tg-kicker">The Nexus games table</span>
-      <h1>Good games.<br><em>Good company.</em></h1>
-      <p>Pull up a chair and find something to play. Nexus is the directory; the games stay on their original publishers&rsquo; sites, where they belong.</p>
-    </header>
-
-    <section class="portal-grid" aria-label="Game portals">
-      <article class="portal-card">
-        <div class="portal-top">
-          <div class="portal-mark" aria-hidden="true">CG</div>
-          <span class="portal-kind">Browser games</span>
-        </div>
-        <h2>CrazyGames</h2>
-        <p>Action, puzzle, racing, multiplayer, and casual games that run straight in the browser.</p>
-        <ul class="portal-links">
-          <li><a href="https://www.crazygames.com/" target="_blank" rel="noopener noreferrer">Browse the full catalogue <span>&nearr;</span></a></li>
-          <li><a href="https://www.crazygames.com/c/action" target="_blank" rel="noopener noreferrer">Action games <span>&nearr;</span></a></li>
-          <li><a href="https://www.crazygames.com/c/puzzle" target="_blank" rel="noopener noreferrer">Puzzle games <span>&nearr;</span></a></li>
-          <li><a href="https://www.crazygames.com/c/multiplayer" target="_blank" rel="noopener noreferrer">Multiplayer games <span>&nearr;</span></a></li>
-        </ul>
-        <a class="tg-btn" href="https://www.crazygames.com/" target="_blank" rel="noopener noreferrer">Open CrazyGames</a>
-      </article>
-
-      <article class="portal-card">
-        <div class="portal-top">
-          <div class="portal-mark" aria-hidden="true">H</div>
-          <span class="portal-kind">Math &amp; more</span>
-        </div>
-        <h2>Hooda Math</h2>
-        <p>Hooda Math&rsquo;s unblocked games page plus the wider collection of math, logic, and browser games.</p>
-        <ul class="portal-links">
-          <li><a href="https://www.hoodamath.com/games/unblocked.html" target="_blank" rel="noopener noreferrer">Unblocked games <span>&nearr;</span></a></li>
-          <li><a href="https://www.hoodamath.com/games/" target="_blank" rel="noopener noreferrer">All Hooda Math games <span>&nearr;</span></a></li>
-        </ul>
-        <a class="tg-btn" href="https://www.hoodamath.com/games/unblocked.html" target="_blank" rel="noopener noreferrer">Open Hooda Math</a>
-      </article>
-    </section>
-
-    <section class="games-note" aria-labelledby="games-note-title">
-      <h2 id="games-note-title">A directory, not a copy</h2>
-      <p>Nexus does not host, copy, or redistribute third-party game files. These links open the original CrazyGames and Hooda Math portals in a new tab, so the game makers stay in control of their work. If either site changes its catalogue, the link will take you to their latest version automatically.</p>
-    </section>
+  <main>
+    <span class="badge">Page retired</span>
+    <h1>The games table has closed.</h1>
+    <p>This page is no longer part of TextNexus. Taking you to the workspace home &mdash; or continue from <a class="plain" href="/home.html">home</a>.</p>
+    <a class="btn" href="/home.html">Go to the workspace home</a>
   </main>
+  <script>location.replace("/home.html" + location.hash);</script>
 </body>
 </html>
