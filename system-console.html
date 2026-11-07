@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>System Control | TextNexus</title>
+    <title>Nexus Admin | System Control</title>
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -25,22 +25,22 @@
     </script>
     <style>
         body { background: #0a0a0a; color: #ededed; font-family: Inter, sans-serif; }
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #262626; border-radius: 6px; }
-        .seg { display: flex; gap: 6px; flex-wrap: wrap; }
-        .seg button {
-            border: 1px solid #262626; background: #121212; color: #a1a1aa;
-            padding: 7px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 600;
-            display: inline-flex; align-items: center; gap: 6px; transition: all .15s ease;
+        .mode-card {
+            border: 1px solid #262626; background: #121212; border-radius: 12px;
+            padding: 14px; text-align: left; transition: all .15s ease; position: relative;
         }
-        .seg button:hover { border-color: #3a3a3a; color: #ededed; }
-        .seg button[aria-pressed="true"] { border-color: #ededed; color: #0a0a0a; background: #ededed; }
+        .mode-card:hover { border-color: #3a3a3a; }
+        .mode-card[aria-pressed="true"] { border-color: #ededed; background: #1a1a1a; }
+        .mode-card[aria-pressed="true"]::after {
+            content: ""; position: absolute; top: 12px; right: 12px;
+            width: 7px; height: 7px; border-radius: 999px; background: #ededed;
+        }
+        .mode-dot { width: 7px; height: 7px; border-radius: 999px; display: inline-block; }
         .switch { position: relative; width: 42px; height: 24px; flex: 0 0 auto; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .switch span {
-            position: absolute; inset: 0; cursor: pointer; background: #262626;
-            border-radius: 999px; transition: background .18s ease;
-        }
+        .switch span { position: absolute; inset: 0; cursor: pointer; background: #262626; border-radius: 999px; transition: background .18s ease; }
         .switch span::before {
             content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px;
             background: #a1a1aa; border-radius: 999px; transition: transform .18s ease, background .18s ease;
@@ -48,13 +48,19 @@
         .switch input:checked + span { background: #ededed; }
         .switch input:checked + span::before { transform: translateX(18px); background: #0a0a0a; }
         .switch input:focus-visible + span { outline: 2px solid #ededed; outline-offset: 2px; }
-        textarea, input[type="text"], select {
+        textarea, input[type="text"], input[type="url"], select {
             width: 100%; background: #0a0a0a; border: 1px solid #262626; color: #ededed;
-            border-radius: 9px; padding: 10px 12px; font-size: 12.5px; line-height: 1.6;
+            border-radius: 9px; padding: 9px 12px; font-size: 12.5px; line-height: 1.6;
         }
-        textarea:focus, input[type="text"]:focus, select:focus { outline: none; border-color: #4a4a4a; }
+        textarea:focus, input:focus, select:focus { outline: none; border-color: #4a4a4a; }
         .pill { font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 1px solid; }
         .is-hidden { display: none !important; }
+        table { border-collapse: collapse; width: 100%; }
+        th { text-align: left; font-size: 9.5px; text-transform: uppercase; letter-spacing: .1em; color: #a1a1aa; font-weight: 700; padding: 8px 10px; border-bottom: 1px solid #262626; }
+        td { padding: 9px 10px; border-bottom: 1px solid #1c1c1c; font-size: 12px; }
+        tr:last-child td { border-bottom: 0; }
+        .bar { height: 6px; border-radius: 999px; background: #262626; overflow: hidden; }
+        .bar > i { display: block; height: 100%; background: #ededed; border-radius: 999px; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -65,8 +71,8 @@
             <div class="w-11 h-11 rounded-xl bg-surfaceHover border border-border mx-auto flex items-center justify-center mb-4">
                 <i class="ph ph-shield-check text-lg"></i>
             </div>
-            <h1 class="text-sm font-bold">System control</h1>
-            <p class="text-[11px] text-textMuted mt-1.5 mb-5">Owner access only. Sign in with the Google account that owns this workspace.</p>
+            <h1 class="text-sm font-bold">Nexus admin</h1>
+            <p class="text-[11px] text-textMuted mt-1.5 mb-5">Staff access only. Sign in with an approved Google account.</p>
             <button id="gate-signin" class="w-full rounded-lg bg-[#ededed] text-black text-[12px] font-bold py-2.5 inline-flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
                 <i class="ph ph-google-logo"></i> Sign in with Google
             </button>
@@ -75,117 +81,152 @@
         </div>
     </div>
 
-    <!-- Console -->
-    <div id="console" class="is-hidden">
-        <header class="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur px-6 py-3 flex items-center gap-3 flex-wrap">
+    <!-- Panel -->
+    <div id="panel" class="is-hidden">
+        <header class="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur px-5 py-3 flex items-center gap-3 flex-wrap">
             <div class="w-8 h-8 rounded-lg bg-surfaceHover border border-border flex items-center justify-center">
                 <i class="ph ph-sliders-horizontal"></i>
             </div>
             <div class="mr-auto">
-                <h1 class="text-sm font-semibold leading-tight">System control</h1>
-                <p class="text-[10.5px] text-textMuted">Live state for <code class="text-textMain">system</code> in the Realtime Database</p>
+                <h1 class="text-sm font-semibold leading-tight">Nexus admin</h1>
+                <p class="text-[10.5px] text-textMuted">Staff panel &middot; <span id="who">—</span></p>
             </div>
             <span id="live-pill" class="pill border-border text-textMuted">connecting</span>
-            <span id="who" class="text-[10.5px] text-textMuted"></span>
             <a href="/index.html" class="text-[11px] font-semibold text-textMuted hover:text-textMain">Exit</a>
         </header>
 
-        <main class="max-w-3xl mx-auto p-6 flex flex-col gap-4">
+        <main class="max-w-5xl mx-auto p-5 flex flex-col gap-4">
 
-            <!-- Status -->
+            <!-- Modes -->
             <section class="rounded-xl border border-border bg-surface p-5">
-                <div class="flex items-start justify-between gap-4 mb-3">
+                <div class="flex items-start justify-between gap-3 mb-4 flex-wrap">
                     <div>
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted">Workspace status</h2>
-                        <p class="text-[11px] text-textMuted mt-1">Sets the tone for the whole site. Maintenance also raises a banner.</p>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted">Workspace mode</h2>
+                        <p class="text-[11px] text-textMuted mt-1">Staff accounts bypass every mode. Everyone else is blocked by maintenance, lockdown and offline.</p>
                     </div>
-                    <span id="status-preview" class="pill border-border text-textMuted">operational</span>
+                    <span id="mode-current" class="pill border-border text-textMuted">operational</span>
                 </div>
-                <div class="seg" id="status-group" role="group" aria-label="Workspace status">
-                    <button type="button" data-status="operational" aria-pressed="true"><i class="ph ph-check-circle"></i> Operational</button>
-                    <button type="button" data-status="degraded" aria-pressed="false"><i class="ph ph-warning"></i> Degraded</button>
-                    <button type="button" data-status="maintenance" aria-pressed="false"><i class="ph ph-wrench"></i> Maintenance</button>
-                    <button type="button" data-status="offline" aria-pressed="false"><i class="ph ph-power"></i> Offline</button>
+                <div id="mode-grid" class="grid sm:grid-cols-3 gap-2.5" role="group" aria-label="Workspace mode"></div>
+            </section>
+
+            <!-- Stats -->
+            <section class="grid sm:grid-cols-4 gap-3">
+                <div class="rounded-xl border border-border bg-surface p-4">
+                    <p class="text-[9.5px] uppercase tracking-widest text-textMuted font-bold">Accounts</p>
+                    <p id="stat-accounts" class="text-2xl font-bold mt-1.5">—</p>
+                    <p id="stat-signups" class="text-[10.5px] text-textMuted mt-1">&nbsp;</p>
+                </div>
+                <div class="rounded-xl border border-border bg-surface p-4">
+                    <p class="text-[9.5px] uppercase tracking-widest text-textMuted font-bold">Group chats</p>
+                    <p id="stat-chats" class="text-2xl font-bold mt-1.5">—</p>
+                    <p class="text-[10.5px] text-textMuted mt-1">indexed rooms</p>
+                </div>
+                <div class="rounded-xl border border-border bg-surface p-4">
+                    <p class="text-[9.5px] uppercase tracking-widest text-textMuted font-bold">Messages</p>
+                    <p id="stat-messages" class="text-2xl font-bold mt-1.5">—</p>
+                    <p class="text-[10.5px] text-textMuted mt-1">across all rooms</p>
+                </div>
+                <div class="rounded-xl border border-border bg-surface p-4">
+                    <p class="text-[9.5px] uppercase tracking-widest text-textMuted font-bold">Updates</p>
+                    <p id="stat-updates" class="text-2xl font-bold mt-1.5">—</p>
+                    <p class="text-[10.5px] text-textMuted mt-1">published posts</p>
                 </div>
             </section>
 
-            <!-- Maintenance -->
-            <section class="rounded-xl border border-border bg-surface p-5">
-                <div class="flex items-center justify-between gap-4">
-                    <div>
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted">Maintenance mode</h2>
-                        <p class="text-[11px] text-textMuted mt-1">Visitors see a red banner explaining the outage.</p>
+            <div class="grid lg:grid-cols-2 gap-4">
+                <!-- Accounts -->
+                <section class="rounded-xl border border-border bg-surface p-5">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted">Accounts</h2>
+                        <input id="account-search" type="text" placeholder="Filter by email or name" class="!w-48 !py-1.5 !text-[11px]">
                     </div>
-                    <label class="switch">
-                        <input id="maintenance-toggle" type="checkbox" aria-label="Maintenance mode">
-                        <span aria-hidden="true"></span>
-                    </label>
-                </div>
-                <label for="maintenance-message" class="block text-[10.5px] font-semibold uppercase tracking-wider text-textMuted mt-4 mb-1.5">Maintenance message</label>
-                <textarea id="maintenance-message" rows="2" maxlength="500" placeholder="Back shortly — we're patching the chat service."></textarea>
-                <p class="text-[10px] text-textMuted mt-1.5"><span id="maintenance-count">0</span>/500</p>
-            </section>
+                    <div class="overflow-auto max-h-72 rounded-lg border border-border">
+                        <table>
+                            <thead><tr><th>Account</th><th>Role</th><th>State</th></tr></thead>
+                            <tbody id="accounts-body">
+                                <tr><td colspan="3" class="text-textMuted">Loading…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p id="accounts-note" class="text-[10.5px] text-textMuted mt-2"></p>
+                </section>
 
-            <!-- Announcement -->
+                <!-- Analytics -->
+                <section class="rounded-xl border border-border bg-surface p-5">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted mb-3">Busiest rooms</h2>
+                    <div id="room-bars" class="flex flex-col gap-2.5">
+                        <p class="text-[11px] text-textMuted">Loading…</p>
+                    </div>
+                    <div class="border-t border-border mt-4 pt-3">
+                        <h3 class="text-[9.5px] uppercase tracking-widest text-textMuted font-bold mb-2">Recent sign-ins</h3>
+                        <div id="recent-signins" class="flex flex-col gap-1.5 text-[11.5px] text-textMuted">—</div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Message + banner -->
             <section class="rounded-xl border border-border bg-surface p-5">
-                <div class="flex items-center justify-between gap-4">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted mb-3">Public message</h2>
+                <label for="mode-message" class="block text-[10.5px] font-semibold uppercase tracking-wider text-textMuted mb-1.5">Shown on the block screen and banner</label>
+                <textarea id="mode-message" rows="2" maxlength="500" placeholder="Back shortly — we're patching the chat service."></textarea>
+                <p class="text-[10px] text-textMuted mt-1.5"><span id="message-count">0</span>/500</p>
+
+                <div class="flex items-center justify-between gap-4 mt-5 pt-4 border-t border-border">
                     <div>
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted">Site announcement</h2>
-                        <p class="text-[11px] text-textMuted mt-1">A quieter banner that works even when nothing is broken.</p>
+                        <h3 class="text-xs font-bold">Announcement banner</h3>
+                        <p class="text-[11px] text-textMuted mt-0.5">A quieter notice for all visitors, independent of the mode.</p>
                     </div>
                     <label class="switch">
                         <input id="banner-toggle" type="checkbox" aria-label="Show announcement banner">
                         <span aria-hidden="true"></span>
                     </label>
                 </div>
-                <div class="grid sm:grid-cols-[1fr_140px] gap-3 mt-4">
-                    <div>
-                        <label for="banner-message" class="block text-[10.5px] font-semibold uppercase tracking-wider text-textMuted mb-1.5">Banner text</label>
-                        <input id="banner-message" type="text" maxlength="300" placeholder="The Christmas theme lands on December 1st.">
-                    </div>
-                    <div>
-                        <label for="banner-tone" class="block text-[10.5px] font-semibold uppercase tracking-wider text-textMuted mb-1.5">Tone</label>
-                        <select id="banner-tone">
-                            <option value="info">Info</option>
-                            <option value="warning">Warning</option>
-                            <option value="danger">Important</option>
-                        </select>
-                    </div>
+                <div class="grid sm:grid-cols-[1fr_140px] gap-3 mt-3">
+                    <input id="banner-message" type="text" maxlength="300" placeholder="The Christmas theme lands on December 1st.">
+                    <select id="banner-tone">
+                        <option value="info">Info</option>
+                        <option value="warning">Warning</option>
+                        <option value="danger">Important</option>
+                    </select>
                 </div>
-                <p class="text-[10px] text-textMuted mt-1.5"><span id="banner-count">0</span>/300</p>
             </section>
 
-            <!-- What visitors see -->
+            <!-- Discord -->
             <section class="rounded-xl border border-border bg-surface p-5">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted mb-3">What visitors will see</h2>
-                <div id="visitor-preview" class="rounded-lg border border-border overflow-hidden">
-                    <div id="preview-bar" class="px-3.5 py-2.5 text-[11.5px] text-textMuted bg-[#0b1220]">No banner — the site looks normal.</div>
+                <div class="flex items-start justify-between gap-4 flex-wrap">
+                    <div>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted">Staff alerts</h2>
+                        <p class="text-[11px] text-textMuted mt-1">Posts to a Discord channel whenever the mode changes to maintenance, lockdown or offline.</p>
+                    </div>
+                    <span id="webhook-pill" class="pill border-border text-textMuted">not configured</span>
                 </div>
-                <p id="preview-note" class="text-[10.5px] text-textMuted mt-2.5">Publishing writes these values and every open tab updates immediately.</p>
+                <label for="webhook" class="block text-[10.5px] font-semibold uppercase tracking-wider text-textMuted mt-4 mb-1.5">Staff channel webhook</label>
+                <input id="webhook" type="url" placeholder="https://discord.com/api/webhooks/…" autocomplete="off" spellcheck="false">
+                <div class="flex items-center gap-2.5 mt-2.5 flex-wrap">
+                    <button id="save-webhook" class="rounded-lg border border-border bg-surfaceHover text-[11px] font-semibold px-3 py-1.5 hover:border-[#3a3a3a]">Save webhook</button>
+                    <button id="test-webhook" class="rounded-lg border border-border bg-surfaceHover text-[11px] font-semibold px-3 py-1.5 hover:border-[#3a3a3a] inline-flex items-center gap-1.5"><i class="ph ph-paper-plane-tilt"></i> Send test</button>
+                    <span id="webhook-msg" class="text-[11px] text-textMuted"></span>
+                </div>
+                <p class="text-[10.5px] text-textMuted mt-2.5">Stored under <code class="text-textMain">nexus/config</code>, readable only by staff. Never world-readable.</p>
             </section>
 
-            <!-- Actions -->
-            <div class="flex flex-wrap items-center gap-3 pb-4">
-                <button id="save" class="rounded-lg bg-[#ededed] text-black text-[12px] font-bold px-4 py-2.5 inline-flex items-center gap-2 hover:opacity-90 transition-opacity">
+            <!-- Publish -->
+            <div class="flex flex-wrap items-center gap-3 pb-6">
+                <button id="save" class="rounded-lg bg-[#ededed] text-black text-[12px] font-bold px-4 py-2.5 inline-flex items-center gap-2 hover:opacity-90">
                     <i class="ph ph-floppy-disk"></i> Publish changes
                 </button>
-                <button id="reset" class="rounded-lg border border-border bg-surface text-textMuted text-[12px] font-semibold px-4 py-2.5 inline-flex items-center gap-2 hover:text-textMain hover:border-[#3a3a3a] transition-colors">
-                    <i class="ph ph-arrow-counter-clockwise"></i> Revert edits
+                <button id="reload" class="rounded-lg border border-border bg-surface text-textMuted text-[12px] font-semibold px-4 py-2.5 inline-flex items-center gap-2 hover:text-textMain">
+                    <i class="ph ph-arrow-counter-clockwise"></i> Reload live data
                 </button>
                 <span id="save-msg" class="text-[11px] text-textMuted" role="status" aria-live="polite"></span>
             </div>
-
-            <section class="rounded-xl border border-border bg-surface p-5 mb-8">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted mb-2">Last change</h2>
-                <p id="last-change" class="text-[11.5px] text-textMuted">Nothing recorded yet.</p>
-            </section>
         </main>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref as dbRef, onValue, update, push } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref as dbRef, onValue, get, update, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
@@ -194,103 +235,241 @@
             databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com"
         };
 
-        const OWNER_EMAILS = ["brodywilliams0226@gmail.com", "imcrabfr@gmail.com"];
+        const STAFF = [
+            "brodywilliams0226@gmail.com",
+            "bkeppel001@stpaul.k12.mn.us",
+            "bmkeppel7@gmail.com"
+        ];
+
+        const MODES = [
+            { id: "operational", label: "Operational", dot: "#7fd1a8", note: "Everything working normally." },
+            { id: "degraded",    label: "Degraded",    dot: "#f0d08a", note: "Online, but something is slow or partial." },
+            { id: "testing",     label: "Testing",     dot: "#7fa8c9", note: "Staff-only notice while you test a change." },
+            { id: "maintenance", label: "Maintenance", dot: "#e2564a", note: "Blocks visitors, lets staff through." },
+            { id: "lockdown",    label: "Lockdown",    dot: "#e2564a", note: "Hard block, staff only." },
+            { id: "offline",     label: "Offline",     dot: "#e2564a", note: "Announced outage, blocks everyone but staff." }
+        ];
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
         const systemRef = dbRef(db, "system");
 
-        const gate = document.getElementById("gate");
-        const consoleEl = document.getElementById("console");
-        const gateMsg = document.getElementById("gate-msg");
-        const gateBtn = document.getElementById("gate-signin");
-        const livePill = document.getElementById("live-pill");
-        const whoEl = document.getElementById("who");
-        const saveBtn = document.getElementById("save");
-        const saveMsg = document.getElementById("save-msg");
-        const statusGroup = document.getElementById("status-group");
-        const maintenanceToggle = document.getElementById("maintenance-toggle");
-        const maintenanceMessage = document.getElementById("maintenance-message");
-        const bannerToggle = document.getElementById("banner-toggle");
-        const bannerMessage = document.getElementById("banner-message");
-        const bannerTone = document.getElementById("banner-tone");
+        const $ = (id) => document.getElementById(id);
+        const gate = $("gate"), panel = $("panel"), gateMsg = $("gate-msg");
+        const modeGrid = $("mode-grid"), saveMsg = $("save-msg");
+        const messageEl = $("mode-message"), bannerToggle = $("banner-toggle");
+        const bannerMessage = $("banner-message"), bannerTone = $("banner-tone");
+        const webhookEl = $("webhook"), webhookMsg = $("webhook-msg");
 
-        let user = null;
-        let live = {};
-        let dirty = false;
+        let user = null, live = {}, dirty = false;
+        let accounts = {}, chatData = {}, indexData = {}, config = {};
 
-        const TONES = {
-            info:    { bg: "rgba(127,168,201,.14)", border: "rgba(127,168,201,.45)", dot: "#7fa8c9" },
-            warning: { bg: "rgba(240,208,138,.14)", border: "rgba(240,208,138,.48)", dot: "#f0d08a" },
-            danger:  { bg: "rgba(200,69,58,.16)",   border: "rgba(200,69,58,.5)",    dot: "#e2564a" }
-        };
+        function setDirty(v) {
+            dirty = v;
+            $("save").classList.toggle("opacity-60", !v);
+        }
 
-        function setDirty(value) {
-            dirty = value;
-            saveBtn.classList.toggle("opacity-60", !dirty);
+        function buildModeCards() {
+            modeGrid.innerHTML = "";
+            MODES.forEach(mode => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "mode-card";
+                btn.dataset.mode = mode.id;
+                btn.setAttribute("aria-pressed", "false");
+                btn.innerHTML = `
+                    <span class="flex items-center gap-2">
+                        <span class="mode-dot" style="background:${mode.dot}"></span>
+                        <span class="text-[12px] font-bold">${mode.label}</span>
+                    </span>
+                    <span class="block text-[10.5px] text-textMuted mt-1.5 leading-snug">${mode.note}</span>
+                `;
+                btn.addEventListener("click", () => {
+                    selectMode(mode.id);
+                    setDirty(true);
+                });
+                modeGrid.appendChild(btn);
+            });
+        }
+
+        function selectMode(id) {
+            [...modeGrid.querySelectorAll("button")].forEach(b =>
+                b.setAttribute("aria-pressed", String(b.dataset.mode === id)));
+            $("mode-current").textContent = id;
+        }
+
+        function currentMode() {
+            const pressed = modeGrid.querySelector('button[aria-pressed="true"]');
+            return pressed ? pressed.dataset.mode : "operational";
         }
 
         function fillForm(state) {
-            const status = state.status || (state.maintenance ? "maintenance" : "operational");
-            [...statusGroup.querySelectorAll("button")].forEach(btn => {
-                btn.setAttribute("aria-pressed", String(btn.dataset.status === status));
-            });
-            maintenanceToggle.checked = state.maintenance === true;
-            maintenanceMessage.value = state.message || "";
+            selectMode(state.status || state.mode || (state.maintenance ? "maintenance" : "operational"));
+            messageEl.value = state.message || "";
             bannerToggle.checked = state.banner?.enabled === true;
             bannerMessage.value = state.banner?.message || "";
             bannerTone.value = state.banner?.tone || "info";
-            updateCounts();
-            renderPreview();
-            document.getElementById("status-preview").textContent = status;
-            document.getElementById("last-change").textContent = state.updatedAt
-                ? `${new Date(state.updatedAt).toLocaleString()} by ${state.updatedBy || "unknown"}`
-                : "Nothing recorded yet.";
+            $("message-count").textContent = messageEl.value.length;
         }
 
-        function updateCounts() {
-            document.getElementById("maintenance-count").textContent = maintenanceMessage.value.length;
-            document.getElementById("banner-count").textContent = bannerMessage.value.length;
+        async function loadData() {
+            const read = (path) => get(dbRef(db, path)).then(s => s.val() || {}).catch(() => null);
+
+            const [usersData, nexusUsers, chats, index, updates, cfg] = await Promise.all([
+                read("users"), read("nexus/users"), read("textnexus/chats"),
+                read("textnexus/index"), read("workspace_updates"), read("nexus/config")
+            ]);
+
+            accounts = usersData || {};
+            const roles = nexusUsers || {};
+            if (Object.keys(roles).length) {
+                Object.keys(roles).forEach(uid => {
+                    accounts[uid] = { ...(accounts[uid] || {}), ...roles[uid] };
+                });
+            }
+            chatData = chats || {};
+            indexData = index || {};
+            config = cfg || {};
+
+            const denied = usersData === null || chats === null;
+            $("accounts-note").textContent = denied
+                ? "Could not read accounts — the hardened rules may not be deployed yet."
+                : "";
+
+            renderStats(updates);
+            renderAccounts();
+            renderRooms();
+            renderSignins();
+            renderWebhook();
         }
 
-        function currentForm() {
-            const pressed = statusGroup.querySelector('button[aria-pressed="true"]');
-            return {
-                status: pressed ? pressed.dataset.status : "operational",
-                maintenance: maintenanceToggle.checked,
-                message: maintenanceMessage.value.trim(),
-                banner: {
-                    enabled: bannerToggle.checked,
-                    message: bannerMessage.value.trim(),
-                    tone: bannerTone.value
-                }
-            };
+        function renderStats(updates) {
+            const uids = Object.keys(accounts);
+            $("stat-accounts").textContent = uids.length || "0";
+            const recent = uids.filter(uid => {
+                const t = Number(accounts[uid]?.lastLogin || 0);
+                return t && Date.now() - t < 7 * 86400000;
+            }).length;
+            $("stat-signups").textContent = recent ? `${recent} active this week` : "no recent sign-ins";
+
+            const chatIds = Object.keys(indexData);
+            $("stat-chats").textContent = chatIds.length;
+
+            let messages = 0;
+            Object.keys(chatData).forEach(id => {
+                messages += Object.keys(chatData[id]?.messages || {}).length;
+            });
+            $("stat-messages").textContent = messages;
+            $("stat-updates").textContent = Object.keys(updates || {}).length;
         }
 
-        function renderPreview() {
-            const form = currentForm();
-            const bar = document.getElementById("preview-bar");
-            const down = form.maintenance || form.status === "maintenance" || form.status === "offline";
-            const show = down || form.banner.enabled;
-            const tone = TONES[down ? "danger" : form.banner.tone] || TONES.info;
+        function renderAccounts() {
+            const filter = ($("account-search").value || "").trim().toLowerCase();
+            const rows = Object.keys(accounts)
+                .map(uid => ({ uid, ...accounts[uid] }))
+                .filter(a => !filter || `${a.email || ""} ${a.name || ""}`.toLowerCase().includes(filter))
+                .sort((a, b) => Number(b.lastLogin || 0) - Number(a.lastLogin || 0))
+                .slice(0, 50);
 
-            if (!show) {
-                bar.textContent = "No banner — the site looks normal.";
-                bar.style.background = "#0b1220";
-                bar.style.color = "#a1a1aa";
-                bar.style.borderBottom = "1px solid transparent";
+            const body = $("accounts-body");
+            if (!rows.length) {
+                body.innerHTML = `<tr><td colspan="3" class="text-textMuted">No accounts to show.</td></tr>`;
                 return;
             }
-            bar.textContent = (down ? form.message : form.banner.message) ||
-                (down ? "Nexus is in maintenance right now." : "Heads up from the Nexus team.");
-            bar.style.background = tone.bg;
-            bar.style.color = "#eef4ff";
-            bar.style.borderBottom = `1px solid ${tone.border}`;
+            body.innerHTML = rows.map(a => {
+                const email = a.email || "(no email)";
+                const staff = STAFF.includes(String(email).toLowerCase());
+                const banned = a.isBanned === true;
+                const role = a.role || (staff ? "owner" : "member");
+                return `<tr>
+                    <td>
+                        <div class="font-medium text-textMain truncate max-w-[220px]">${escapeHtml(a.name || email.split("@")[0])}</div>
+                        <div class="text-[10.5px] text-textMuted truncate max-w-[220px]">${escapeHtml(email)}</div>
+                    </td>
+                    <td><span class="text-[10px] uppercase tracking-wider ${staff ? "text-emerald-400" : "text-textMuted"}">${escapeHtml(role)}</span></td>
+                    <td><span class="text-[10px] ${banned ? "text-red-400" : "text-textMuted"}">${banned ? "banned" : "active"}</span></td>
+                </tr>`;
+            }).join("");
         }
 
-        gateBtn.addEventListener("click", async () => {
-            gateBtn.disabled = true;
+        function renderRooms() {
+            const rooms = Object.keys(chatData).map(id => ({
+                id,
+                name: indexData[id]?.name || chatData[id]?.name || "Untitled",
+                count: Object.keys(chatData[id]?.messages || {}).length
+            })).sort((a, b) => b.count - a.count).slice(0, 6);
+
+            const wrap = $("room-bars");
+            if (!rooms.length) {
+                wrap.innerHTML = `<p class="text-[11px] text-textMuted">No chat data yet.</p>`;
+                return;
+            }
+            const max = Math.max(...rooms.map(r => r.count), 1);
+            wrap.innerHTML = rooms.map(r => `
+                <div>
+                    <div class="flex items-center justify-between text-[11px] mb-1">
+                        <span class="text-textMain truncate max-w-[65%]">${escapeHtml(r.name)}</span>
+                        <span class="text-textMuted">${r.count}</span>
+                    </div>
+                    <div class="bar"><i style="width:${Math.max(4, Math.round((r.count / max) * 100))}%"></i></div>
+                </div>
+            `).join("");
+        }
+
+        function renderSignins() {
+            const recent = Object.keys(accounts)
+                .map(uid => accounts[uid])
+                .filter(a => Number(a.lastLogin || 0) > 0)
+                .sort((a, b) => Number(b.lastLogin) - Number(a.lastLogin))
+                .slice(0, 5);
+
+            $("recent-signins").innerHTML = recent.length
+                ? recent.map(a => `<div class="flex items-center justify-between gap-2">
+                        <span class="truncate">${escapeHtml(a.email || a.name || "unknown")}</span>
+                        <span class="shrink-0 text-[10px]">${new Date(Number(a.lastLogin)).toLocaleDateString()}</span>
+                    </div>`).join("")
+                : `<span>No recorded sign-ins.</span>`;
+        }
+
+        function renderWebhook() {
+            const url = config.discordStaffWebhook || "";
+            webhookEl.value = url;
+            const pill = $("webhook-pill");
+            pill.textContent = url ? "configured" : "not configured";
+            pill.className = url
+                ? "pill border-emerald-500/40 text-emerald-400"
+                : "pill border-border text-textMuted";
+        }
+
+        function escapeHtml(value) {
+            return String(value == null ? "" : value).replace(/[&<>"']/g, c => (
+                { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
+            ));
+        }
+
+        async function postToDiscord(text) {
+            const url = (config.discordStaffWebhook || "").trim();
+            if (!url) return { ok: false, reason: "no-webhook" };
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ content: text.slice(0, 1900), allowed_mentions: { parse: [] } })
+                });
+                return { ok: response.ok, reason: response.ok ? "sent" : `HTTP ${response.status}` };
+            } catch (error) {
+                return { ok: false, reason: error?.message || "network" };
+            }
+        }
+
+        function modeLabel(id) {
+            return (MODES.find(m => m.id === id) || MODES[0]).label;
+        }
+
+        // ---- auth ----
+        $("gate-signin").addEventListener("click", async () => {
+            $("gate-signin").disabled = true;
             gateMsg.textContent = "Opening Google...";
             try {
                 await signInWithPopup(auth, new GoogleAuthProvider());
@@ -299,90 +478,121 @@
                     ? "Sign-in cancelled."
                     : `Sign-in failed: ${error?.code || error?.message}`;
             } finally {
-                gateBtn.disabled = false;
+                $("gate-signin").disabled = false;
             }
         });
 
-        onAuthStateChanged(auth, (nextUser) => {
+        onAuthStateChanged(auth, async (nextUser) => {
             user = nextUser;
-            const allowed = !!user && OWNER_EMAILS.includes(user.email);
+            const allowed = !!user && STAFF.includes(String(user.email || "").toLowerCase());
             gate.classList.toggle("is-hidden", allowed);
-            consoleEl.classList.toggle("is-hidden", !allowed);
+            panel.classList.toggle("is-hidden", !allowed);
 
-            if (user && !allowed) {
-                gateMsg.textContent = `${user.email} is not an owner account.`;
-            }
-            if (allowed) {
-                whoEl.textContent = user.email;
-                livePill.textContent = "live";
-                livePill.className = "pill border-emerald-500/40 text-emerald-400";
-                fillForm(live);
-            }
+            if (user && !allowed) gateMsg.textContent = `${user.email} is not a staff account.`;
+            if (!allowed) return;
+
+            $("who").textContent = user.email;
+            buildModeCards();
+            await loadData();
+            fillForm(live);
         });
 
+        // ---- live system ----
         onValue(systemRef, (snap) => {
             live = snap.val() || {};
             if (!dirty) fillForm(live);
-            if (user && OWNER_EMAILS.includes(user.email)) {
-                livePill.textContent = "live";
-                livePill.className = "pill border-emerald-500/40 text-emerald-400";
-            }
-        }, (error) => {
-            livePill.textContent = "read failed";
-            livePill.className = "pill border-red-500/40 text-red-400";
-            console.error("system read failed:", error);
+            const pill = $("live-pill");
+            pill.textContent = "live";
+            pill.className = "pill border-emerald-500/40 text-emerald-400";
+        }, () => {
+            $("live-pill").textContent = "read failed";
+            $("live-pill").className = "pill border-red-500/40 text-red-400";
         });
 
-        statusGroup.addEventListener("click", (event) => {
-            const btn = event.target.closest("button[data-status]");
-            if (!btn) return;
-            [...statusGroup.querySelectorAll("button")].forEach(b =>
-                b.setAttribute("aria-pressed", String(b === btn)));
-            document.getElementById("status-preview").textContent = btn.dataset.status;
+        // ---- interactions ----
+        messageEl.addEventListener("input", () => {
+            $("message-count").textContent = messageEl.value.length;
             setDirty(true);
-            renderPreview();
+        });
+        [bannerToggle, bannerMessage, bannerTone].forEach(el =>
+            el.addEventListener("input", () => setDirty(true)));
+        $("account-search").addEventListener("input", renderAccounts);
+
+        $("save-webhook").addEventListener("click", async () => {
+            const url = webhookEl.value.trim();
+            webhookMsg.textContent = "Saving…";
+            try {
+                await set(dbRef(db, "nexus/config/discordStaffWebhook"), url);
+                config.discordStaffWebhook = url;
+                renderWebhook();
+                webhookMsg.textContent = url ? "Saved." : "Cleared.";
+            } catch (error) {
+                webhookMsg.textContent = `Could not save: ${error?.code || error?.message}`;
+            }
         });
 
-        [maintenanceToggle, bannerToggle, bannerTone].forEach(el =>
-            el.addEventListener("change", () => { setDirty(true); renderPreview(); }));
+        $("test-webhook").addEventListener("click", async () => {
+            webhookMsg.textContent = "Sending…";
+            const result = await postToDiscord(`Nexus staff alerts connected. Signed in as ${user?.email || "unknown"}.`);
+            webhookMsg.textContent = result.ok ? "Test message sent." : `Not sent (${result.reason}).`;
+        });
 
-        [maintenanceMessage, bannerMessage].forEach(el =>
-            el.addEventListener("input", () => { updateCounts(); setDirty(true); renderPreview(); }));
-
-        document.getElementById("reset").addEventListener("click", () => {
+        $("reload").addEventListener("click", async () => {
+            saveMsg.textContent = "Reloading…";
+            await loadData();
             fillForm(live);
             setDirty(false);
-            saveMsg.textContent = "Reverted to the live values.";
+            saveMsg.textContent = "Live data reloaded.";
         });
 
-        saveBtn.addEventListener("click", async () => {
+        $("save").addEventListener("click", async () => {
             if (!user) return;
-            const form = currentForm();
-            saveBtn.disabled = true;
-            saveMsg.textContent = "Publishing...";
+            const mode = currentMode();
+            const previous = live.status || live.mode || "operational";
+            $("save").disabled = true;
+            saveMsg.textContent = "Publishing…";
             try {
                 await update(systemRef, {
-                    ...form,
+                    status: mode,
+                    mode: mode,
+                    maintenance: ["maintenance", "lockdown", "offline"].includes(mode),
+                    message: messageEl.value.trim(),
+                    banner: {
+                        enabled: bannerToggle.checked,
+                        message: bannerMessage.value.trim(),
+                        tone: bannerTone.value
+                    },
                     updatedAt: Date.now(),
                     updatedBy: user.email || ""
                 });
                 await push(dbRef(db, "nexus/audit_logs"), {
-                    action: "SYSTEM_UPDATE",
+                    action: "SYSTEM_MODE",
                     adminEmail: user.email || "",
                     timestamp: Date.now(),
-                    details: `status=${form.status} maintenance=${form.maintenance} banner=${form.banner.enabled}`
+                    details: `${previous} -> ${mode}`
                 }).catch(() => {});
+
                 setDirty(false);
-                saveMsg.textContent = "Published. Open tabs will update now.";
+                let note = `Published — now ${modeLabel(mode)}.`;
+
+                if (mode !== previous && ["maintenance", "lockdown", "offline"].includes(mode)) {
+                    const result = await postToDiscord(
+                        `**Nexus is now in ${modeLabel(mode)}**\n` +
+                        `${messageEl.value.trim() || "No message set."}\n` +
+                        `Changed by ${user.email}`
+                    );
+                    note += result.ok ? " Staff channel notified." : ` Discord not notified (${result.reason}).`;
+                }
+                saveMsg.textContent = note;
             } catch (error) {
                 saveMsg.textContent = `Could not publish: ${error?.code || error?.message}`;
             } finally {
-                saveBtn.disabled = false;
+                $("save").disabled = false;
             }
         });
 
-        // Expose for quick console pokes.
-        window.nexusSystemConsole = { ref: systemRef, auth };
+        buildModeCards();
+        window.nexusAdmin = { db, auth, systemRef };
     </script>
 </body>
 </html>
