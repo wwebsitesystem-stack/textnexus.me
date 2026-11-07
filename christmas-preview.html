@@ -37,9 +37,9 @@
             pointer-events: none;
             z-index: 0;
             background:
-                radial-gradient(760px 420px at 12% -6%, rgba(47, 122, 95, 0.28), transparent 70%),
-                radial-gradient(700px 400px at 88% 4%, rgba(200, 69, 58, 0.22), transparent 72%),
-                radial-gradient(900px 520px at 50% 108%, rgba(240, 208, 138, 0.14), transparent 70%);
+                radial-gradient(760px 420px at 12% -6%, rgba(47, 122, 95, 0.18), transparent 70%),
+                radial-gradient(700px 400px at 88% 4%, rgba(200, 69, 58, 0.14), transparent 72%),
+                radial-gradient(900px 520px at 50% 108%, rgba(240, 208, 138, 0.09), transparent 70%);
         }
 
         #snow {
@@ -54,7 +54,7 @@
             top: -12px;
             border-radius: 50%;
             background: #ffffff;
-            opacity: 0.75;
+            opacity: 0.5;
             animation-name: fall;
             animation-timing-function: linear;
             animation-iteration-count: infinite;
@@ -132,25 +132,25 @@
             height: 26px;
             display: flex;
             justify-content: space-between;
-            padding: 0 22px;
+            padding: 0 34px;
             margin-bottom: -26px;
             z-index: 3;
         }
         .bulb {
-            width: 7px;
-            height: 9px;
+            width: 4px;
+            height: 6px;
             border-radius: 50% 50% 45% 45%;
-            margin-top: 6px;
+            margin-top: 7px;
             background: #f0d08a;
-            box-shadow: 0 0 10px 2px rgba(240, 208, 138, 0.55);
-            opacity: 0.9;
-            animation: twinkle 2.6s ease-in-out infinite;
+            box-shadow: 0 0 6px 1px rgba(240, 208, 138, 0.3);
+            opacity: 0.6;
+            animation: twinkle 4.6s ease-in-out infinite;
         }
-        .bulb:nth-child(3n)   { background: #e2564a; box-shadow: 0 0 10px 2px rgba(226, 86, 74, 0.55); }
-        .bulb:nth-child(3n+1) { background: #7fd1a8; box-shadow: 0 0 10px 2px rgba(127, 209, 168, 0.5); }
+        .bulb:nth-child(3n)   { background: #e2564a; box-shadow: 0 0 6px 1px rgba(226, 86, 74, 0.28); }
+        .bulb:nth-child(3n+1) { background: #7fd1a8; box-shadow: 0 0 6px 1px rgba(127, 209, 168, 0.26); }
         @keyframes twinkle {
-            0%, 100% { opacity: 0.28; }
-            50%      { opacity: 1; }
+            0%, 100% { opacity: 0.16; }
+            50%      { opacity: 0.72; }
         }
 
         .pv-rail {
@@ -324,7 +324,7 @@
             border-radius: 999px;
             margin: 28px 0 22px;
             background-image: repeating-linear-gradient(115deg, #c8453a 0 10px, #eef4ff 10px 20px);
-            opacity: 0.5;
+            opacity: 0.3;
         }
 
         .pv-footer {
@@ -543,17 +543,17 @@
             if (!reduce) {
                 var snow = document.getElementById('snow');
                 var frag = document.createDocumentFragment();
-                for (var i = 0; i < 44; i++) {
+                for (var i = 0; i < 16; i++) {
                     var f = document.createElement('span');
-                    var size = 1.5 + Math.random() * 3.2;
+                    var size = 1.2 + Math.random() * 2.0;
                     f.className = 'flake';
                     f.style.left = (Math.random() * 100).toFixed(2) + '%';
                     f.style.width = size.toFixed(1) + 'px';
                     f.style.height = size.toFixed(1) + 'px';
-                    f.style.opacity = (0.25 + Math.random() * 0.55).toFixed(2);
-                    f.style.animationDuration = (7 + Math.random() * 11).toFixed(1) + 's';
-                    f.style.animationDelay = (-Math.random() * 18).toFixed(1) + 's';
-                    f.style.setProperty('--drift', (Math.random() * 80 - 40).toFixed(0) + 'px');
+                    f.style.opacity = (0.14 + Math.random() * 0.3).toFixed(2);
+                    f.style.animationDuration = (16 + Math.random() * 16).toFixed(1) + 's';
+                    f.style.animationDelay = (-Math.random() * 32).toFixed(1) + 's';
+                    f.style.setProperty('--drift', (Math.random() * 40 - 20).toFixed(0) + 'px');
                     frag.appendChild(f);
                 }
                 snow.appendChild(frag);
@@ -562,10 +562,10 @@
             // Garland bulbs
             var garland = document.getElementById('garland');
             var bulbs = document.createDocumentFragment();
-            for (var j = 0; j < 24; j++) {
+            for (var j = 0; j < 13; j++) {
                 var b = document.createElement('span');
                 b.className = 'bulb';
-                b.style.animationDelay = (Math.random() * 2.6).toFixed(2) + 's';
+                b.style.animationDelay = (Math.random() * 4.6).toFixed(2) + 's';
                 bulbs.appendChild(b);
             }
             garland.appendChild(bulbs);
