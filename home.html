@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" data-season="thanksgiving">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,11 +56,59 @@
         .link.static:hover { border-color: var(--border); color: var(--muted); }
         .span-2 { grid-column: 1 / -1; }
             </style>
+    <link rel="stylesheet" href="thanksgiving.css">
 </head>
 <body>
     <main class="page">
         <h1>Overview</h1>
         <p class="lede">TextNexus is a private workspace for real-time group chat and secure file sharing through Ghostlink. Everything runs in your browser — no installs.</p>
+
+        <section class="tg-hero" aria-labelledby="tg-hero-title">
+            <div class="tg-hero-copy">
+                <span class="tg-kicker">Thanksgiving 2026 &middot; Harvest edition</span>
+                <h2 id="tg-hero-title">A little more <em>gratitude</em><br>in the workspace.</h2>
+                <p>This Thanksgiving, we&rsquo;re grateful for the people who write, build, and share here. Pull up a chair, take a breath, and tell us what you&rsquo;d like Nexus to serve next.</p>
+                <div class="tg-actions">
+                    <a class="tg-btn" href="feedback.html">Share what you&rsquo;re grateful for</a>
+                    <a class="tg-btn tg-btn-ghost" href="updates.html">See what&rsquo;s new</a>
+                </div>
+            </div>
+            <div class="tg-hero-art" aria-hidden="true">
+                <svg class="tg-turkey" viewBox="0 0 300 280" focusable="false">
+                    <defs>
+                        <linearGradient id="tg-body" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="#9b5636"/>
+                            <stop offset="1" stop-color="#63321f"/>
+                        </linearGradient>
+                        <linearGradient id="tg-wing" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="#c17a4d"/>
+                            <stop offset="1" stop-color="#7a4028"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="150" cy="145" r="112" fill="rgba(232,177,92,.045)" stroke="rgba(232,177,92,.24)" stroke-width="1" stroke-dasharray="2 7"/>
+                    <g opacity=".96">
+                        <path d="M150 152C126 100 124 50 146 22 170 48 174 102 150 152Z" fill="#8b4b31" transform="rotate(-56 150 152)"/>
+                        <path d="M150 152C124 98 122 48 146 20 172 46 176 100 150 152Z" fill="#a6403c" transform="rotate(-28 150 152)"/>
+                        <path d="M150 152C124 98 122 48 146 20 172 46 176 100 150 152Z" fill="#e8b15c"/>
+                        <path d="M150 152C124 98 122 48 146 20 172 46 176 100 150 152Z" fill="#c9783f" transform="rotate(28 150 152)"/>
+                        <path d="M150 152C126 100 124 50 146 22 170 48 174 102 150 152Z" fill="#8b4b31" transform="rotate(56 150 152)"/>
+                    </g>
+                    <ellipse cx="150" cy="174" rx="48" ry="58" fill="url(#tg-body)"/>
+                    <ellipse cx="136" cy="178" rx="29" ry="39" fill="url(#tg-wing)" transform="rotate(-18 136 178)"/>
+                    <path d="M172 155C182 138 185 120 180 106" stroke="#8d4c2f" stroke-width="22" stroke-linecap="round" fill="none"/>
+                    <circle cx="181" cy="99" r="23" fill="#8d4c2f"/>
+                    <circle cx="188" cy="93" r="3.4" fill="#1b0d06"/>
+                    <circle cx="189" cy="92" r="1" fill="#f8ead8"/>
+                    <path d="M200 97 226 104 201 110Z" fill="#e8b15c"/>
+                    <path d="M195 111C202 116 200 126 190 128 186 121 186 115 195 111Z" fill="#a6403c"/>
+                    <path d="M137 229 133 251M162 229 158 251" stroke="#c9783f" stroke-width="5" stroke-linecap="round"/>
+                    <path d="M133 251 122 258M133 251 143 258M158 251 147 258M158 251 169 258" stroke="#c9783f" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M86 236C86 222 98 212 112 212 112 226 100 236 86 236Z" fill="#8b9a6b" transform="rotate(-18 99 224)"/>
+                    <path d="M208 238C222 238 232 228 232 214 218 214 208 224 208 238Z" fill="#a6403c" transform="rotate(14 220 226)"/>
+                </svg>
+                <span class="tg-hero-stamp">Gather &middot; Share &middot; Give thanks</span>
+            </div>
+        </section>
 
         <div class="grid">
             <section class="card">
@@ -87,6 +135,15 @@
                 </div>
             </section>
         </div>
+
+        <section class="tg-gratitude" aria-labelledby="tg-gratitude-title">
+            <div>
+                <span class="tg-kicker">From our table to yours</span>
+                <h2 id="tg-gratitude-title">Thank you for being part of the table.</h2>
+                <p>Every message, file, and piece of feedback makes this workspace better. This week, tell someone what they bring to your table &mdash; and if you have a moment, tell us what you&rsquo;re thankful for.</p>
+            </div>
+            <a class="tg-btn tg-btn-ghost" href="feedback.html">Send a gratitude note</a>
+        </section>
     </main>
 
     <script>

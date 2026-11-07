@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" data-season="thanksgiving">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,6 +57,7 @@
         }
         .update-card { animation: fadeIn 0.4s ease-out forwards; }
     </style>
+    <link rel="stylesheet" href="thanksgiving.css">
 </head>
 <body class="w-full h-full flex flex-col overflow-hidden bg-background">
 
@@ -76,6 +77,18 @@
     <!-- Main Scrollable Area -->
     <main class="flex-1 overflow-y-auto p-8 relative">
         <div class="max-w-3xl mx-auto flex flex-col gap-6" id="updates-container">
+
+            <section class="tg-update-banner" aria-labelledby="tg-updates-title">
+                <div class="tg-update-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M5 19C13 19 19 13 19 5 11 5 5 11 5 19Z"/><path d="M5 19C7.5 13.5 11 10 16 8"/><path d="M12 12C12 8 10 5 7 4C6 8 8 11 12 12Z"/></svg>
+                </div>
+                <div class="tg-update-copy">
+                    <span class="tg-kicker">Thanksgiving 2026</span>
+                    <h1 id="tg-updates-title">A harvest of updates.</h1>
+                    <p>Release notes and announcements from the Nexus table &mdash; plus a little gratitude for everyone building here.</p>
+                </div>
+                <a class="tg-btn" href="feedback.html">Send thanks</a>
+            </section>
             
             <!-- Loading State -->
             <div id="loading-state" class="flex flex-col items-center justify-center py-20 text-textMuted gap-3">

@@ -1,0 +1,839 @@
+/* =========================================================
+   TEXTNEXUS — THANKSGIVING / HARVEST EDITION
+   Scoped to html[data-season="thanksgiving"] so the theme can
+   be removed or swapped without touching the base design.
+   ========================================================= */
+
+html[data-season="thanksgiving"] {
+  --tg-ink: #120a06;
+  --tg-ink-2: #1c100a;
+  --tg-ink-3: #26150c;
+  --tg-cream: #f8ead8;
+  --tg-cream-2: #e6d2ba;
+  --tg-muted: #c4ad94;
+  --tg-faint: #927b63;
+  --tg-pumpkin: #d97a3f;
+  --tg-pumpkin-bright: #f09a58;
+  --tg-amber: #e8b15c;
+  --tg-cranberry: #a6403c;
+  --tg-sage: #8b9a6b;
+  --tg-line: rgba(232, 177, 92, 0.18);
+  --tg-line-strong: rgba(232, 177, 92, 0.34);
+  --font-season: Georgia, "Times New Roman", serif;
+
+  /* Shell tokens */
+  --bg-base: #120a06;
+  --bg-surface: #1c100a;
+  --glass-panel: rgba(28, 16, 10, 0.82);
+  --glass-border: rgba(232, 177, 92, 0.16);
+  --glass-hover: rgba(232, 177, 92, 0.1);
+  --text-primary: #f8ead8;
+  --text-secondary: #c4ad94;
+  --text-tertiary: #927b63;
+  --accent-primary: #f8ead8;
+  --accent-gold: #e8b15c;
+
+  /* Overview tokens */
+  --bg: #120a06;
+  --surface: #1c100a;
+  --border: #3b2417;
+  --text: #f8ead8;
+  --muted: #c4ad94;
+  --ok: #8b9a6b;
+
+  /* Updates tokens */
+  --brand-color: #e8b15c;
+
+  color-scheme: dark;
+}
+
+html[data-season="thanksgiving"] ::selection {
+  background: var(--tg-amber);
+  color: var(--tg-ink);
+}
+
+html[data-season="thanksgiving"] :focus-visible {
+  outline-color: var(--tg-amber);
+}
+
+html[data-season="thanksgiving"] body {
+  background-color: var(--tg-ink) !important;
+  background-image:
+    radial-gradient(ellipse at 10% -10%, rgba(217, 122, 63, 0.16), transparent 42%),
+    radial-gradient(ellipse at 90% 105%, rgba(166, 64, 60, 0.12), transparent 46%);
+  background-attachment: fixed;
+  color: var(--tg-cream);
+}
+
+/* =========================================================
+   NEXUS SHELL
+   ========================================================= */
+
+html[data-season="thanksgiving"] .ambient-mesh {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(232, 177, 92, 0.16), transparent 34%),
+    radial-gradient(circle at 84% 100%, rgba(166, 64, 60, 0.13), transparent 38%),
+    radial-gradient(circle at 50% 50%, rgba(217, 122, 63, 0.05), transparent 58%);
+}
+
+html[data-season="thanksgiving"] aside.sidebar {
+  background: linear-gradient(180deg, rgba(38, 21, 12, 0.92), rgba(18, 10, 6, 0.94));
+  border-color: var(--tg-line);
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+html[data-season="thanksgiving"] .brand-icon {
+  background: linear-gradient(145deg, #f3c77e, #d97a3f);
+  box-shadow: 0 0 20px rgba(232, 177, 92, 0.22);
+}
+
+html[data-season="thanksgiving"] .brand-icon svg {
+  fill: #2a1409;
+}
+
+html[data-season="thanksgiving"] .brand-text h1 {
+  color: var(--tg-cream);
+}
+
+html[data-season="thanksgiving"] .brand-text span {
+  color: var(--tg-faint);
+}
+
+html[data-season="thanksgiving"] .nav-label {
+  color: var(--tg-faint);
+}
+
+html[data-season="thanksgiving"] .nav-item {
+  color: var(--tg-muted);
+}
+
+html[data-season="thanksgiving"] .nav-item:hover {
+  color: var(--tg-cream);
+  background: var(--glass-hover);
+}
+
+html[data-season="thanksgiving"] .nav-item.active {
+  color: var(--tg-cream);
+  background: linear-gradient(90deg, rgba(217, 122, 63, 0.2), rgba(232, 177, 92, 0.06));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+html[data-season="thanksgiving"] .nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--tg-pumpkin-bright);
+  box-shadow: 0 0 12px rgba(240, 154, 88, 0.45);
+}
+
+html[data-season="thanksgiving"] .top-hud {
+  background: linear-gradient(100deg, rgba(38, 21, 12, 0.9), rgba(24, 13, 8, 0.78));
+  border-color: var(--tg-line);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+html[data-season="thanksgiving"] .cmd-button {
+  background: rgba(15, 8, 4, 0.55);
+  border-color: var(--tg-line);
+  color: var(--tg-muted);
+}
+
+html[data-season="thanksgiving"] .cmd-button:hover {
+  background: rgba(232, 177, 92, 0.08);
+  border-color: var(--tg-line-strong);
+  color: var(--tg-cream);
+}
+
+html[data-season="thanksgiving"] .cmd-kbd {
+  background: rgba(232, 177, 92, 0.12);
+  color: var(--tg-amber);
+}
+
+html[data-season="thanksgiving"] .system-time {
+  color: var(--tg-muted);
+}
+
+html[data-season="thanksgiving"] .pulse-dot {
+  background: var(--tg-amber);
+  box-shadow: 0 0 10px rgba(232, 177, 92, 0.7);
+}
+
+html[data-season="thanksgiving"] .iframe-wrapper {
+  background: #0d0704;
+  border-color: var(--tg-line);
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+html[data-season="thanksgiving"] .tg-season-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border: 1px solid var(--tg-line);
+  border-radius: 999px;
+  background: rgba(217, 122, 63, 0.08);
+  color: var(--tg-amber);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+html[data-season="thanksgiving"] .tg-season-pill svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+html[data-season="thanksgiving"] .tg-shell-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px;
+  border: 1px solid var(--tg-line);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(217, 122, 63, 0.1), rgba(232, 177, 92, 0.035));
+}
+
+html[data-season="thanksgiving"] .tg-shell-note svg {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  stroke: var(--tg-amber);
+  fill: rgba(217, 122, 63, 0.12);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+html[data-season="thanksgiving"] .tg-shell-note strong {
+  display: block;
+  color: var(--tg-cream);
+  font-family: var(--font-season);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+html[data-season="thanksgiving"] .tg-shell-note span {
+  display: block;
+  margin-top: 3px;
+  color: var(--tg-faint);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+/* =========================================================
+   SHARED SEASONAL UI
+   ========================================================= */
+
+html[data-season="thanksgiving"] .tg-kicker {
+  display: block;
+  color: var(--tg-amber);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+html[data-season="thanksgiving"] .tg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 9px 15px;
+  border: 1px solid var(--tg-pumpkin-bright);
+  border-radius: 10px;
+  background: var(--tg-pumpkin);
+  color: #211008;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+html[data-season="thanksgiving"] .tg-btn:hover {
+  background: var(--tg-pumpkin-bright);
+  border-color: #ffd49a;
+  color: #211008;
+  transform: translateY(-1px);
+}
+
+html[data-season="thanksgiving"] .tg-btn-ghost {
+  background: transparent;
+  border-color: var(--tg-line-strong);
+  color: var(--tg-cream);
+}
+
+html[data-season="thanksgiving"] .tg-btn-ghost:hover {
+  background: rgba(232, 177, 92, 0.1);
+  border-color: var(--tg-amber);
+  color: var(--tg-cream);
+}
+
+/* =========================================================
+   OVERVIEW / HOME
+   ========================================================= */
+
+html[data-season="thanksgiving"] .page {
+  max-width: 980px;
+}
+
+html[data-season="thanksgiving"] h1 {
+  color: var(--tg-cream);
+  font-family: var(--font-season);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+html[data-season="thanksgiving"] .lede {
+  color: var(--tg-muted);
+  font-size: 13.5px;
+}
+
+html[data-season="thanksgiving"] .card {
+  background: linear-gradient(160deg, rgba(38, 21, 12, 0.92), rgba(24, 13, 8, 0.96));
+  border-color: var(--tg-line);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+html[data-season="thanksgiving"] .card h2 {
+  color: var(--tg-cream);
+  font-family: var(--font-season);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+html[data-season="thanksgiving"] .card p {
+  color: var(--tg-muted);
+}
+
+html[data-season="thanksgiving"] .link {
+  background: rgba(13, 7, 4, 0.58);
+  border-color: var(--tg-line);
+  color: var(--tg-cream-2);
+}
+
+html[data-season="thanksgiving"] .link:hover {
+  background: rgba(217, 122, 63, 0.09);
+  border-color: var(--tg-line-strong);
+  color: var(--tg-cream);
+}
+
+html[data-season="thanksgiving"] .link.static:hover {
+  background: rgba(13, 7, 4, 0.58);
+  border-color: var(--tg-line);
+  color: var(--tg-cream-2);
+}
+
+html[data-season="thanksgiving"] .dot {
+  background: var(--tg-sage);
+  box-shadow: 0 0 9px rgba(139, 154, 107, 0.45);
+}
+
+html[data-season="thanksgiving"] .tg-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(230px, 0.7fr);
+  align-items: center;
+  gap: 18px;
+  min-height: 292px;
+  margin-bottom: 16px;
+  padding: 32px;
+  overflow: hidden;
+  border: 1px solid var(--tg-line);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 84% 48%, rgba(217, 122, 63, 0.24), transparent 34%),
+    radial-gradient(circle at 8% 0%, rgba(232, 177, 92, 0.1), transparent 42%),
+    linear-gradient(135deg, #2b160b 0%, #211109 54%, #180d08 100%);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+html[data-season="thanksgiving"] .tg-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.035) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.03) 0 1px, transparent 1.5px);
+  background-size: 34px 34px, 46px 46px;
+  opacity: 0.6;
+}
+
+html[data-season="thanksgiving"] .tg-hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+html[data-season="thanksgiving"] .tg-hero h2 {
+  max-width: 17ch;
+  margin: 10px 0 12px;
+  color: #fff4e5;
+  font-family: var(--font-season);
+  font-size: clamp(30px, 4vw, 43px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+}
+
+html[data-season="thanksgiving"] .tg-hero h2 em {
+  color: var(--tg-amber);
+  font-weight: 400;
+}
+
+html[data-season="thanksgiving"] .tg-hero p {
+  max-width: 52ch;
+  margin: 0;
+  color: #d6bda5;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+html[data-season="thanksgiving"] .tg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+html[data-season="thanksgiving"] .tg-hero-art {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-height: 230px;
+}
+
+html[data-season="thanksgiving"] .tg-hero-art::before {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 177, 92, 0.16), rgba(217, 122, 63, 0.04) 58%, transparent 70%);
+  filter: blur(4px);
+}
+
+html[data-season="thanksgiving"] .tg-turkey {
+  position: relative;
+  z-index: 1;
+  width: min(242px, 92%);
+  height: auto;
+  filter: drop-shadow(0 16px 20px rgba(0, 0, 0, 0.3));
+  animation: tg-float 7s ease-in-out infinite;
+}
+
+html[data-season="thanksgiving"] .tg-hero-stamp {
+  position: absolute;
+  right: 2px;
+  bottom: 5px;
+  z-index: 2;
+  color: rgba(248, 234, 216, 0.55);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transform: rotate(-7deg);
+}
+
+@keyframes tg-float {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-7px) rotate(1deg); }
+}
+
+html[data-season="thanksgiving"] .tg-gratitude {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 16px;
+  padding: 24px 26px;
+  border: 1px solid var(--tg-line);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(217, 122, 63, 0.12), transparent 38%),
+    linear-gradient(120deg, rgba(38, 21, 12, 0.86), rgba(24, 13, 8, 0.94));
+}
+
+html[data-season="thanksgiving"] .tg-gratitude h2 {
+  margin: 7px 0 6px;
+  color: var(--tg-cream);
+  font-family: var(--font-season);
+  font-size: 23px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+html[data-season="thanksgiving"] .tg-gratitude p {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--tg-muted);
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+
+html[data-season="thanksgiving"] .tg-gratitude .tg-btn {
+  flex: 0 0 auto;
+}
+
+/* =========================================================
+   UPDATES
+   ========================================================= */
+
+html[data-season="thanksgiving"] body > header {
+  background: linear-gradient(100deg, rgba(38, 21, 12, 0.96), rgba(24, 13, 8, 0.92)) !important;
+  border-color: var(--tg-line) !important;
+}
+
+html[data-season="thanksgiving"] body > header h2 {
+  color: var(--tg-cream);
+}
+
+html[data-season="thanksgiving"] body > header p {
+  color: var(--tg-muted) !important;
+}
+
+html[data-season="thanksgiving"] .text-textMain {
+  color: var(--tg-cream) !important;
+}
+
+html[data-season="thanksgiving"] .text-textMuted {
+  color: var(--tg-muted) !important;
+}
+
+html[data-season="thanksgiving"] .bg-surface {
+  background-color: var(--tg-ink-2) !important;
+}
+
+html[data-season="thanksgiving"] .bg-surfaceHover {
+  background-color: var(--tg-ink-3) !important;
+}
+
+html[data-season="thanksgiving"] .border-border {
+  border-color: var(--tg-line) !important;
+}
+
+html[data-season="thanksgiving"] .tg-update-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 22px;
+  overflow: hidden;
+  border: 1px solid var(--tg-line);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 88% 20%, rgba(217, 122, 63, 0.22), transparent 38%),
+    linear-gradient(125deg, #2b160b, #1c100a 72%);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+html[data-season="thanksgiving"] .tg-update-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--tg-line-strong);
+  border-radius: 12px;
+  background: rgba(217, 122, 63, 0.12);
+}
+
+html[data-season="thanksgiving"] .tg-update-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--tg-amber);
+  fill: rgba(217, 122, 63, 0.16);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+html[data-season="thanksgiving"] .tg-update-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+html[data-season="thanksgiving"] .tg-update-banner h1 {
+  margin: 4px 0 4px;
+  color: var(--tg-cream);
+  font-family: var(--font-season);
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+html[data-season="thanksgiving"] .tg-update-banner p {
+  margin: 0;
+  color: var(--tg-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+html[data-season="thanksgiving"] .tg-update-banner .tg-btn {
+  flex: 0 0 auto;
+}
+
+html[data-season="thanksgiving"] .update-card {
+  background: linear-gradient(160deg, rgba(38, 21, 12, 0.92), rgba(24, 13, 8, 0.96)) !important;
+  border-color: var(--tg-line) !important;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.22) !important;
+}
+
+html[data-season="thanksgiving"] .update-card h3 {
+  color: var(--tg-cream);
+}
+
+html[data-season="thanksgiving"] .update-card .border-l-2 {
+  border-color: var(--tg-line) !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 820px) {
+  html[data-season="thanksgiving"] .app-layout {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  html[data-season="thanksgiving"] aside.sidebar {
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
+    padding: 10px 12px;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  html[data-season="thanksgiving"] aside.sidebar > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  html[data-season="thanksgiving"] .brand {
+    flex: 0 0 auto;
+    padding: 0;
+  }
+
+  html[data-season="thanksgiving"] .brand-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  html[data-season="thanksgiving"] .brand-text h1 {
+    font-size: 13px;
+  }
+
+  html[data-season="thanksgiving"] .brand-text span {
+    display: none;
+  }
+
+  html[data-season="thanksgiving"] .nav-group {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 2px;
+    min-width: 0;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  html[data-season="thanksgiving"] .nav-group::-webkit-scrollbar {
+    display: none;
+  }
+
+  html[data-season="thanksgiving"] .nav-label {
+    display: none;
+  }
+
+  html[data-season="thanksgiving"] .nav-item {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 7px 9px;
+    border-radius: 9px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  html[data-season="thanksgiving"] .nav-item svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  html[data-season="thanksgiving"] .tg-shell-note {
+    display: none;
+  }
+
+  html[data-season="thanksgiving"] .main-area {
+    flex: 1;
+    gap: 8px;
+    min-height: 0;
+  }
+
+  html[data-season="thanksgiving"] .top-hud {
+    height: 48px;
+    padding: 0 12px;
+    border-radius: 14px;
+  }
+
+  html[data-season="thanksgiving"] .cmd-button {
+    gap: 8px;
+    padding: 6px 9px;
+  }
+
+  html[data-season="thanksgiving"] .cmd-button > span:first-child {
+    max-width: 112px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  html[data-season="thanksgiving"] .tg-season-pill {
+    display: none;
+  }
+
+  html[data-season="thanksgiving"] .iframe-wrapper {
+    flex: 1;
+    min-height: 0;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 760px) {
+  html[data-season="thanksgiving"] .tg-hero {
+    grid-template-columns: 1fr;
+    padding: 26px 22px;
+  }
+
+  html[data-season="thanksgiving"] .tg-hero h2 {
+    max-width: 20ch;
+  }
+
+  html[data-season="thanksgiving"] .tg-hero-art {
+    min-height: 178px;
+    margin-top: -4px;
+  }
+
+  html[data-season="thanksgiving"] .tg-turkey {
+    width: min(196px, 72%);
+  }
+
+  html[data-season="thanksgiving"] .tg-gratitude {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    padding: 22px;
+  }
+
+  html[data-season="thanksgiving"] .tg-update-banner {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  html[data-season="thanksgiving"] .tg-update-banner .tg-btn {
+    margin-left: 60px;
+  }
+}
+
+@media (max-width: 520px) {
+  html[data-season="thanksgiving"] .tg-season-pill {
+    display: none;
+  }
+
+  html[data-season="thanksgiving"] aside.sidebar > div:first-child {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  html[data-season="thanksgiving"] .brand {
+    width: 100%;
+  }
+
+  html[data-season="thanksgiving"] .nav-group {
+    flex: 1 0 100%;
+    gap: 3px;
+  }
+
+  html[data-season="thanksgiving"] .nav-item {
+    flex: 1 1 0;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+    padding: 6px 4px;
+    font-size: 10px;
+  }
+
+  html[data-season="thanksgiving"] .nav-item svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  html[data-season="thanksgiving"] .tg-update-banner {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+    padding: 18px;
+  }
+
+  html[data-season="thanksgiving"] .tg-update-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  html[data-season="thanksgiving"] .tg-update-banner h1 {
+    font-size: 22px;
+  }
+
+  html[data-season="thanksgiving"] .tg-update-banner p {
+    font-size: 11.5px;
+  }
+
+  html[data-season="thanksgiving"] .tg-update-banner .tg-btn {
+    grid-column: 2;
+    justify-self: start;
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-season="thanksgiving"] .tg-turkey {
+    animation: none;
+  }
+
+  html[data-season="thanksgiving"] .tg-btn {
+    transition: none;
+  }
+}
