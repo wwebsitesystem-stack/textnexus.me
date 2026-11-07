@@ -47,11 +47,11 @@ Copy the site files and the server block into place:
 
 ```bash
 sudo cp index.html 404.html home.html updates.html ghostlink.html TextNexus.html \
-        feedback.html admin.html owner.html creator.html settings.html \
+        feedback.html admin.html owner.html creator.html settings.html games.html \
         notifications.html suggestions.html email-manager.html jeoweb.html \
         secret1.html nexus_maintenance.html system_analytics_health.html \
         nexus_admin_control_center.html Style.css logo.svg sw.js app.js \
-        bareworker.js robots.txt sitemap.xml site.webmanifest /var/www/textnexus/
+        bareworker.js thanksgiving.css robots.txt sitemap.xml site.webmanifest /var/www/textnexus/
 sudo cp "Self hosting/nginx.conf" /etc/nginx/sites-available/textnexus
 sudo ln -s /etc/nginx/sites-available/textnexus /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
@@ -94,19 +94,15 @@ Also make sure, in the Firebase Console:
 - Authentication -> Settings -> Authorized domains: add the hostname you serve
   this site from (for example `localhost` during testing, or your domain).
 
-## The AI deploy Worker
+## AI with Lofin.dev
 
-`worker.js` is a Cloudflare Worker, not something nginx can serve. It powers the
-AI site generator and needs:
+AI is provided through our partnership with [Lofin.dev](https://lofin.dev/). The
+`creator.html` page is a static partner page that explains what Lofin.dev offers
+and links out to it; nginx only needs to serve the page. There is no AI service,
+API key or additional container to run for this integration.
 
-- the Workers AI binding named `AI`,
-- optionally `GITHUB_TOKEN`, `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ZONE_ID` if
-  you want it to create repositories and DNS records.
-
-Deploy it with `wrangler deploy`, then point `app.js` at its URL. Treat it as a
-separate service: **as written it accepts unauthenticated POSTs**, so anyone can
-trigger generation and, if the tokens are set, repository and DNS creation. Put
-it behind a shared secret or Turnstile before you expose it.
+`worker.js` is a legacy Cloudflare Worker experiment and is not used by the
+published site.
 
 ## Custom domain and HTTPS
 
@@ -144,8 +140,9 @@ docker compose -f "Self hosting/docker-compose.yml" up -d --build
 
 ## Security notes
 
-- Admin, Owner and Creator pages are gated in JavaScript; the page markup is
-  public. The database rules are the real boundary, so keep them deployed.
+- Admin and Owner pages are gated in JavaScript; the page markup is public. The
+  database rules are the real boundary, so keep them deployed. `creator.html`
+  is a public partner page and contains no account data.
 - No secrets belong in this image. The only credential in the site files is the
   public Firebase web API key, which should be restricted by HTTP referrer in
   the Google Cloud console.

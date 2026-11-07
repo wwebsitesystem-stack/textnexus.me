@@ -3,28 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TextNexus — Private Chat, File Sharing & AI Sites</title>
-    <meta name="description" content="Nexus OS by TextNexus: real-time group chat, secure file sharing, an AI website builder and a fast private workspace — all in one place.">
+    <title>TextNexus — Private Chat, File Sharing & AI</title>
+    <meta name="description" content="Nexus OS by TextNexus: real-time group chat, secure file sharing, and AI through our Lofin.dev partnership — all in one private workspace.">
     <link rel="canonical" href="https://textnexus.me/">
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="TextNexus">
-    <meta property="og:title" content="TextNexus — Private Chat, File Sharing & AI Sites">
-    <meta property="og:description" content="Nexus OS by TextNexus: real-time group chat, secure file sharing, an AI website builder and a fast private workspace — all in one place.">
+    <meta property="og:title" content="TextNexus — Private Chat, File Sharing & AI">
+    <meta property="og:description" content="Nexus OS by TextNexus: real-time group chat, secure file sharing, and AI through our Lofin.dev partnership — all in one private workspace.">
     <meta property="og:url" content="https://textnexus.me/">
     <meta name="twitter:card" content="summary_large_image">
     <meta property="og:image" content="https://textnexus.me/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="TextNexus — private chat, file sharing and AI sites">
+    <meta property="og:image:alt" content="TextNexus — private chat, file sharing and AI with Lofin.dev">
     <meta name="twitter:image" content="https://textnexus.me/og-image.png">
-    <meta name="twitter:title" content="TextNexus — Private Chat, File Sharing & AI Sites">
-    <meta name="twitter:description" content="Nexus OS by TextNexus: real-time group chat, secure file sharing, an AI website builder and a fast private workspace — all in one place.">
+    <meta name="twitter:title" content="TextNexus — Private Chat, File Sharing & AI">
+    <meta name="twitter:description" content="Nexus OS by TextNexus: real-time group chat, secure file sharing, and AI through our Lofin.dev partnership — all in one private workspace.">
     <meta name="theme-color" content="#0a0a0a">
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"TextNexus","url":"https://textnexus.me/","description":"Real-time group chat, secure file sharing and an AI website builder in one private workspace."}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"TextNexus","url":"https://textnexus.me/","description":"Real-time group chat, secure file sharing and AI through Lofin.dev in one private workspace."}</script>
 
     <!-- Google AdSense Verification / Certification Mode -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1457471654932561"
@@ -408,6 +408,75 @@
         }
         .sidebar-collapse:hover { background: var(--glass-hover); color: var(--text-primary); border-color: rgba(255,255,255,.18); }
         .sidebar-collapse svg { width: 13px; height: 13px; flex: 0 0 auto; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .22s var(--ease-out-expo); }
+        .sidebar-account {
+            padding: 9px 10px; border: 1px solid var(--glass-border); border-radius: 14px;
+            background: linear-gradient(135deg, rgba(255,255,255,.045), rgba(255,255,255,.012));
+            flex: 0 0 auto;
+        }
+        .account-kicker {
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            margin: 0 1px 7px; color: var(--text-tertiary);
+            font-family: var(--font-mono); font-size: 8px; letter-spacing: 1.25px; text-transform: uppercase;
+        }
+        .account-only {
+            color: var(--accent-gold); opacity: .78; letter-spacing: .2px;
+            font-family: var(--font-sans); font-size: 8px; font-weight: 600; text-transform: none; white-space: nowrap;
+        }
+        .account-signin {
+            display: flex; align-items: center; gap: 9px; width: 100%; padding: 0;
+            border: 0; background: transparent; color: var(--text-primary); cursor: pointer;
+            font-family: var(--font-sans); text-align: left;
+        }
+        .account-signin:hover .account-copy strong { color: var(--accent-gold); }
+        .account-signin[hidden], .account-user[hidden] { display: none !important; }
+        .google-mark {
+            display: grid; place-items: center; flex: 0 0 auto;
+            width: 30px; height: 30px; border-radius: 9px; background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,.18);
+        }
+        .google-mark svg { display: block; width: 16px; height: 16px; }
+        .account-copy {
+            display: flex; flex: 1; flex-direction: column; min-width: 0; gap: 1px;
+        }
+        .account-copy strong {
+            overflow: hidden; color: var(--text-primary); font-size: 11.5px; font-weight: 600;
+            line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; transition: color .18s ease;
+        }
+        .account-copy span {
+            overflow: hidden; color: var(--text-secondary); font-family: var(--font-mono);
+            font-size: 8.5px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .account-arrow {
+            width: 13px; height: 13px; flex: 0 0 auto; stroke: var(--text-tertiary);
+            fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+        .account-user { display: flex; align-items: center; gap: 9px; min-width: 0; }
+        .account-avatar-wrap { position: relative; flex: 0 0 auto; width: 30px; height: 30px; overflow: hidden; border-radius: 9px; }
+        .account-avatar, .account-initials { width: 30px; height: 30px; border-radius: 9px; }
+        .account-avatar { display: block; object-fit: cover; background: rgba(255,255,255,.08); }
+        .account-avatar[hidden], .account-initials[hidden] { display: none !important; }
+        .account-initials {
+            display: grid; place-items: center;
+            background: linear-gradient(145deg, #f3c77e, #d97a3f); color: #2a160e;
+            font-size: 11px; font-weight: 700; font-family: var(--font-sans);
+        }
+        .account-signout {
+            display: grid; place-items: center; flex: 0 0 auto; width: 24px; height: 24px;
+            padding: 0; border: 1px solid var(--glass-border); border-radius: 7px;
+            background: transparent; color: var(--text-secondary); cursor: pointer;
+            transition: background .18s ease, color .18s ease, border-color .18s ease;
+        }
+        .account-signout:hover { background: var(--glass-hover); color: var(--text-primary); border-color: rgba(255,255,255,.18); }
+        .account-signout:disabled { opacity: .5; cursor: wait; }
+        .account-signout svg {
+            width: 12px; height: 12px; stroke: currentColor; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+        .account-status {
+            margin: 7px 1px 0; color: var(--text-secondary); font-size: 9px; line-height: 1.35;
+        }
+        .account-status:empty { display: none; }
+        .account-status[data-kind="error"] { color: #ff9b8e; }
         .yt-subscribe {
             padding: 11px; border: 1px solid var(--glass-border); border-radius: 14px;
             background: linear-gradient(135deg, rgba(255, 59, 59, .11), rgba(255, 255, 255, .025));
@@ -451,6 +520,11 @@
         .app-layout.sidebar-collapsed .brand-text,
         .app-layout.sidebar-collapsed .nav-label,
         .app-layout.sidebar-collapsed .nav-text,
+        .app-layout.sidebar-collapsed .account-kicker,
+        .app-layout.sidebar-collapsed .account-copy,
+        .app-layout.sidebar-collapsed .account-arrow,
+        .app-layout.sidebar-collapsed .account-signout,
+        .app-layout.sidebar-collapsed .account-status,
         .app-layout.sidebar-collapsed .yt-copy,
         .app-layout.sidebar-collapsed .yt-note,
         .app-layout.sidebar-collapsed .yt-btn,
@@ -468,6 +542,13 @@
         .app-layout.sidebar-collapsed .nav-item:focus-visible::after { opacity: 1; }
         .app-layout.sidebar-collapsed .sidebar-collapse { justify-content: center; padding: 7px 0; }
         .app-layout.sidebar-collapsed .sidebar-collapse svg { transform: rotate(180deg); }
+        .app-layout.sidebar-collapsed .sidebar-account { padding: 4px; border-color: transparent; background: transparent; }
+        .app-layout.sidebar-collapsed .account-signin,
+        .app-layout.sidebar-collapsed .account-user { justify-content: center; gap: 0; }
+        .app-layout.sidebar-collapsed .google-mark,
+        .app-layout.sidebar-collapsed .account-avatar-wrap,
+        .app-layout.sidebar-collapsed .account-avatar,
+        .app-layout.sidebar-collapsed .account-initials { width: 36px; height: 36px; border-radius: 10px; }
         .app-layout.sidebar-collapsed .yt-subscribe { padding: 7px; border-color: transparent; background: transparent; }
         .app-layout.sidebar-collapsed .yt-head { justify-content: center; }
         .app-layout.sidebar-collapsed .yt-logo { width: 36px; height: 36px; }
@@ -679,6 +760,18 @@
             <div class="boot-orb orb-2"></div>
         </div>
 
+        <!-- CSS-only harvest leaves for the Thanksgiving boot sequence -->
+        <div class="boot-harvest-layer" aria-hidden="true">
+            <span class="boot-leaf"></span>
+            <span class="boot-leaf"></span>
+            <span class="boot-leaf"></span>
+            <span class="boot-leaf"></span>
+            <span class="boot-leaf"></span>
+            <span class="boot-leaf"></span>
+            <span class="boot-leaf"></span>
+            <span class="boot-leaf"></span>
+        </div>
+
         <div class="boot-content">
             <!-- Modern Abstract Geometric Nexus Logo -->
             <div class="boot-logo-wrapper">
@@ -785,6 +878,10 @@
                         <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         <span class="nav-text">TextNexus</span>
                     </a>
+                    <a class="nav-item" href="creator.html" data-label="Nexus AI" aria-label="Nexus AI with Lofin.dev" onclick="return loadRoute('creator.html', this)">
+                        <svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg>
+                        <span class="nav-text">Nexus AI</span>
+                    </a>
                     <a class="nav-item" href="feedback.html" data-label="Feedback" aria-label="Feedback" onclick="return loadRoute('feedback.html', this)">
                         <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg>
                         <span class="nav-text">Feedback</span>
@@ -802,6 +899,38 @@
                     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M11 17l-5-5 5-5"/><path d="M18 17l-5-5 5-5"/></svg>
                     <span class="nav-text">Collapse</span>
                 </button>
+
+                <div class="sidebar-account" id="accountCard" data-state="signed-out">
+                    <div class="account-kicker">
+                        <span>Nexus account</span>
+                        <span class="account-only">Google only</span>
+                    </div>
+                    <button class="account-signin" id="accountSignin" type="button" aria-label="Sign in with Google" title="Sign in with Google">
+                        <span class="google-mark" aria-hidden="true">
+                            <svg viewBox="0 0 48 48" focusable="false"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-1.7 4.7-6.1 8-11.3 8-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44c11 0 20-9 20-20 0-1.3-.1-2.6-.4-3.9z"/></svg>
+                        </span>
+                        <span class="account-copy">
+                            <strong>Sign in</strong>
+                            <span>Continue with Google</span>
+                        </span>
+                        <svg class="account-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+                    </button>
+                    <div class="account-user" id="accountUser" hidden>
+                        <span class="account-avatar-wrap">
+                            <img class="account-avatar" id="accountAvatar" alt="" referrerpolicy="no-referrer" hidden>
+                            <span class="account-initials" id="accountInitials">N</span>
+                        </span>
+                        <span class="account-copy">
+                            <strong id="accountName">Nexus member</strong>
+                            <span id="accountEmail">Signed in with Google</span>
+                        </span>
+                        <button class="account-signout" id="accountSignout" type="button" aria-label="Sign out of Nexus" title="Sign out">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                        </button>
+                    </div>
+                    <p class="account-status" id="accountStatus" role="status" aria-live="polite"></p>
+                </div>
+
                 <div class="yt-subscribe" aria-labelledby="yt-subscribe-title">
                     <div class="yt-head">
                         <a class="yt-logo" href="https://www.youtube.com/@Nexusofficial-f7i/featured" target="_blank" rel="noopener noreferrer" aria-label="Subscribe to Nexus on YouTube">
@@ -1187,6 +1316,131 @@
                 event.preventDefault();
                 const width = setWidth(sidebar.getBoundingClientRect().width + (event.key === 'ArrowRight' ? 12 : -12));
                 try { localStorage.setItem(WIDTH_KEY, String(Math.round(width))); } catch { /* no-op */ }
+            });
+        })();
+    </script>
+
+    <script>
+        // GOOGLE-ONLY ACCOUNT (FIREBASE AUTH)
+        (() => {
+            const card = document.getElementById('accountCard');
+            const signInBtn = document.getElementById('accountSignin');
+            const signOutBtn = document.getElementById('accountSignout');
+            const userBox = document.getElementById('accountUser');
+            const avatar = document.getElementById('accountAvatar');
+            const initials = document.getElementById('accountInitials');
+            const nameEl = document.getElementById('accountName');
+            const emailEl = document.getElementById('accountEmail');
+            const statusEl = document.getElementById('accountStatus');
+            if (!card || !signInBtn || !signOutBtn || !userBox || !nameEl || !emailEl || !statusEl) return;
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
+                authDomain: "nexus-web-development-official.firebaseapp.com",
+                projectId: "nexus-web-development-official",
+                databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com"
+            };
+
+            let auth = null;
+            let googleProvider = null;
+            let signInWithGoogle = null;
+            let signOutUser = null;
+
+            function setStatus(message, kind = '') {
+                statusEl.textContent = message || '';
+                statusEl.dataset.kind = kind;
+            }
+
+            function initialFor(value) {
+                const first = Array.from((value || 'N').trim())[0] || 'N';
+                return first.toUpperCase();
+            }
+
+            function showSignedOut() {
+                card.dataset.state = 'signed-out';
+                signInBtn.hidden = false;
+                signInBtn.setAttribute('aria-label', 'Sign in with Google');
+                userBox.hidden = true;
+                avatar.hidden = true;
+                avatar.removeAttribute('src');
+                initials.hidden = false;
+            }
+
+            function showSignedIn(user) {
+                const name = user.displayName || (user.email ? user.email.split('@')[0] : 'Nexus member');
+                card.dataset.state = 'signed-in';
+                signInBtn.hidden = true;
+                userBox.hidden = false;
+                nameEl.textContent = name;
+                emailEl.textContent = user.email || 'Signed in with Google';
+                initials.textContent = initialFor(name);
+                initials.hidden = false;
+                avatar.hidden = true;
+                if (user.photoURL) {
+                    avatar.onload = () => { avatar.hidden = false; initials.hidden = true; };
+                    avatar.onerror = () => { avatar.hidden = true; initials.hidden = false; };
+                    avatar.src = user.photoURL;
+                }
+            }
+
+            function friendlyAuthError(error) {
+                const code = error?.code || '';
+                if (code.includes('popup-closed') || code.includes('cancelled-popup-request')) return 'Google sign-in was closed.';
+                if (code.includes('popup-blocked')) return 'Allow pop-ups, then try Google sign-in again.';
+                if (code.includes('unauthorized-domain')) return 'This domain is not authorized for Google sign-in in Firebase.';
+                if (code.includes('operation-not-allowed')) return 'Google sign-in is not enabled in Firebase.';
+                if (code.includes('network-request-failed')) return 'Network error. Try Google sign-in again.';
+                return error?.message || 'Google sign-in failed. Try again.';
+            }
+
+            const authReady = (async () => {
+                const [{ initializeApp, getApps }, authModule] = await Promise.all([
+                    import('https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js'),
+                    import('https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js')
+                ]);
+                const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+                auth = authModule.getAuth(app);
+                googleProvider = new authModule.GoogleAuthProvider();
+                googleProvider.setCustomParameters({ prompt: 'select_account' });
+                signInWithGoogle = authModule.signInWithPopup;
+                signOutUser = authModule.signOut;
+                authModule.onAuthStateChanged(auth, (user) => {
+                    if (user) showSignedIn(user);
+                    else showSignedOut();
+                });
+            })().catch((error) => {
+                console.error('Google account could not initialise:', error);
+                setStatus('Google sign-in could not load. Refresh and try again.', 'error');
+            });
+
+            signInBtn.addEventListener('click', async () => {
+                setStatus('');
+                signInBtn.disabled = true;
+                try {
+                    if (!auth) await authReady;
+                    if (!auth) throw new Error('Google sign-in could not load. Refresh and try again.');
+                    setStatus('Opening Google...');
+                    await signInWithGoogle(auth, googleProvider);
+                    setStatus('');
+                } catch (error) {
+                    setStatus(friendlyAuthError(error), 'error');
+                } finally {
+                    signInBtn.disabled = false;
+                }
+            });
+
+            signOutBtn.addEventListener('click', async () => {
+                if (!auth || !signOutUser) return;
+                signOutBtn.disabled = true;
+                setStatus('Signing out...');
+                try {
+                    await signOutUser(auth);
+                    setStatus('Signed out.');
+                } catch (error) {
+                    setStatus(error?.message || 'Could not sign out. Try again.', 'error');
+                } finally {
+                    signOutBtn.disabled = false;
+                }
             });
         })();
     </script>

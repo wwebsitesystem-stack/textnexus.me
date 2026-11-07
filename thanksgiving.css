@@ -1105,3 +1105,147 @@ html[data-season="thanksgiving"] #turnstile-gate .gate-retry-btn:hover {
     animation: none;
   }
 }
+
+/* Drifting harvest leaves — purely decorative, layered behind the boot copy. */
+html[data-season="thanksgiving"] #boot-screen .boot-harvest-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+html[data-season="thanksgiving"] #boot-screen .boot-leaf {
+  position: absolute;
+  top: 0;
+  left: var(--leaf-x, 50%);
+  width: var(--leaf-size, 12px);
+  height: calc(var(--leaf-size, 12px) * 0.62);
+  border-radius: 0 68% 0 68%;
+  background:
+    linear-gradient(135deg, rgba(255, 244, 229, 0.26), transparent 52%),
+    var(--leaf-color, var(--tg-amber));
+  box-shadow: inset -2px -2px 3px rgba(0, 0, 0, 0.12);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18));
+  opacity: 0;
+  animation: tg-leaf-fall var(--leaf-duration, 13s) linear var(--leaf-delay, 0s) infinite;
+  will-change: transform, opacity;
+}
+
+html[data-season="thanksgiving"] #boot-screen .boot-leaf:nth-child(1) {
+  --leaf-x: 7%;
+  --leaf-size: 10px;
+  --leaf-color: #e8b15c;
+  --leaf-duration: 13s;
+  --leaf-delay: -2s;
+  --leaf-drift: 46px;
+  --leaf-spin: 1;
+  --leaf-opacity: 0.4;
+}
+
+html[data-season="thanksgiving"] #boot-screen .boot-leaf:nth-child(2) {
+  --leaf-x: 21%;
+  --leaf-size: 8px;
+  --leaf-color: #d97a3f;
+  --leaf-duration: 16s;
+  --leaf-delay: -7s;
+  --leaf-drift: -34px;
+  --leaf-spin: -1;
+  --leaf-opacity: 0.34;
+}
+
+html[data-season="thanksgiving"] #boot-screen .boot-leaf:nth-child(3) {
+  --leaf-x: 34%;
+  --leaf-size: 13px;
+  --leaf-color: #a6403c;
+  --leaf-duration: 14s;
+  --leaf-delay: -11s;
+  --leaf-drift: 60px;
+  --leaf-spin: 1;
+  --leaf-opacity: 0.3;
+}
+
+html[data-season="thanksgiving"] #boot-screen .boot-leaf:nth-child(4) {
+  --leaf-x: 48%;
+  --leaf-size: 9px;
+  --leaf-color: #8b9a6b;
+  --leaf-duration: 17s;
+  --leaf-delay: -4s;
+  --leaf-drift: -52px;
+  --leaf-spin: -1;
+  --leaf-opacity: 0.3;
+}
+
+html[data-season="thanksgiving"] #boot-screen .boot-leaf:nth-child(5) {
+  --leaf-x: 62%;
+  --leaf-size: 12px;
+  --leaf-color: #f09a58;
+  --leaf-duration: 12s;
+  --leaf-delay: -9s;
+  --leaf-drift: 42px;
+  --leaf-spin: 1;
+  --leaf-opacity: 0.38;
+}
+
+html[data-season="thanksgiving"] #boot-screen .boot-leaf:nth-child(6) {
+  --leaf-x: 74%;
+  --leaf-size: 8px;
+  --leaf-color: #e6d2ba;
+  --leaf-duration: 15s;
+  --leaf-delay: -1s;
+  --leaf-drift: -46px;
+  --leaf-spin: -1;
+  --leaf-opacity: 0.32;
+}
+
+html[data-season="thanksgiving"] #boot-screen .boot-leaf:nth-child(7) {
+  --leaf-x: 86%;
+  --leaf-size: 11px;
+  --leaf-color: #e8b15c;
+  --leaf-duration: 14s;
+  --leaf-delay: -12s;
+  --leaf-drift: 36px;
+  --leaf-spin: 1;
+  --leaf-opacity: 0.36;
+}
+
+html[data-season="thanksgiving"] #boot-screen .boot-leaf:nth-child(8) {
+  --leaf-x: 94%;
+  --leaf-size: 7px;
+  --leaf-color: #c4ad94;
+  --leaf-duration: 18s;
+  --leaf-delay: -5s;
+  --leaf-drift: -28px;
+  --leaf-spin: -1;
+  --leaf-opacity: 0.28;
+}
+
+@keyframes tg-leaf-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -8vh, 0) rotate(0deg);
+  }
+  8%, 88% {
+    opacity: var(--leaf-opacity, 0.4);
+  }
+  50% {
+    transform: translate3d(var(--leaf-drift, 40px), 52vh, 0) rotate(calc(150deg * var(--leaf-spin, 1)));
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--leaf-drift, 40px) * -0.4), 112vh, 0) rotate(calc(300deg * var(--leaf-spin, 1)));
+  }
+}
+
+@media (max-width: 520px) {
+  html[data-season="thanksgiving"] #boot-screen .boot-leaf:nth-child(3),
+  html[data-season="thanksgiving"] #boot-screen .boot-leaf:nth-child(6) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-season="thanksgiving"] #boot-screen .boot-harvest-layer {
+    display: none;
+  }
+}

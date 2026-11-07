@@ -13,6 +13,7 @@ FILES=(
     index.html
     home.html
     updates.html
+    games.html
     ghostlink.html
     TextNexus.html
     feedback.html
@@ -31,6 +32,7 @@ FILES=(
     nexus_admin_control_center.html
     404.html
     Style.css
+    thanksgiving.css
     logo.svg
     og-image.png
     sw.js

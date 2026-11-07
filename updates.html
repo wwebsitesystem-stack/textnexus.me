@@ -89,6 +89,61 @@
                 </div>
                 <a class="tg-btn" href="feedback.html">Send thanks</a>
             </section>
+
+            <!-- Curated release notes: always visible, even if the live Firebase feed is empty. -->
+            <article class="update-card bg-surface border border-border rounded-xl p-6 shadow-xl relative overflow-hidden" aria-labelledby="harvest-release-title">
+                <div class="absolute top-0 left-0 w-full h-1 bg-[var(--brand-color)] opacity-80"></div>
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--brand-color)]/20 bg-[var(--brand-color)]/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-[var(--brand-color)]">
+                            <i class="ph ph-sparkle"></i> Latest release
+                        </span>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-textMuted">Harvest 2026</span>
+                    </div>
+                    <time datetime="2026-11-07" class="shrink-0 text-[10px] font-mono text-textMuted bg-surfaceHover px-2 py-1 rounded border border-border flex items-center gap-1.5">
+                        <i class="ph ph-clock"></i> November 7, 2026
+                    </time>
+                </div>
+
+                <h3 id="harvest-release-title" class="text-xl font-bold text-textMain leading-tight tracking-tight">Google sign-in, a harvest boot, and a new AI partner.</h3>
+                <p class="text-sm text-textMuted leading-relaxed mt-2 mb-5 max-w-2xl">Everything we shipped this week, gathered in one place.</p>
+
+                <div class="grid sm:grid-cols-2 gap-3">
+                    <div class="rounded-lg border border-border bg-background p-4">
+                        <div class="flex items-center gap-2 mb-1.5 text-textMain">
+                            <i class="ph ph-google-logo text-sm"></i>
+                            <h4 class="text-xs font-bold">Google-only accounts</h4>
+                        </div>
+                        <p class="text-[11px] text-textMuted leading-relaxed">Sign-up and sign-in now use Google through Firebase only. The Nexus sidebar also has a real account card with your Google profile and a sign-out control.</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-background p-4">
+                        <div class="flex items-center gap-2 mb-1.5 text-textMain">
+                            <i class="ph ph-leaf text-sm"></i>
+                            <h4 class="text-xs font-bold">A Thanksgiving boot</h4>
+                        </div>
+                        <p class="text-[11px] text-textMuted leading-relaxed">The Nexus startup now opens with a harvest-themed boot sequence and a gentle layer of falling autumn leaves.</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-background p-4">
+                        <div class="flex items-center gap-2 mb-1.5 text-textMain">
+                            <i class="ph ph-sparkle text-sm"></i>
+                            <h4 class="text-xs font-bold">Nexus AI × Lofin.dev</h4>
+                        </div>
+                        <p class="text-[11px] text-textMuted leading-relaxed">Our AI home is now <a class="text-textMain underline decoration-border underline-offset-2 hover:decoration-textMain" href="creator.html">Lofin.dev</a>: 130+ models, comparison battles, images, speech and live web search. Open the playground from the Nexus AI page.</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-background p-4">
+                        <div class="flex items-center gap-2 mb-1.5 text-textMain">
+                            <i class="ph ph-youtube-logo text-sm"></i>
+                            <h4 class="text-xs font-bold">The Nexus film is live</h4>
+                        </div>
+                        <p class="text-[11px] text-textMuted leading-relaxed">&ldquo;Nexus Is Changing&rdquo; is now playing on our YouTube channel. Watch the direction we&rsquo;re heading and see what comes next.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 border-t border-border mt-5 pt-4">
+                    <a href="creator.html" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-textMain hover:underline underline-offset-2">Meet our AI partner <i class="ph ph-arrow-right"></i></a>
+                    <a href="https://www.youtube.com/@Nexusofficial-f7i/featured" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-textMuted hover:text-textMain transition-colors">Watch on YouTube <i class="ph ph-arrow-up-right"></i></a>
+                </div>
+            </article>
             
             <!-- Loading State -->
             <div id="loading-state" class="flex flex-col items-center justify-center py-20 text-textMuted gap-3">
@@ -100,7 +155,7 @@
             <div id="empty-state" class="hidden flex-col items-center justify-center py-20 text-textMuted gap-3 text-center border border-dashed border-border rounded-xl bg-surface/50">
                 <i class="ph ph-envelope-simple-open text-4xl mb-2 opacity-50"></i>
                 <h3 class="text-sm font-semibold text-textMain">You're all caught up</h3>
-                <p class="text-xs">No updates yet — check back soon for news and patch notes.</p>
+                <p class="text-xs">No live announcements right now. The release notes above are the latest.</p>
             </div>
 
             <!-- Posts inject here dynamically -->

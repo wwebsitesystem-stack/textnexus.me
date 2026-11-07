@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Create your TextNexus account</title>
-  <meta name="description" content="Create a free TextNexus account with your email address.">
+  <title>Sign in to TextNexus</title>
+  <meta name="description" content="Sign in to TextNexus with your Google account.">
   <link rel="icon" href="/logo.svg" type="image/svg+xml">
   <style>
     :root {
@@ -24,73 +24,55 @@
     .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; font-weight: 600; }
     .brand img { width: 26px; height: 26px; }
     .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 26px; }
-    h1 { font-size: 19px; margin: 0 0 6px; letter-spacing: -.01em; }
-    .sub { font-size: 13px; color: var(--muted); margin: 0 0 18px; line-height: 1.55; }
-    .tabs { display: flex; gap: 6px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 4px; margin-bottom: 18px; }
-    .tabs button {
-      flex: 1; padding: 8px; font-size: 13px; font-weight: 600; border: 0; border-radius: 7px;
-      background: transparent; color: var(--muted); cursor: pointer; font-family: inherit;
+    .kicker {
+      color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; margin-bottom: 10px;
     }
-    .tabs button[aria-selected="true"] { background: #fff; color: #000; }
-    label { display: block; font-size: 12px; color: var(--muted); margin: 12px 0 6px; }
-    input {
-      width: 100%; padding: 10px 12px; background: var(--surface-2);
-      border: 1px solid var(--line); border-radius: 9px; color: var(--text);
-      font-family: inherit; font-size: 14px;
+    h1 { font-size: 21px; margin: 0 0 8px; letter-spacing: -.02em; }
+    .sub { font-size: 13px; color: var(--muted); margin: 0 0 20px; line-height: 1.6; }
+    .google-btn {
+      display: flex; align-items: center; justify-content: center; gap: 11px;
+      width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line);
+      background: #fff; color: #111; font-family: inherit; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: background .18s ease, border-color .18s ease, transform .18s ease;
     }
-    input:focus { outline: none; border-color: rgba(96,165,250,.55); }
-    button.submit {
-      width: 100%; margin-top: 18px; padding: 11px; border-radius: 9px; border: 0;
-      background: #fff; color: #000; font-weight: 600; font-size: 14px; cursor: pointer; font-family: inherit;
+    .google-btn:hover { background: #f4f4f4; border-color: rgba(255,255,255,.3); transform: translateY(-1px); }
+    .google-btn:disabled { opacity: .55; cursor: wait; transform: none; }
+    .google-btn svg { width: 19px; height: 19px; flex: 0 0 auto; }
+    .google-only {
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      margin-top: 14px; color: var(--muted); font-size: 11px; line-height: 1.5;
     }
-    button.submit:disabled { opacity: .5; cursor: not-allowed; }
-    button.google {
-      width: 100%; margin-top: 10px; padding: 10px; border-radius: 9px;
-      background: transparent; color: var(--text); border: 1px solid var(--line);
-      font-family: inherit; font-size: 13.5px; font-weight: 500; cursor: pointer;
+    .google-only svg {
+      width: 12px; height: 12px; flex: 0 0 auto; fill: none; stroke: var(--ok);
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
     }
-    button.google:hover { border-color: rgba(255,255,255,.25); }
     #msg { font-size: 12.5px; line-height: 1.5; margin-top: 14px; min-height: 18px; }
     #msg.ok { color: var(--ok); }
     #msg.err { color: var(--bad); }
     .foot { font-size: 11.5px; color: #555; text-align: center; margin-top: 18px; line-height: 1.7; }
     .foot a { color: var(--muted); }
-    .hidden { display: none !important; }
   </style>
-    <link rel="stylesheet" href="thanksgiving.css">
+  <link rel="stylesheet" href="thanksgiving.css">
 </head>
 <body>
   <main class="wrap">
     <div class="brand"><img src="/logo.svg" alt=""><span>TextNexus</span></div>
     <div class="card">
-      <h1 id="title">Create your account</h1>
-      <p class="sub" id="subtitle">One account for TextNexus. We email you a confirmation right away.</p>
+      <div class="kicker">Nexus account</div>
+      <h1 id="title">Sign in with Google</h1>
+      <p class="sub" id="subtitle">Use your Google account to open TextNexus. There is no separate password to remember.</p>
 
-      <div class="tabs" role="tablist">
-        <button id="tabCreate" role="tab" aria-selected="true">Create account</button>
-        <button id="tabSignin" role="tab" aria-selected="false">Sign in</button>
+      <button class="google-btn" id="googleBtn" type="button">
+        <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-1.7 4.7-6.1 8-11.3 8-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44c11 0 20-9 20-20 0-1.3-.1-2.6-.4-3.9z"/></svg>
+        <span>Continue with Google</span>
+      </button>
+
+      <div class="google-only">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>
+        Google is the only sign-in method for TextNexus.
       </div>
-
-      <form id="createForm" novalidate>
-        <label for="name">Display name</label>
-        <input id="name" type="text" autocomplete="name" maxlength="80" placeholder="Ada Lovelace">
-        <label for="email">Email</label>
-        <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
-        <label for="password">Password</label>
-        <input id="password" type="password" autocomplete="new-password" placeholder="At least 6 characters">
-        <button class="submit" id="createBtn" type="submit">Create account</button>
-      </form>
-
-      <form id="signinForm" class="hidden" novalidate>
-        <label for="emailIn">Email</label>
-        <input id="emailIn" type="email" autocomplete="username" placeholder="you@example.com">
-        <label for="passwordIn">Password</label>
-        <input id="passwordIn" type="password" autocomplete="current-password" placeholder="Your password">
-        <button class="submit" id="signinBtn" type="submit">Sign in</button>
-      </form>
-
-      <button class="google" id="googleBtn" type="button">Continue with Google</button>
-      <div id="msg"></div>
+      <div id="msg" role="status" aria-live="polite"></div>
     </div>
     <p class="foot">
       <a href="/home.html">Back to TextNexus</a>
@@ -99,10 +81,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import {
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-      updateProfile, sendEmailVerification, GoogleAuthProvider, signInWithPopup
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
     const firebaseConfig = {
@@ -115,134 +94,65 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
 
-    const $ = (id) => document.getElementById(id);
-    const msg = (text, kind = "") => { const m = $("msg"); m.textContent = text; m.className = kind; };
-
-    $("tabCreate").addEventListener("click", () => switchTab("create"));
-    $("tabSignin").addEventListener("click", () => switchTab("signin"));
-
-    function switchTab(which) {
-      const creating = which === "create";
-      $("createForm").classList.toggle("hidden", !creating);
-      $("signinForm").classList.toggle("hidden", creating);
-      $("tabCreate").setAttribute("aria-selected", String(creating));
-      $("tabSignin").setAttribute("aria-selected", String(!creating));
-      $("title").textContent = creating ? "Create your account" : "Welcome back";
-      $("subtitle").textContent = creating
-        ? "One account for TextNexus. We email you a confirmation right away."
-        : "Sign in to pick up where you left off.";
-      msg("");
-    }
+    const googleBtn = document.getElementById("googleBtn");
+    const msgEl = document.getElementById("msg");
+    const msg = (text, kind = "") => { msgEl.textContent = text; msgEl.className = kind; };
+    let redirecting = false;
 
     function friendly(error) {
       const code = error?.code || "";
-      if (code.includes("email-already-in-use")) return "That email already has an account — sign in instead.";
-      if (code.includes("invalid-email")) return "That email address is not valid.";
-      if (code.includes("weak-password")) return "Use at least 6 characters.";
-      if (code.includes("invalid-credential") || code.includes("wrong-password")) return "Wrong email or password.";
-      if (code.includes("user-not-found")) return "No account with that email.";
-      if (code.includes("popup-closed")) return "Google sign-in was closed.";
-      if (code.includes("unauthorized-domain")) return "This domain is not authorised for Google sign-in in Firebase.";
-      if (code.includes("operation-not-allowed")) return "Email/password sign-in is disabled in the Firebase console.";
-      if (code.includes("too-many-requests")) return "Too many attempts — try again in a minute.";
-      return error?.message || "Something went wrong.";
+      if (code.includes("popup-closed") || code.includes("cancelled-popup-request")) return "Google sign-in was closed.";
+      if (code.includes("popup-blocked")) return "Allow pop-ups, then try Google sign-in again.";
+      if (code.includes("unauthorized-domain")) return "This domain is not authorized for Google sign-in in Firebase.";
+      if (code.includes("operation-not-allowed")) return "Google sign-in is not enabled in the Firebase console.";
+      if (code.includes("network-request-failed")) return "Network error. Try Google sign-in again.";
+      return error?.message || "Google sign-in failed. Try again.";
     }
 
-    // The sign-in user may only write their own node; database.rules.json enforces that.
-    async function saveProfile(user, provider) {
-      const record = {
-        uid: user.uid,
-        email: user.email || "",
-        name: user.displayName || ($("name")?.value || "").trim(),
-        provider,
-        createdAt: Date.now()
-      };
-      await set(ref(db, `users/${user.uid}`), record);
-      return record;
-    }
-
-    async function sendWelcome(user) {
+    async function saveProfile(user) {
       try {
-        const idToken = await user.getIdToken();
-        const res = await fetch("/api/welcome", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idToken })
+        await set(ref(db, `users/${user.uid}`), {
+          uid: user.uid,
+          email: user.email || "",
+          name: user.displayName || "",
+          provider: "google",
+          createdAt: Date.now()
         });
-        return res.ok;
       } catch {
-        return false;
+        // The user is authenticated even if the Realtime Database rules are not published yet.
       }
     }
 
-    $("createForm").addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const name = $("name").value.trim();
-      const email = $("email").value.trim();
-      const password = $("password").value;
+    function enterNexus(user) {
+      if (redirecting) return;
+      redirecting = true;
+      const name = user.displayName || user.email || "your Google account";
+      msg(`Signed in as ${name}. Opening TextNexus...`, "ok");
+      setTimeout(() => location.assign("/home.html"), 700);
+    }
 
-      if (!name) return msg("Add a display name.", "err");
-      if (!email) return msg("Add your email.", "err");
-      if (password.length < 6) return msg("Password needs at least 6 characters.", "err");
-
-      $("createBtn").disabled = true;
-      msg("Creating your account…");
+    googleBtn.addEventListener("click", async () => {
+      googleBtn.disabled = true;
+      msg("Opening Google...");
       try {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(cred.user, { displayName: name });
-
-        try {
-          await saveProfile(cred.user, "password");
-        } catch (err) {
-          msg(`Account created, but saving your profile failed (${err.code || err.message}). The database rules may not be published yet.`, "err");
-        }
-
-        await sendEmailVerification(cred.user).catch(() => {});
-        const welcomeSent = await sendWelcome(cred.user);
-
-        msg(welcomeSent
-          ? "Account created. Check your inbox for the welcome and verification emails."
-          : "Account created. Firebase sent your verification email. The welcome email needs the Brevo key on Cloudflare Pages.", "ok");
-
-        setTimeout(() => location.assign("/home.html"), 1600);
-      } catch (err) {
-        msg(friendly(err), "err");
-      } finally {
-        $("createBtn").disabled = false;
+        const cred = await signInWithPopup(auth, provider);
+        await saveProfile(cred.user);
+        enterNexus(cred.user);
+      } catch (error) {
+        msg(friendly(error), "err");
+        googleBtn.disabled = false;
       }
     });
 
-    $("signinForm").addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const email = $("emailIn").value.trim();
-      const password = $("passwordIn").value;
-      if (!email || !password) return msg("Email and password are required.", "err");
-      $("signinBtn").disabled = true;
-      msg("Signing in…");
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        msg("Signed in. Opening TextNexus…", "ok");
-        setTimeout(() => location.assign("/home.html"), 700);
-      } catch (err) {
-        msg(friendly(err), "err");
-      } finally {
-        $("signinBtn").disabled = false;
-      }
-    });
-
-    $("googleBtn").addEventListener("click", async () => {
-      $("googleBtn").disabled = true;
-      msg("Opening Google…");
-      try {
-        const cred = await signInWithPopup(auth, new GoogleAuthProvider());
-        try { await saveProfile(cred.user, "google"); } catch { /* rules may be unpublished */ }
-        msg("Signed in. Opening TextNexus…", "ok");
-        setTimeout(() => location.assign("/home.html"), 700);
-      } catch (err) {
-        msg(friendly(err), "err");
-      } finally {
-        $("googleBtn").disabled = false;
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        saveProfile(user);
+        enterNexus(user);
+      } else {
+        googleBtn.disabled = false;
       }
     });
   </script>
