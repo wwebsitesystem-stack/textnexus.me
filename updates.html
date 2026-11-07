@@ -58,6 +58,10 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .update-card { animation: fadeIn 0.4s ease-out forwards; }
+
+        /* Seasonal copy: exactly one variant renders at a time. */
+        html[data-season="christmas"] .tg-harvest-only { display: none !important; }
+        html:not([data-season="christmas"]) .tg-christmas-only { display: none !important; }
     </style>
     <link rel="stylesheet" href="thanksgiving.css">
     <script src="season.js"></script>
@@ -83,14 +87,20 @@
 
             <section class="tg-update-banner" aria-labelledby="tg-updates-title">
                 <div class="tg-update-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false"><path d="M5 19C13 19 19 13 19 5 11 5 5 11 5 19Z"/><path d="M5 19C7.5 13.5 11 10 16 8"/><path d="M12 12C12 8 10 5 7 4C6 8 8 11 12 12Z"/></svg>
+                    <svg class="tg-harvest-only" viewBox="0 0 24 24" focusable="false"><path d="M5 19C13 19 19 13 19 5 11 5 5 11 5 19Z"/><path d="M5 19C7.5 13.5 11 10 16 8"/><path d="M12 12C12 8 10 5 7 4C6 8 8 11 12 12Z"/></svg>
+                    <svg class="tg-christmas-only" viewBox="0 0 24 24" focusable="false"><path d="M12 2l2.6 6.8L22 12l-7.4 3.2L12 22l-2.6-6.8L2 12l7.4-3.2z"/></svg>
                 </div>
                 <div class="tg-update-copy">
-                    <span class="tg-kicker">Thanksgiving 2026</span>
-                    <h1 id="tg-updates-title">A harvest of updates.</h1>
-                    <p>Release notes and announcements from the Nexus table &mdash; plus a little gratitude for everyone building here.</p>
+                    <span class="tg-kicker tg-harvest-only">Thanksgiving 2026</span>
+                    <h1 id="tg-updates-title" class="tg-harvest-only">A harvest of updates.</h1>
+                    <p class="tg-harvest-only">Release notes and announcements from the Nexus table &mdash; plus a little gratitude for everyone building here.</p>
+
+                    <span class="tg-kicker tg-christmas-only">Christmas 2026</span>
+                    <h1 class="tg-christmas-only">The winter edition is nearly here.</h1>
+                    <p class="tg-christmas-only">Release notes from the Nexus table &mdash; plus the theme, the dates, and everything else we&rsquo;re shipping before the year closes.</p>
                 </div>
-                <a class="tg-btn" href="feedback.html">Send thanks</a>
+                <a class="tg-btn tg-harvest-only" href="feedback.html">Send thanks</a>
+                <a class="tg-btn tg-christmas-only" href="#christmas-theme-title">See what&rsquo;s coming</a>
             </section>
 
             <!-- Christmas theme: upcoming, dated ahead of release. -->

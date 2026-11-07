@@ -1275,6 +1275,28 @@ html[data-season="christmas"] .tg-kicker {
   color: var(--tg-amber);
 }
 
+/* The winter hero art mirrors the harvest turkey's size and float. */
+html[data-season="christmas"] .tg-tree {
+  position: relative;
+  z-index: 1;
+  width: min(232px, 88%);
+  height: auto;
+  filter: drop-shadow(0 16px 20px rgba(0, 0, 0, 0.34));
+  animation: tg-float 7s ease-in-out infinite;
+}
+
+@media (max-width: 760px) {
+  html[data-season="christmas"] .tg-tree {
+    width: min(190px, 70%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-season="christmas"] .tg-tree {
+    animation: none;
+  }
+}
+
 /* A quiet red-and-pine ribbon on the overview hero. */
 html[data-season="christmas"] .tg-hero::after {
   content: "";
