@@ -43,10 +43,9 @@ which calls Brevo server-side so the API key never reaches the browser.
 ### Required setup
 
 1. Publish the rules: `firebase deploy --only database --project nexus-web-development-official`.
-2. Feedback from `/feedback.html` is delivered by Web3Forms using the public form key in
-   that page; it works on GitHub Pages and needs no server or secret. Submissions go to
-   the recipient configured in the Web3Forms dashboard (currently
-   `brodywilliams0226@gmail.com`).
+2. Feedback from `/feedback.html` opens a prefilled email draft addressed to
+   `brodywilliams0226@gmail.com`; the visitor presses Send in their own mail app. This
+   works on GitHub Pages and needs no form service, server, or secret.
 3. The branded welcome email is sent by `functions/api/welcome.js`, which calls Brevo
    server-side so the API key never reaches the browser. That function needs Cloudflare
    Pages (or another host that runs `/api/*`); GitHub Pages serves the pages but not the

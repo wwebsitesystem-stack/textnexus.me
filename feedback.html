@@ -110,17 +110,15 @@
 
         <input id="website" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-        <button id="sendBtn" type="submit">Send feedback</button>
+        <button id="sendBtn" type="submit">Open email draft</button>
         <div id="status" role="status" aria-live="polite"></div>
-        <p class="alt">Prefer your own mail app? <a id="mailtoLink" href="mailto:brodywilliams0226@gmail.com">Email it directly</a>.</p>
+        <p class="alt">This opens your email app with the message ready to send. Prefer to write your own? <a id="mailtoLink" href="mailto:brodywilliams0226@gmail.com">Email it directly</a>.</p>
       </form>
     </div>
   </main>
 
   <script>
     const OWNER_EMAIL = 'brodywilliams0226@gmail.com';
-    const WEB3FORMS_ACCESS_KEY = '1e9a28ba-4d87-4fef-a815-96dc1ee8460d';
-    const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
     const form = document.getElementById('feedbackForm');
     const btn = document.getElementById('sendBtn');
     const statusEl = document.getElementById('status');
@@ -156,64 +154,19 @@
     });
     refreshMailto();
 
-    function fallback(message) {
-      setStatus(`${message} Your mail app can send it instead — <a href="${mailtoHref()}">open the message</a>.`, 'err');
-    }
-
-    form.addEventListener('submit', async (event) => {
+    form.addEventListener('submit', (event) => {
       event.preventDefault();
 
-      const payload = {
-        access_key: WEB3FORMS_ACCESS_KEY,
-        name: value('name'),
-        email: value('email'),
-        category: value('category'),
-        message: value('message'),
-        page: location.href,
-        subject: `[Feedback] ${value('category') || 'Other'} from ${value('name') || 'a visitor'}`,
-        from_name: 'TextNexus Feedback',
-        replyto: value('email'),
-        botcheck: value('website') ? 'true' : ''
-      };
+      if (value('website')) return;
+      if (!value('name')) return setStatus('Add your name so we know who to reply to.', 'err');
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value('email'))) return setStatus('Add a valid email address.', 'err');
+      if (value('message').length < 5) return setStatus('Tell us a little more — at least a sentence.', 'err');
 
-      if (!payload.name) return setStatus('Add your name so we know who to reply to.', 'err');
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(payload.email)) return setStatus('Add a valid email address.', 'err');
-      if (payload.message.length < 5) return setStatus('Tell us a little more — at least a sentence.', 'err');
-
+      const href = mailtoHref();
       btn.disabled = true;
-      setStatus('Sending…');
-
-      let res;
-      try {
-        res = await fetch(WEB3FORMS_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify(payload)
-        });
-      } catch {
-        btn.disabled = false;
-        return fallback('The form service could not be reached.');
-      }
-
-      let data = {};
-      try { data = await res.json(); } catch { /* non-JSON host response */ }
-
-      btn.disabled = false;
-
-      const delivered = res.ok && (data.success === true || data.success === 'true');
-      if (delivered) {
-        form.reset();
-        refreshMailto();
-        setStatus('Thanks — your feedback is on its way to the TextNexus inbox.', 'ok');
-        return;
-      }
-
-      const reason = data?.body?.message || data?.message;
-      if (reason) console.warn('Feedback delivery failed:', reason);
-      if (res.status === 429) {
-        return fallback('The form is busy right now. Try again in a minute, or email it directly.');
-      }
-      return fallback('The form service could not deliver your message.');
+      setStatus(`Your email app should open with your feedback ready. Press Send to deliver it. If it does not open, <a href="${href}">use this email link</a>.`, 'ok');
+      window.location.href = href;
+      setTimeout(() => { btn.disabled = false; }, 1200);
     });
   </script>
 </body>
