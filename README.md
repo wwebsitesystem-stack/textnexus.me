@@ -57,9 +57,10 @@ which calls Brevo server-side so the API key never reaches the browser.
 
 ### Performance and analytics
 
-`index.html` renders its workspace immediately; the old boot/splash/Turnstile gate no
-longer blocks paint. `home.html` uses plain CSS and inline SVG instead of the Tailwind
-browser compiler, the Phosphor icon bundle and Google Fonts.
+`index.html` runs the Nexus boot animation and gates the workspace behind a Cloudflare
+Turnstile challenge. The check is client-side only on GitHub Pages; there is no server-side
+token validation. `home.html` uses plain CSS and inline SVG instead of the Tailwind browser
+compiler, the Phosphor icon bundle and Google Fonts.
 
 Set `CF_ANALYTICS_TOKEN` when running `scripts/build-site.sh` (or as a CI secret) to
 inject Cloudflare Web Analytics into every staged page. With no token, no beacon is

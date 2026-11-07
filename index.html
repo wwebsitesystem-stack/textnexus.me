@@ -30,6 +30,9 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1457471654932561"
      crossorigin="anonymous"></script>
 
+    <!-- Cloudflare Turnstile (human verification) -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+
     <style>
         :root {
             /* Luxury Dark Palette */
@@ -350,8 +353,7 @@
             pointer-events: none; z-index: 0;
         }
 
-        /* Intro overlays stay in the DOM for reference but never gate the first paint. */
-        #boot-screen, #status-splash, #turnstile-gate { display: none !important; }
+        /* Intro overlays are restored and are dismissed by the boot/Turnstile flow below. */
         .app-layout {
             display: flex; width: 100%; height: 100%; position: relative; z-index: 1;
             padding: 16px; gap: 16px;
@@ -739,7 +741,7 @@
             <div class="gate-widget-slot">
                 <div id="turnstile-widget"></div>
             </div>
-            <div class="gate-status" id="gate-status-text"></div>
+            <div class="gate-status" id="gate-status-text" aria-live="polite"></div>
             <button class="gate-retry-btn" id="gate-retry-btn" onclick="retryTurnstile()">Try Again</button>
         </div>
     </div>
@@ -858,6 +860,175 @@
     </div>
 
     <script>
+        // BOOT SEQUENCE + CLOUDFLARE TURNSTILE
+        (() => {
+            const productionHosts = new Set(['textnexus.me', 'www.textnexus.me']);
+            const TURNSTILE_SITE_KEY = productionHosts.has(location.hostname)
+                ? '0x4AAAAAAFXCQ7lZ7OM2JFsT'
+                : '1x00000000000000000000AA'; // Cloudflare test key, preview hosts only
+            let turnstileWidgetId = null;
+
+            function showTurnstileGate() {
+                const gate = document.getElementById('turnstile-gate');
+                if (!gate) return;
+                gate.classList.add('gate-visible');
+                renderTurnstileWidget();
+            }
+
+            function gateError(message) {
+                const statusEl = document.getElementById('gate-status-text');
+                const retryBtn = document.getElementById('gate-retry-btn');
+                if (!statusEl || !retryBtn) return;
+                statusEl.classList.add('gate-status-error');
+                statusEl.textContent = message;
+                retryBtn.style.display = 'inline-block';
+            }
+
+            function renderTurnstileWidget() {
+                const statusEl = document.getElementById('gate-status-text');
+                const retryBtn = document.getElementById('gate-retry-btn');
+                if (!statusEl || !retryBtn) return;
+                retryBtn.style.display = 'none';
+                statusEl.classList.remove('gate-status-error');
+                statusEl.textContent = 'Loading verification...';
+
+                const render = () => {
+                    if (!window.turnstile) return false;
+                    statusEl.textContent = '';
+                    try {
+                        if (turnstileWidgetId !== null) {
+                            window.turnstile.reset(turnstileWidgetId);
+                        } else {
+                            turnstileWidgetId = window.turnstile.render('#turnstile-widget', {
+                                sitekey: TURNSTILE_SITE_KEY,
+                                theme: 'dark',
+                                callback: window.onTurnstileSuccess,
+                                'error-callback': window.onTurnstileError,
+                                'expired-callback': window.onTurnstileExpired,
+                                'timeout-callback': window.onTurnstileExpired
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Turnstile could not initialise:', error);
+                        gateError('Verification could not load. Please retry.');
+                    }
+                    return true;
+                };
+
+                if (render()) return;
+                let waited = 0;
+                const poll = setInterval(() => {
+                    waited += 100;
+                    if (render()) {
+                        clearInterval(poll);
+                    } else if (waited >= 10000) {
+                        clearInterval(poll);
+                        gateError('Verification is unavailable. Check your connection and retry.');
+                    }
+                }, 100);
+            }
+
+            window.retryTurnstile = function () {
+                const statusEl = document.getElementById('gate-status-text');
+                const retryBtn = document.getElementById('gate-retry-btn');
+                if (!statusEl || !retryBtn) return;
+                retryBtn.style.display = 'none';
+                statusEl.classList.remove('gate-status-error');
+                statusEl.textContent = '';
+                if (window.turnstile && turnstileWidgetId !== null) {
+                    try { window.turnstile.reset(turnstileWidgetId); }
+                    catch { turnstileWidgetId = null; renderTurnstileWidget(); }
+                } else {
+                    turnstileWidgetId = null;
+                    renderTurnstileWidget();
+                }
+            };
+
+            window.onTurnstileSuccess = function (token) {
+                // This is a client-side check only. Static GitHub Pages has no
+                // endpoint to call Cloudflare's server-side siteverify API.
+                const gate = document.getElementById('turnstile-gate');
+                const appRoot = document.getElementById('app-root');
+                const statusEl = document.getElementById('gate-status-text');
+                if (!token) { gateError('Verification failed. Please try again.'); return; }
+                statusEl.classList.remove('gate-status-error');
+                statusEl.textContent = 'Verified. Opening Nexus...';
+                setTimeout(() => {
+                    gate.classList.add('gate-hidden');
+                    appRoot?.classList.add('loaded');
+                    setTimeout(() => { gate.style.display = 'none'; }, 800);
+                }, 400);
+            };
+
+            window.onTurnstileError = function () {
+                gateError('Verification failed. Please try again.');
+            };
+
+            window.onTurnstileExpired = function () {
+                const statusEl = document.getElementById('gate-status-text');
+                if (statusEl) statusEl.textContent = 'Verification expired, retrying...';
+                if (window.turnstile && turnstileWidgetId !== null) {
+                    try { window.turnstile.reset(turnstileWidgetId); } catch { /* retry button is available */ }
+                }
+            };
+
+            function startBoot() {
+                const bootScreen = document.getElementById('boot-screen');
+                const statusText = document.getElementById('boot-status-text');
+                const percentText = document.getElementById('boot-percent');
+                const progressBar = document.getElementById('boot-progress-bar');
+                if (!bootScreen || !statusText || !percentText || !progressBar) {
+                    showTurnstileGate();
+                    return;
+                }
+
+                const finishBoot = () => {
+                    setTimeout(() => {
+                        bootScreen.classList.add('boot-hidden');
+                        setTimeout(() => {
+                            bootScreen.style.display = 'none';
+                            showTurnstileGate();
+                        }, 1200);
+                    }, 450);
+                };
+
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    progressBar.style.width = '100%';
+                    percentText.textContent = '100%';
+                    statusText.textContent = 'System ready.';
+                    finishBoot();
+                    return;
+                }
+
+                const logs = [
+                    { p: 15, text: 'Mounting VFS volumes...' },
+                    { p: 32, text: 'Decrypting Neural Link...' },
+                    { p: 58, text: 'Establishing secure uplinks...' },
+                    { p: 85, text: 'Initializing workspace UI...' },
+                    { p: 91, text: 'System ready.' },
+                    { p: 100, text: 'Welcome to Nexus!' }
+                ];
+                let progress = 0;
+                let logIndex = 0;
+                const bootInterval = setInterval(() => {
+                    progress = Math.min(100, progress + (Math.random() * 2) + 0.5);
+                    progressBar.style.width = `${progress}%`;
+                    percentText.textContent = `${Math.floor(progress)}%`;
+                    if (logIndex < logs.length && progress >= logs[logIndex].p) {
+                        statusText.textContent = logs[logIndex].text;
+                        logIndex++;
+                    }
+                    if (progress >= 100) {
+                        clearInterval(bootInterval);
+                        finishBoot();
+                    }
+                }, 30);
+            }
+
+            if (document.readyState === 'complete') startBoot();
+            else window.addEventListener('load', startBoot, { once: true });
+        })();
+
         // Clock logic
         function updateClock() {
             const now = new Date();
