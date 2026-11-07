@@ -43,6 +43,11 @@
         "lastSentAt": {
           ".validate": "newData.isNumber()"
         }
+      },
+      "history": {
+        "$eventId": {
+          ".validate": "newData.hasChildren(['mode', 'at']) && newData.child('at').isNumber() && (newData.child('mode').val() === 'operational' || newData.child('mode').val() === 'degraded' || newData.child('mode').val() === 'testing' || newData.child('mode').val() === 'maintenance' || newData.child('mode').val() === 'lockdown' || newData.child('mode').val() === 'offline')"
+        }
       }
     },
     "workspace_updates": {

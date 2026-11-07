@@ -16,6 +16,7 @@ FILES=(
     ad.html
     christmas-preview.html
     system-console.html
+    status.html
     games.html
     thanksgiving.html
     ghostlink.html

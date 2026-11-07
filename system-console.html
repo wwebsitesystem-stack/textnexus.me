@@ -572,16 +572,33 @@
                     details: `${previous} -> ${mode}`
                 }).catch(() => {});
 
+                // History feeds the public status page.
+                await push(dbRef(db, "system/history"), {
+                    mode: mode,
+                    previous: previous,
+                    message: messageEl.value.trim(),
+                    at: Date.now(),
+                    by: user.email || ""
+                }).catch(() => {});
+
                 setDirty(false);
                 let note = `Published — now ${modeLabel(mode)}.`;
+                const blocking = ["maintenance", "lockdown", "offline"];
 
-                if (mode !== previous && ["maintenance", "lockdown", "offline"].includes(mode)) {
+                if (mode !== previous && blocking.includes(mode)) {
                     const result = await postToDiscord(
                         `**Nexus is now in ${modeLabel(mode)}**\n` +
                         `${messageEl.value.trim() || "No message set."}\n` +
                         `Changed by ${user.email}`
                     );
                     note += result.ok ? " Staff channel notified." : ` Discord not notified (${result.reason}).`;
+                } else if (mode === "operational" && blocking.includes(previous)) {
+                    const result = await postToDiscord(
+                        `**Nexus is back up — ${modeLabel(mode)}**\n` +
+                        `The ${modeLabel(previous).toLowerCase()} has ended. All services should be available again.\n` +
+                        `Cleared by ${user.email}`
+                    );
+                    note += result.ok ? " Staff channel got the all-clear." : ` Discord not notified (${result.reason}).`;
                 }
                 saveMsg.textContent = note;
             } catch (error) {

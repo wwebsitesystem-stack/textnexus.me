@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Status | textnexus.me</title>
+    <meta name="description" content="Live operating status for textnexus.me — workspace, chat, sign-in and file sharing, plus the history of recent mode changes.">
+    <link rel="canonical" href="https://textnexus.me/status.html">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta property="og:title" content="Nexus Status">
+    <meta property="og:description" content="Live operating status for textnexus.me and the history of recent changes.">
+    <meta property="og:url" content="https://textnexus.me/status.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #121212;
+            --surface-2: #1c1c1c;
+            --border: #262626;
+            --text: #ededed;
+            --muted: #a1a1aa;
+            --ok: #4ade80;
+            --warn: #f0d08a;
+            --bad: #e2564a;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: inherit; }
+        .wrap { max-width: 760px; margin: 0 auto; padding: 48px 20px 64px; }
+
+        header.top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 26px; }
+        .logo {
+            width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--border);
+            background: var(--surface); display: grid; place-items: center; font-weight: 700; font-size: 13px;
+        }
+        h1 { font-size: 19px; margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+        .sub { font-size: 11.5px; color: var(--muted); }
+        .top-right { margin-left: auto; display: flex; gap: 8px; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+            font-size: 11.5px; font-weight: 600; padding: 7px 12px; border-radius: 9px;
+            border: 1px solid var(--border); color: var(--text); background: var(--surface);
+            transition: border-color .15s ease;
+        }
+        .btn:hover { border-color: #3a3a3a; }
+
+        .hero {
+            border: 1px solid var(--border); border-radius: 16px; padding: 26px;
+            background: var(--surface); margin-bottom: 18px; position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: ""; position: absolute; inset: 0 0 auto 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent, #4ade80), transparent);
+            opacity: .8;
+        }
+        .hero-row { display: flex; align-items: flex-start; gap: 14px; }
+        .dot { width: 11px; height: 11px; border-radius: 999px; margin-top: 7px; flex: 0 0 auto; box-shadow: 0 0 12px currentColor; }
+        .hero h2 { margin: 0 0 6px; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+        .hero p { margin: 0; font-size: 13px; line-height: 1.7; color: var(--muted); max-width: 56ch; }
+        .meta { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); display: flex; gap: 18px; flex-wrap: wrap; font-size: 11px; color: var(--muted); }
+        .meta code { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text); }
+
+        h3.section { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin: 28px 0 10px; }
+
+        .services { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); overflow: hidden; }
+        .service { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+        .service:last-child { border-bottom: 0; }
+        .service .name { font-size: 13px; font-weight: 500; }
+        .service .desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+        .service .state { margin-left: auto; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+        .s-ok { color: var(--ok); }
+        .s-warn { color: var(--warn); }
+        .s-bad { color: var(--bad); }
+
+        .history { display: flex; flex-direction: column; gap: 8px; }
+        .event {
+            display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px;
+            border: 1px solid var(--border); border-radius: 11px; background: var(--surface);
+        }
+        .event .when { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); flex: 0 0 auto; padding-top: 2px; }
+        .event .what { font-size: 12.5px; }
+        .event .note { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.55; }
+        .empty { font-size: 12px; color: var(--muted); padding: 14px; border: 1px dashed var(--border); border-radius: 11px; }
+
+        footer.bot { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; font-size: 11.5px; color: var(--muted); }
+        .live-pill {
+            display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+        }
+        .live-pill i { width: 6px; height: 6px; border-radius: 999px; background: var(--muted); display: inline-block; }
+        .live-pill.on i { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <header class="top">
+            <div class="logo">N</div>
+            <div>
+                <h1>Nexus Status</h1>
+                <div class="sub">Live operating status for textnexus.me</div>
+            </div>
+            <div class="top-right">
+                <a class="btn" href="/index.html">Open Nexus</a>
+                <a class="btn" href="https://discord.gg/FchgxQJ8uG" target="_blank" rel="noopener noreferrer">Discord</a>
+            </div>
+        </header>
+
+        <section class="hero" id="hero" style="--accent:#4ade80">
+            <div class="hero-row">
+                <span class="dot" id="hero-dot" style="background:#4ade80;color:#4ade80"></span>
+                <div>
+                    <h2 id="hero-title">Checking status…</h2>
+                    <p id="hero-message">Reading the live system state from Nexus.</p>
+                </div>
+            </div>
+            <div class="meta">
+                <span class="live-pill" id="live-pill"><i></i> <span id="live-text">connecting</span></span>
+                <span>Mode <code id="meta-mode">—</code></span>
+                <span>Updated <code id="meta-updated">—</code></span>
+                <span>By <code id="meta-by">—</code></span>
+            </div>
+        </section>
+
+        <h3 class="section">Services</h3>
+        <div class="services" id="services">
+            <div class="service"><div><div class="name">Workspace</div><div class="desc">The shell, navigation and sidebar</div></div><span class="state s-ok">checking</span></div>
+        </div>
+
+        <h3 class="section">Recent changes</h3>
+        <div class="history" id="history">
+            <div class="empty">Loading recent changes…</div>
+        </div>
+
+        <footer class="bot">
+            <span>Something wrong that this page doesn't show? Tell us in <a href="https://discord.gg/FchgxQJ8uG" target="_blank" rel="noopener noreferrer" style="color:var(--text)">the Discord</a> or on the <a href="/feedback.html" style="color:var(--text)">feedback page</a>.</span>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        const app = initializeApp({
+            apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
+            authDomain: "nexus-web-development-official.firebaseapp.com",
+            projectId: "nexus-web-development-official",
+            databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com"
+        });
+        const db = getDatabase(app);
+
+        const MODES = {
+            operational: { label: "All systems operational", tone: "ok", message: "Everything is running normally.", dot: "#4ade80" },
+            degraded:    { label: "Degraded performance", tone: "warn", message: "Nexus is online, but at least one service is slower than usual.", dot: "#f0d08a" },
+            testing:     { label: "Testing in progress", tone: "ok", message: "Everything is available. Staff are testing a change behind the scenes.", dot: "#4ade80" },
+            maintenance: { label: "Scheduled maintenance", tone: "bad", message: "Nexus is being updated and will be back shortly.", dot: "#e2564a" },
+            lockdown:    { label: "Service lockdown", tone: "bad", message: "Access is temporarily restricted while staff respond to an incident.", dot: "#e2564a" },
+            offline:     { label: "Nexus is offline", tone: "bad", message: "The workspace is unavailable right now.", dot: "#e2564a" }
+        };
+
+        const SERVICES = [
+            { key: "workspace", name: "Workspace", desc: "The shell, navigation and sidebar" },
+            { key: "chat", name: "Group chat", desc: "Rooms, messages and invite codes" },
+            { key: "auth", name: "Google sign-in", desc: "Signing in and out of Nexus" },
+            { key: "files", name: "Ghostlink file sharing", desc: "Uploading and sharing links" },
+            { key: "updates", name: "Updates feed", desc: "Announcements and release notes" }
+        ];
+
+        const BLOCKING = ["maintenance", "lockdown", "offline"];
+
+        function serviceState(mode, key) {
+            if (BLOCKING.includes(mode)) return "down";
+            if (mode === "degraded") return key === "chat" || key === "files" ? "degraded" : "ok";
+            return "ok";
+        }
+
+        function paintServices(mode) {
+            document.getElementById("services").innerHTML = SERVICES.map(service => {
+                const state = serviceState(mode, service.key);
+                const label = state === "down" ? "Unavailable" : state === "degraded" ? "Degraded" : "Operational";
+                const cls = state === "down" ? "s-bad" : state === "degraded" ? "s-warn" : "s-ok";
+                return `<div class="service">
+                    <div><div class="name">${service.name}</div><div class="desc">${service.desc}</div></div>
+                    <span class="state ${cls}">${label}</span>
+                </div>`;
+            }).join("");
+        }
+
+        function paint(state) {
+            const mode = MODES[state.status] ? state.status : (state.maintenance ? "maintenance" : "operational");
+            const def = MODES[mode];
+
+            document.documentElement.dataset.systemStatus = mode;
+            document.getElementById("hero").style.setProperty("--accent", def.dot);
+            document.getElementById("hero-dot").style.background = def.dot;
+            document.getElementById("hero-dot").style.color = def.dot;
+            document.getElementById("hero-title").textContent = def.label;
+            document.getElementById("hero-message").textContent = state.message || def.message;
+
+            document.getElementById("meta-mode").textContent = mode;
+            document.getElementById("meta-updated").textContent = state.updatedAt
+                ? new Date(Number(state.updatedAt)).toLocaleString()
+                : "never";
+            document.getElementById("meta-by").textContent = state.updatedBy || "—";
+
+            const live = document.getElementById("live-pill");
+            live.classList.add("on");
+            document.getElementById("live-text").textContent = "live";
+
+            paintServices(mode);
+        }
+
+        function paintHistory(history) {
+            const entries = Object.values(history || {})
+                .filter(e => e && e.mode)
+                .sort((a, b) => Number(b.at || 0) - Number(a.at || 0))
+                .slice(0, 10);
+
+            const wrap = document.getElementById("history");
+            if (!entries.length) {
+                wrap.innerHTML = `<div class="empty">No recorded changes yet. Nexus has been steady.</div>`;
+                return;
+            }
+            wrap.innerHTML = entries.map(entry => {
+                const def = MODES[entry.mode] || MODES.operational;
+                const tone = def.tone === "bad" ? "s-bad" : def.tone === "warn" ? "s-warn" : "s-ok";
+                return `<div class="event">
+                    <span class="when">${entry.at ? new Date(Number(entry.at)).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "—"}</span>
+                    <div>
+                        <div class="what">Changed to <strong class="${tone}">${def.label}</strong>${entry.previous && MODES[entry.previous] ? ` <span style="color:var(--muted)">from ${MODES[entry.previous].label}</span>` : ""}</div>
+                        ${entry.message ? `<div class="note">${String(entry.message).replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]))}</div>` : ""}
+                    </div>
+                </div>`;
+            }).join("");
+        }
+
+        onValue(ref(db, "system"), (snap) => {
+            paint(snap.val() || {});
+        }, (error) => {
+            document.getElementById("hero-title").textContent = "Status unavailable";
+            document.getElementById("hero-message").textContent = "This page could not read the live system state. The site itself may still be fine.";
+            document.getElementById("live-text").textContent = error?.code || "read failed";
+        });
+
+        onValue(ref(db, "system/history"), (snap) => paintHistory(snap.val()), () => {
+            document.getElementById("history").innerHTML = `<div class="empty">Change history is not readable right now.</div>`;
+        });
+    </script>
+</body>
+</html>

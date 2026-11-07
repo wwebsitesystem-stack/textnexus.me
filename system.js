@@ -90,6 +90,7 @@ function injectStyle() {
         }
         #${GATE_ID} h1 { margin: 0 0 10px; font-size: 21px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; }
         #${GATE_ID} p { margin: 0 0 20px; font-size: 13px; line-height: 1.65; color: #9fb3cf; }
+        #${GATE_ID} .nx-gate-links { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
         #${GATE_ID} a {
             display: inline-flex; align-items: center; gap: 7px;
             font-size: 11.5px; font-weight: 600; color: #eef4ff; text-decoration: none;
@@ -139,7 +140,10 @@ function ensureGate() {
             <span class="nx-gate-badge"><span aria-hidden="true">&bull;</span> <span data-gate-mode>Maintenance</span></span>
             <h1 data-gate-title>Nexus is briefly offline</h1>
             <p data-gate-message>We are making a few changes and the workspace will be back shortly.</p>
-            <a href="/system-console.html" rel="noopener">Staff access</a>
+            <div class="nx-gate-links">
+                <a href="/status.html">Check status</a>
+                <a href="/system-console.html" rel="noopener">Staff access</a>
+            </div>
         </div>
     `;
     document.body.appendChild(gate);
