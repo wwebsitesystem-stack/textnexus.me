@@ -295,7 +295,7 @@ html[data-season="thanksgiving"] .page {
   max-width: 980px;
 }
 
-html[data-season="thanksgiving"] h1 {
+html[data-season="thanksgiving"] .page > h1 {
   color: var(--tg-cream);
   font-family: var(--font-season);
   font-size: 30px;
