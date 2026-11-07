@@ -43,12 +43,15 @@ which calls Brevo server-side so the API key never reaches the browser.
 ### Required setup
 
 1. Publish the rules: `firebase deploy --only database --project nexus-web-development-official`.
-2. On Cloudflare Pages, add encrypted environment variables `BREVO_API_KEY` and
-   `BREVO_SENDER` (a sender verified in Brevo). Optional: `BREVO_SENDER_NAME`,
-   `BREVO_REPLY_TO`, `FEEDBACK_TO`, `APP_ORIGIN`, `FIREBASE_API_KEY`. Feedback from
-   `/feedback.html` is emailed to `FEEDBACK_TO` (default `brodywilliams0226@gmail.com`).
-3. The email function needs Cloudflare Pages (or any host that runs `/api/*`); GitHub
-   Pages serves the pages but not the function.
+2. Feedback from `/feedback.html` is delivered by Web3Forms using the public form key in
+   that page; it works on GitHub Pages and needs no server or secret. Submissions go to
+   the recipient configured in the Web3Forms dashboard (currently
+   `brodywilliams0226@gmail.com`).
+3. The branded welcome email is sent by `functions/api/welcome.js`, which calls Brevo
+   server-side so the API key never reaches the browser. That function needs Cloudflare
+   Pages (or another host that runs `/api/*`); GitHub Pages serves the pages but not the
+   function. On Pages, add encrypted `BREVO_API_KEY` and `BREVO_SENDER` (optional:
+   `BREVO_SENDER_NAME`, `BREVO_REPLY_TO`, `APP_ORIGIN`, `FIREBASE_API_KEY`).
 4. In Firebase Authentication, enable the Email/Password and Google providers and add
    `textnexus.me` to Authorized domains.
 5. Create a DNS record for `www` (CNAME to `textnexus.me`, proxied).

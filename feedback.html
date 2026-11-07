@@ -108,7 +108,7 @@
         <label for="message">Message</label>
         <textarea id="message" name="message" maxlength="4000" placeholder="Describe your idea, the workflow it improves, and why it matters…"></textarea>
 
-        <input id="website" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <input id="website" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
 
         <button id="sendBtn" type="submit">Send feedback</button>
         <div id="status" role="status" aria-live="polite"></div>
@@ -119,6 +119,8 @@
 
   <script>
     const OWNER_EMAIL = 'brodywilliams0226@gmail.com';
+    const WEB3FORMS_ACCESS_KEY = '1e9a28ba-4d87-4fef-a815-96dc1ee8460d';
+    const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
     const form = document.getElementById('feedbackForm');
     const btn = document.getElementById('sendBtn');
     const statusEl = document.getElementById('status');
@@ -162,12 +164,16 @@
       event.preventDefault();
 
       const payload = {
+        access_key: WEB3FORMS_ACCESS_KEY,
         name: value('name'),
         email: value('email'),
         category: value('category'),
         message: value('message'),
         page: location.href,
-        website: value('website')
+        subject: `[Feedback] ${value('category') || 'Other'} from ${value('name') || 'a visitor'}`,
+        from_name: 'TextNexus Feedback',
+        replyto: value('email'),
+        botcheck: value('website') ? 'true' : ''
       };
 
       if (!payload.name) return setStatus('Add your name so we know who to reply to.', 'err');
@@ -179,14 +185,14 @@
 
       let res;
       try {
-        res = await fetch('/api/feedback', {
+        res = await fetch(WEB3FORMS_ENDPOINT, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify(payload)
         });
       } catch {
         btn.disabled = false;
-        return fallback('The feedback endpoint could not be reached.');
+        return fallback('The form service could not be reached.');
       }
 
       let data = {};
@@ -194,17 +200,20 @@
 
       btn.disabled = false;
 
-      if (res.ok && data.ok) {
+      const delivered = res.ok && (data.success === true || data.success === 'true');
+      if (delivered) {
         form.reset();
         refreshMailto();
         setStatus('Thanks — your feedback is on its way to the TextNexus inbox.', 'ok');
         return;
       }
 
-      if (res.status === 503) {
-        return fallback(data.error || 'Email sending is not configured on this deployment.');
+      const reason = data?.body?.message || data?.message;
+      if (reason) console.warn('Feedback delivery failed:', reason);
+      if (res.status === 429) {
+        return fallback('The form is busy right now. Try again in a minute, or email it directly.');
       }
-      return fallback(data.error || `The send failed (HTTP ${res.status}).`);
+      return fallback('The form service could not deliver your message.');
     });
   </script>
 </body>
