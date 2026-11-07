@@ -13,6 +13,8 @@ FILES=(
     index.html
     home.html
     updates.html
+    ad.html
+    christmas-preview.html
     games.html
     thanksgiving.html
     ghostlink.html
@@ -60,6 +62,15 @@ done
 
 if [ "$missing" -ne 0 ]; then
     echo "build failed: expected site files are missing" >&2
+    exit 1
+fi
+
+# Binary assets live in media/ so the ad video and poster stay with the page
+# that references them.
+if [ -d media ]; then
+    cp -r media dist/
+else
+    echo "missing: media/" >&2
     exit 1
 fi
 

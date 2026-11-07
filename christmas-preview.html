@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" data-season="christmas">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Christmas Theme Preview | TextNexus</title>
+    <meta name="description" content="A non-interactive preview of the TextNexus Christmas theme: colours, cards, chat and the winter shell before December 1st.">
+    <link rel="canonical" href="https://textnexus.me/christmas-preview.html">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#070c17">
+    <link rel="stylesheet" href="christmas.css?v=2026-12-01">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg-base, #070c17);
+            color: var(--text-primary, #eef4ff);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ---- Chrome: the only interactive strip on the page ---- */
+        .pv-banner {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 10px 18px;
+            background: rgba(7, 12, 23, 0.92);
+            border-bottom: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14));
+            backdrop-filter: blur(10px);
+            font-size: 12px;
+            color: var(--text-secondary, #9fb3cf);
+        }
+        .pv-badge {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #0b1220;
+            background: var(--accent-gold, #f0d08a);
+            padding: 3px 8px;
+            border-radius: 999px;
+        }
+        .pv-banner strong { color: var(--text-primary, #eef4ff); font-weight: 600; }
+        .pv-actions { margin-left: auto; display: flex; gap: 8px; }
+        .pv-actions a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14));
+            border-radius: 8px;
+            padding: 6px 11px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary, #eef4ff);
+            text-decoration: none;
+            transition: border-color .18s ease, background .18s ease;
+        }
+        .pv-actions a:hover {
+            border-color: var(--accent-gold, #f0d08a);
+            background: var(--glass-hover, rgba(232, 177, 92, 0.1));
+        }
+
+        /* ---- Stage: intentionally inert, nothing inside is clickable ---- */
+        .pv-stage {
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+            display: grid;
+            grid-template-columns: 210px 1fr;
+            min-height: calc(100vh - 44px);
+        }
+        .pv-stage * { cursor: default !important; }
+
+        .pv-rail {
+            border-right: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14));
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: var(--bg-base, #070c17);
+        }
+        .pv-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 8px 18px;
+        }
+        .pv-brand img { width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14)); }
+        .pv-brand span { font-size: 12.5px; font-weight: 600; letter-spacing: -0.01em; }
+        .pv-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 9px;
+            border: 1px solid transparent;
+            font-size: 12.5px;
+            color: var(--text-secondary, #9fb3cf);
+        }
+        .pv-nav svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .pv-nav.active {
+            background: var(--glass-hover, rgba(232, 177, 92, 0.1));
+            border-color: var(--glass-border, rgba(214, 231, 255, 0.14));
+            color: var(--text-primary, #eef4ff);
+        }
+
+        .pv-main { padding: 30px 34px 44px; max-width: 980px; }
+        .pv-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent-gold, #f0d08a);
+            border: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14));
+            border-radius: 999px;
+            padding: 4px 10px;
+            margin-bottom: 14px;
+        }
+        h1 { font-size: 26px; line-height: 1.22; letter-spacing: -0.02em; margin: 0 0 8px; font-weight: 600; }
+        .pv-lede { font-size: 13px; line-height: 1.65; color: var(--text-secondary, #9fb3cf); margin: 0 0 24px; max-width: 62ch; }
+
+        .pv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        .pv-card {
+            background: var(--bg-surface, #0d1524);
+            border: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14));
+            border-radius: 13px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .pv-card h2 { margin: 0; font-size: 13px; font-weight: 600; }
+        .pv-card p { margin: 0; font-size: 12px; line-height: 1.6; color: var(--text-secondary, #9fb3cf); }
+        .pv-span2 { grid-column: 1 / -1; }
+
+        .pv-links { display: flex; flex-direction: column; gap: 8px; }
+        .pv-link {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 10px 12px;
+            background: var(--bg-base, #070c17);
+            border: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14));
+            border-radius: 10px;
+            font-size: 12.5px;
+            color: var(--text-secondary, #9fb3cf);
+        }
+        .pv-link svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
+
+        .pv-chat { display: flex; flex-direction: column; gap: 10px; }
+        .pv-msg { display: flex; align-items: flex-start; gap: 9px; max-width: 78%; }
+        .pv-msg.me { margin-left: auto; flex-direction: row-reverse; }
+        .pv-avatar { width: 26px; height: 26px; border-radius: 999px; background: rgba(232, 177, 92, 0.18); border: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14)); flex: 0 0 auto; }
+        .pv-bubble {
+            background: var(--bg-base, #070c17);
+            border: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14));
+            border-radius: 13px;
+            border-top-left-radius: 4px;
+            padding: 8px 12px;
+            font-size: 12.5px;
+            line-height: 1.5;
+        }
+        .pv-msg.me .pv-bubble {
+            background: var(--text-primary, #eef4ff);
+            color: #0b1220;
+            border-color: transparent;
+            border-top-left-radius: 13px;
+            border-top-right-radius: 4px;
+        }
+        .pv-meta { font-size: 10px; color: var(--text-secondary, #9fb3cf); margin-bottom: 4px; }
+
+        .pv-swatch-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .pv-swatch {
+            flex: 1 1 90px;
+            border-radius: 9px;
+            border: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14));
+            padding: 10px 10px 8px;
+            font-size: 9.5px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-secondary, #9fb3cf);
+        }
+        .pv-chip { width: 100%; height: 22px; border-radius: 5px; margin-bottom: 7px; }
+
+        @media (max-width: 780px) {
+            .pv-stage { grid-template-columns: 1fr; }
+            .pv-rail { display: none; }
+            .pv-main { padding: 22px 18px 36px; }
+            .pv-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pv-banner">
+        <span class="pv-badge">Preview</span>
+        <span><strong>Christmas theme</strong> &mdash; a look at the winter pack. This page is read-only by design: nothing inside can be clicked.</span>
+        <span class="pv-actions">
+            <a href="home.html">Back to workspace</a>
+            <a href="home.html" target="_top">Open full tab</a>
+        </span>
+    </div>
+
+    <!-- inert + pointer-events:none: the preview cannot be interacted with. -->
+    <div class="pv-stage" inert>
+
+        <aside class="pv-rail">
+            <div class="pv-brand">
+                <img src="/logo.svg" alt="">
+                <span>TextNexus</span>
+            </div>
+
+            <div class="pv-nav active">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Overview
+            </div>
+            <div class="pv-nav">
+                <svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                Updates
+            </div>
+            <div class="pv-nav">
+                <svg viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/></svg>
+                Ghostlink
+            </div>
+            <div class="pv-nav">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                TextNexus
+            </div>
+            <div class="pv-nav">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/></svg>
+                Preview
+            </div>
+        </aside>
+
+        <main class="pv-main">
+            <div class="pv-kicker">Winter edition &middot; December 1st</div>
+            <h1>Workspace Overview</h1>
+            <p class="pv-lede">
+                The full seasonal reskin: cooler inks, a cream text ramp and a gold accent that carries
+                through every card, bubble and button. Same layout, same information &mdash; nothing moves
+                just because the palette changed.
+            </p>
+
+            <div class="pv-grid">
+                <div class="pv-card">
+                    <h2>Group chat</h2>
+                    <p>Rooms stay legible in the winter palette, with your own messages inverted for instant scanning.</p>
+                    <div class="pv-chat">
+                        <div class="pv-msg">
+                            <div class="pv-avatar"></div>
+                            <div class="pv-bubble">Does the new pack land on the first?</div>
+                        </div>
+                        <div class="pv-msg me">
+                            <div class="pv-bubble">December 1st, automatic. No switch to flip.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pv-card">
+                    <h2>Ghostlink file sharing</h2>
+                    <p>Drop a file and share a link. The winter shell keeps the same contrast ratios, so links stay readable in a dark room.</p>
+                    <div class="pv-links">
+                        <div class="pv-link">
+                            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            Open group chat
+                        </div>
+                        <div class="pv-link">
+                            <svg viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/></svg>
+                            Share files with Ghostlink
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pv-card pv-span2">
+                    <h2>Seasonal tokens</h2>
+                    <p>These are the actual variables the pack defines. Everything above is painted from them.</p>
+                    <div class="pv-swatch-row">
+                        <div class="pv-swatch">
+                            <div class="pv-chip" style="background:#070c17; border:1px solid rgba(214,231,255,.16)"></div>
+                            Ink
+                        </div>
+                        <div class="pv-swatch">
+                            <div class="pv-chip" style="background:#0d1524"></div>
+                            Surface
+                        </div>
+                        <div class="pv-swatch">
+                            <div class="pv-chip" style="background:#eef4ff"></div>
+                            Cream
+                        </div>
+                        <div class="pv-swatch">
+                            <div class="pv-chip" style="background:#f0d08a"></div>
+                            Gold
+                        </div>
+                        <div class="pv-swatch">
+                            <div class="pv-chip" style="background:#7fa8c9"></div>
+                            Frost
+                        </div>
+                        <div class="pv-swatch">
+                            <div class="pv-chip" style="background:#c8453a"></div>
+                            Berry
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
