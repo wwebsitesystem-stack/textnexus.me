@@ -1,17 +1,24 @@
 <!DOCTYPE html>
+<!-- xmas-preview-v2 -->
 <html lang="en" class="dark" data-season="christmas">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>Christmas Theme Preview | TextNexus</title>
-    <meta name="description" content="A non-interactive preview of the TextNexus Christmas theme: colours, cards, chat and the winter shell before December 1st.">
+    <meta name="description" content="A non-interactive preview of the TextNexus Christmas theme: snow, garlands, the winter palette and the full seasonal shell before December 1st.">
     <link rel="canonical" href="https://textnexus.me/christmas-preview.html">
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <meta name="theme-color" content="#070c17">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="christmas.css?v=2026-12-01">
+
     <style>
         * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
             margin: 0;
             min-height: 100vh;
@@ -19,13 +26,50 @@
             color: var(--text-primary, #eef4ff);
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        /* ---- Chrome: the only interactive strip on the page ---- */
+        /* ---------- Festive atmosphere ---------- */
+        .aurora {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(760px 420px at 12% -6%, rgba(47, 122, 95, 0.28), transparent 70%),
+                radial-gradient(700px 400px at 88% 4%, rgba(200, 69, 58, 0.22), transparent 72%),
+                radial-gradient(900px 520px at 50% 108%, rgba(240, 208, 138, 0.14), transparent 70%);
+        }
+
+        #snow {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .flake {
+            position: absolute;
+            top: -12px;
+            border-radius: 50%;
+            background: #ffffff;
+            opacity: 0.75;
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            will-change: transform;
+        }
+        @keyframes fall {
+            0%   { transform: translate3d(0, -10vh, 0); }
+            100% { transform: translate3d(var(--drift, 20px), 112vh, 0); }
+        }
+
+        /* ---------- Chrome ---------- */
         .pv-banner {
             position: sticky;
             top: 0;
-            z-index: 50;
+            z-index: 60;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -43,8 +87,8 @@
             letter-spacing: 0.14em;
             text-transform: uppercase;
             color: #0b1220;
-            background: var(--accent-gold, #f0d08a);
-            padding: 3px 8px;
+            background: linear-gradient(120deg, #f0d08a, #e2564a);
+            padding: 3px 9px;
             border-radius: 999px;
         }
         .pv-banner strong { color: var(--text-primary, #eef4ff); font-weight: 600; }
@@ -60,27 +104,58 @@
             font-weight: 600;
             color: var(--text-primary, #eef4ff);
             text-decoration: none;
-            transition: border-color .18s ease, background .18s ease;
+            transition: border-color .18s ease, background .18s ease, transform .18s ease;
         }
         .pv-actions a:hover {
             border-color: var(--accent-gold, #f0d08a);
-            background: var(--glass-hover, rgba(232, 177, 92, 0.1));
+            background: rgba(232, 177, 92, 0.12);
+            transform: translateY(-1px);
         }
 
-        /* ---- Stage: intentionally inert, nothing inside is clickable ---- */
+        /* ---------- Stage: inert, nothing inside is clickable ---------- */
         .pv-stage {
+            position: relative;
+            z-index: 2;
             pointer-events: none;
             user-select: none;
             -webkit-user-select: none;
             display: grid;
-            grid-template-columns: 210px 1fr;
+            grid-template-columns: 218px 1fr;
             min-height: calc(100vh - 44px);
         }
         .pv-stage * { cursor: default !important; }
 
+        /* Light garland strung across the top of the workspace */
+        .garland {
+            position: relative;
+            grid-column: 1 / -1;
+            height: 26px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 22px;
+            margin-bottom: -26px;
+            z-index: 3;
+        }
+        .bulb {
+            width: 7px;
+            height: 9px;
+            border-radius: 50% 50% 45% 45%;
+            margin-top: 6px;
+            background: #f0d08a;
+            box-shadow: 0 0 10px 2px rgba(240, 208, 138, 0.55);
+            opacity: 0.9;
+            animation: twinkle 2.6s ease-in-out infinite;
+        }
+        .bulb:nth-child(3n)   { background: #e2564a; box-shadow: 0 0 10px 2px rgba(226, 86, 74, 0.55); }
+        .bulb:nth-child(3n+1) { background: #7fd1a8; box-shadow: 0 0 10px 2px rgba(127, 209, 168, 0.5); }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.28; }
+            50%      { opacity: 1; }
+        }
+
         .pv-rail {
             border-right: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14));
-            padding: 16px 12px;
+            padding: 34px 12px 20px;
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -90,10 +165,14 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 6px 8px 18px;
+            padding: 6px 8px 14px;
         }
         .pv-brand img { width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14)); }
         .pv-brand span { font-size: 12.5px; font-weight: 600; letter-spacing: -0.01em; }
+
+        .wreath { display: flex; justify-content: center; padding: 4px 0 16px; }
+        .wreath svg { width: 62px; height: 62px; filter: drop-shadow(0 0 12px rgba(240, 208, 138, 0.25)); }
+
         .pv-nav {
             display: flex;
             align-items: center;
@@ -106,12 +185,12 @@
         }
         .pv-nav svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
         .pv-nav.active {
-            background: var(--glass-hover, rgba(232, 177, 92, 0.1));
+            background: rgba(232, 177, 92, 0.1);
             border-color: var(--glass-border, rgba(214, 231, 255, 0.14));
             color: var(--text-primary, #eef4ff);
         }
 
-        .pv-main { padding: 30px 34px 44px; max-width: 980px; }
+        .pv-main { padding: 52px 34px 56px; max-width: 1000px; }
         .pv-kicker {
             display: inline-flex;
             align-items: center;
@@ -125,12 +204,43 @@
             border-radius: 999px;
             padding: 4px 10px;
             margin-bottom: 14px;
+            background: rgba(240, 208, 138, 0.07);
         }
-        h1 { font-size: 26px; line-height: 1.22; letter-spacing: -0.02em; margin: 0 0 8px; font-weight: 600; }
-        .pv-lede { font-size: 13px; line-height: 1.65; color: var(--text-secondary, #9fb3cf); margin: 0 0 24px; max-width: 62ch; }
+
+        .pv-title {
+            font-family: 'Mountains of Christmas', Georgia, serif;
+            font-size: clamp(34px, 5vw, 52px);
+            line-height: 1.05;
+            letter-spacing: 0.01em;
+            margin: 0 0 10px;
+            background: linear-gradient(100deg, #eef4ff 10%, #f0d08a 45%, #e2564a 85%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .pv-lede { font-size: 13.5px; line-height: 1.7; color: var(--text-secondary, #9fb3cf); margin: 0 0 18px; max-width: 62ch; }
+
+        .countdown {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            border: 1px solid rgba(240, 208, 138, 0.28);
+            background: rgba(240, 208, 138, 0.08);
+            border-radius: 999px;
+            padding: 7px 14px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--accent-gold, #f0d08a);
+            margin-bottom: 30px;
+        }
+        .countdown .dot-live {
+            width: 7px; height: 7px; border-radius: 999px; background: #7fd1a8;
+            box-shadow: 0 0 8px rgba(127, 209, 168, 0.8);
+        }
 
         .pv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
         .pv-card {
+            position: relative;
             background: var(--bg-surface, #0d1524);
             border: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14));
             border-radius: 13px;
@@ -138,9 +248,18 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            overflow: hidden;
+        }
+        .pv-card::after {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(240, 208, 138, 0.6), rgba(226, 86, 74, 0.5), transparent);
+            opacity: 0.7;
         }
         .pv-card h2 { margin: 0; font-size: 13px; font-weight: 600; }
-        .pv-card p { margin: 0; font-size: 12px; line-height: 1.6; color: var(--text-secondary, #9fb3cf); }
+        .pv-card p { margin: 0; font-size: 12px; line-height: 1.65; color: var(--text-secondary, #9fb3cf); }
         .pv-span2 { grid-column: 1 / -1; }
 
         .pv-links { display: flex; flex-direction: column; gap: 8px; }
@@ -158,9 +277,13 @@
         .pv-link svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
 
         .pv-chat { display: flex; flex-direction: column; gap: 10px; }
-        .pv-msg { display: flex; align-items: flex-start; gap: 9px; max-width: 78%; }
+        .pv-msg { display: flex; align-items: flex-start; gap: 9px; max-width: 82%; }
         .pv-msg.me { margin-left: auto; flex-direction: row-reverse; }
-        .pv-avatar { width: 26px; height: 26px; border-radius: 999px; background: rgba(232, 177, 92, 0.18); border: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14)); flex: 0 0 auto; }
+        .pv-avatar {
+            width: 26px; height: 26px; border-radius: 999px; flex: 0 0 auto;
+            background: radial-gradient(circle at 35% 30%, #f0d08a, #c8453a 70%);
+            border: 1px solid rgba(240, 208, 138, 0.4);
+        }
         .pv-bubble {
             background: var(--bg-base, #070c17);
             border: 1px solid var(--glass-border, rgba(214, 231, 255, 0.14));
@@ -171,13 +294,12 @@
             line-height: 1.5;
         }
         .pv-msg.me .pv-bubble {
-            background: var(--text-primary, #eef4ff);
+            background: linear-gradient(120deg, #eef4ff, #dfe9f7);
             color: #0b1220;
             border-color: transparent;
             border-top-left-radius: 13px;
             border-top-right-radius: 4px;
         }
-        .pv-meta { font-size: 10px; color: var(--text-secondary, #9fb3cf); margin-bottom: 4px; }
 
         .pv-swatch-row { display: flex; gap: 8px; flex-wrap: wrap; }
         .pv-swatch {
@@ -192,19 +314,55 @@
         }
         .pv-chip { width: 100%; height: 22px; border-radius: 5px; margin-bottom: 7px; }
 
+        .pv-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .pv-list li { display: flex; gap: 9px; align-items: flex-start; font-size: 12px; line-height: 1.55; color: var(--text-secondary, #9fb3cf); }
+        .pv-list li svg { width: 14px; height: 14px; margin-top: 2px; flex: 0 0 auto; stroke: var(--accent-gold, #f0d08a); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* Candy-cane hairline */
+        .candy {
+            height: 4px;
+            border-radius: 999px;
+            margin: 28px 0 22px;
+            background-image: repeating-linear-gradient(115deg, #c8453a 0 10px, #eef4ff 10px 20px);
+            opacity: 0.5;
+        }
+
+        .pv-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 11.5px;
+            color: var(--text-secondary, #9fb3cf);
+        }
+        .pv-footer .script {
+            font-family: 'Mountains of Christmas', Georgia, serif;
+            font-size: 19px;
+            color: var(--accent-gold, #f0d08a);
+        }
+
         @media (max-width: 780px) {
             .pv-stage { grid-template-columns: 1fr; }
             .pv-rail { display: none; }
-            .pv-main { padding: 22px 18px 36px; }
+            .pv-main { padding: 40px 18px 44px; }
             .pv-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .flake, .bulb { animation: none !important; }
+            .flake { display: none; }
+            html { scroll-behavior: auto; }
         }
     </style>
 </head>
 <body>
 
+    <div class="aurora" aria-hidden="true"></div>
+    <div id="snow" aria-hidden="true"></div>
+
     <div class="pv-banner">
         <span class="pv-badge">Preview</span>
-        <span><strong>Christmas theme</strong> &mdash; a look at the winter pack. This page is read-only by design: nothing inside can be clicked.</span>
+        <span><strong>Christmas theme</strong> &mdash; a look at the winter pack. This page is read-only by design: nothing inside the frame can be clicked.</span>
         <span class="pv-actions">
             <a href="home.html">Back to workspace</a>
             <a href="home.html" target="_top">Open full tab</a>
@@ -214,7 +372,23 @@
     <!-- inert + pointer-events:none: the preview cannot be interacted with. -->
     <div class="pv-stage" inert>
 
+        <div class="garland" id="garland" aria-hidden="true"></div>
+
         <aside class="pv-rail">
+            <div class="wreath" aria-hidden="true">
+                <svg viewBox="0 0 64 64">
+                    <circle cx="32" cy="32" r="21" fill="none" stroke="#2f7a5f" stroke-width="7" stroke-linecap="round" stroke-dasharray="4 5"/>
+                    <circle cx="32" cy="32" r="21" fill="none" stroke="#7fa8c9" stroke-width="2" stroke-dasharray="2 9" opacity="0.7"/>
+                    <circle cx="53" cy="32" r="3.4" fill="#e2564a"/>
+                    <circle cx="48" cy="44" r="3" fill="#f0d08a"/>
+                    <circle cx="38" cy="52" r="3" fill="#e2564a"/>
+                    <circle cx="26" cy="52" r="3" fill="#7fd1a8"/>
+                    <circle cx="16" cy="44" r="3" fill="#e2564a"/>
+                    <circle cx="11" cy="32" r="3" fill="#f0d08a"/>
+                    <path d="M32 8l2.6 5.4L40 14l-4 4 1 5.6-5-2.8-5 2.8 1-5.6-4-4 5.4-.6z" fill="#f0d08a"/>
+                </svg>
+            </div>
+
             <div class="pv-brand">
                 <img src="/logo.svg" alt="">
                 <span>TextNexus</span>
@@ -244,12 +418,17 @@
 
         <main class="pv-main">
             <div class="pv-kicker">Winter edition &middot; December 1st</div>
-            <h1>Workspace Overview</h1>
+            <h1 class="pv-title">Merry Christmas from Nexus</h1>
             <p class="pv-lede">
-                The full seasonal reskin: cooler inks, a cream text ramp and a gold accent that carries
-                through every card, bubble and button. Same layout, same information &mdash; nothing moves
-                just because the palette changed.
+                The full seasonal reskin, dressed for the season: pine and frost inks, a cream text ramp,
+                a gold accent and a little candlelight. Same layout, same information &mdash; it just feels
+                like December in here.
             </p>
+
+            <div class="countdown">
+                <span class="dot-live" aria-hidden="true"></span>
+                <span id="countdown">Counting down&hellip;</span>
+            </div>
 
             <div class="pv-grid">
                 <div class="pv-card">
@@ -263,12 +442,16 @@
                         <div class="pv-msg me">
                             <div class="pv-bubble">December 1st, automatic. No switch to flip.</div>
                         </div>
+                        <div class="pv-msg">
+                            <div class="pv-avatar"></div>
+                            <div class="pv-bubble">Merry Christmas, all of you. 🎄</div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="pv-card">
                     <h2>Ghostlink file sharing</h2>
-                    <p>Drop a file and share a link. The winter shell keeps the same contrast ratios, so links stay readable in a dark room.</p>
+                    <p>Drop a file and share a link. The winter shell keeps the same contrast ratios, so links stay readable by lamplight.</p>
                     <div class="pv-links">
                         <div class="pv-link">
                             <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -278,7 +461,33 @@
                             <svg viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/></svg>
                             Share files with Ghostlink
                         </div>
+                        <div class="pv-link">
+                            <svg viewBox="0 0 24 24"><path d="M20 12v9H4v-9"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7S9 3 6.5 4.5 8 9 12 7z"/></svg>
+                            Something under the tree
+                        </div>
                     </div>
+                </div>
+
+                <div class="pv-card pv-span2">
+                    <h2>What the winter pack changes</h2>
+                    <ul class="pv-list">
+                        <li>
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            A cooler ink base with cream text, so late-night reading stays soft.
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            Gold replaced by a warmer candlelight accent across buttons and badges.
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            Seasonal copy on the overview, and a tree that appears on the first of December.
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            Turns itself on December 1st and off again on January 6th &mdash; no setting to remember.
+                        </li>
+                    </ul>
                 </div>
 
                 <div class="pv-card pv-span2">
@@ -299,11 +508,15 @@
                         </div>
                         <div class="pv-swatch">
                             <div class="pv-chip" style="background:#f0d08a"></div>
-                            Gold
+                            Candle
                         </div>
                         <div class="pv-swatch">
                             <div class="pv-chip" style="background:#7fa8c9"></div>
                             Frost
+                        </div>
+                        <div class="pv-swatch">
+                            <div class="pv-chip" style="background:#2f7a5f"></div>
+                            Pine
                         </div>
                         <div class="pv-swatch">
                             <div class="pv-chip" style="background:#c8453a"></div>
@@ -312,8 +525,67 @@
                     </div>
                 </div>
             </div>
+
+            <div class="candy" aria-hidden="true"></div>
+
+            <div class="pv-footer">
+                <span class="script">Merry Christmas &amp; a bright new year</span>
+                <span>&mdash; the Nexus team</span>
+            </div>
         </main>
     </div>
 
+    <script>
+        (function () {
+            var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // Snowfall
+            if (!reduce) {
+                var snow = document.getElementById('snow');
+                var frag = document.createDocumentFragment();
+                for (var i = 0; i < 44; i++) {
+                    var f = document.createElement('span');
+                    var size = 1.5 + Math.random() * 3.2;
+                    f.className = 'flake';
+                    f.style.left = (Math.random() * 100).toFixed(2) + '%';
+                    f.style.width = size.toFixed(1) + 'px';
+                    f.style.height = size.toFixed(1) + 'px';
+                    f.style.opacity = (0.25 + Math.random() * 0.55).toFixed(2);
+                    f.style.animationDuration = (7 + Math.random() * 11).toFixed(1) + 's';
+                    f.style.animationDelay = (-Math.random() * 18).toFixed(1) + 's';
+                    f.style.setProperty('--drift', (Math.random() * 80 - 40).toFixed(0) + 'px');
+                    frag.appendChild(f);
+                }
+                snow.appendChild(frag);
+            }
+
+            // Garland bulbs
+            var garland = document.getElementById('garland');
+            var bulbs = document.createDocumentFragment();
+            for (var j = 0; j < 24; j++) {
+                var b = document.createElement('span');
+                b.className = 'bulb';
+                b.style.animationDelay = (Math.random() * 2.6).toFixed(2) + 's';
+                bulbs.appendChild(b);
+            }
+            garland.appendChild(bulbs);
+
+            // Countdown to the winter pack
+            var out = document.getElementById('countdown');
+            var now = new Date();
+            var year = now.getFullYear();
+            var start = new Date(year, 11, 1);
+            var end = new Date(year + 1, 0, 7);
+            if (now >= end) {
+                start = new Date(year + 1, 11, 1);
+                out.textContent = 'Back on December 1st';
+            } else if (now >= start) {
+                out.textContent = 'The winter pack is live until January 6th';
+            } else {
+                var days = Math.ceil((start - now) / 86400000);
+                out.textContent = days + (days === 1 ? ' day' : ' days') + ' until the winter pack';
+            }
+        })();
+    </script>
 </body>
 </html>
