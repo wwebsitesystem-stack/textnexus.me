@@ -173,6 +173,24 @@
         .wreath { display: flex; justify-content: center; padding: 4px 0 16px; }
         .wreath svg { width: 62px; height: 62px; filter: drop-shadow(0 0 12px rgba(240, 208, 138, 0.25)); }
 
+        /* Floor tree: waits at the base of the rail, then settles in quietly. */
+        .tree {
+            margin-top: auto;
+            padding: 26px 0 6px;
+            display: flex;
+            justify-content: center;
+            animation: tree-in 1.4s ease-out 0.55s both;
+        }
+        .tree svg {
+            width: 54px;
+            height: 72px;
+            filter: drop-shadow(0 0 9px rgba(240, 208, 138, 0.14));
+        }
+        @keyframes tree-in {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
         .pv-nav {
             display: flex;
             align-items: center;
@@ -349,8 +367,9 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .flake, .bulb { animation: none !important; }
+            .flake, .bulb, .tree { animation: none !important; }
             .flake { display: none; }
+            .tree { opacity: 1; transform: none; }
             html { scroll-behavior: auto; }
         }
     </style>
@@ -413,6 +432,23 @@
             <div class="pv-nav">
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/></svg>
                 Preview
+            </div>
+
+            <div class="tree" aria-hidden="true">
+                <svg viewBox="0 0 64 84">
+                    <path d="M32 5l11 25H21z" fill="#2f7a5f"/>
+                    <path d="M32 19l17 29H15z" fill="#296b53"/>
+                    <path d="M32 35l22 31H10z" fill="#225c47"/>
+                    <rect x="29.5" y="65" width="5" height="9" rx="1.5" fill="#6b4a35"/>
+                    <circle cx="32" cy="5.5" r="2.5" fill="#f0d08a"/>
+                    <circle cx="26" cy="27" r="1.8" fill="#e2564a"/>
+                    <circle cx="38.5" cy="37" r="1.8" fill="#f0d08a"/>
+                    <circle cx="24" cy="45" r="1.8" fill="#7fa8c9"/>
+                    <circle cx="42" cy="54" r="1.8" fill="#e2564a"/>
+                    <circle cx="30" cy="58" r="1.8" fill="#f0d08a"/>
+                    <circle cx="47" cy="44" r="1.6" fill="#f0d08a"/>
+                    <circle cx="19" cy="58" r="1.6" fill="#7fa8c9"/>
+                </svg>
             </div>
         </aside>
 
