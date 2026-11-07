@@ -70,11 +70,26 @@
         h3.section { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin: 28px 0 10px; }
 
         .services { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); overflow: hidden; }
-        .service { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+        .service { display: block; padding: 14px 16px; border-bottom: 1px solid var(--border); }
         .service:last-child { border-bottom: 0; }
+        .service-head { display: flex; align-items: flex-start; gap: 12px; }
         .service .name { font-size: 13px; font-weight: 500; }
         .service .desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
-        .service .state { margin-left: auto; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+        .service .state { margin-left: auto; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+
+        .uptime { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+        .segs { display: flex; gap: 2px; flex: 1; min-width: 0; }
+        .seg { flex: 1 1 0; height: 20px; border-radius: 2px; background: #1f1f1f; min-width: 3px; transition: transform .12s ease; }
+        .seg:hover { transform: scaleY(1.15); }
+        .seg.ok { background: rgba(74, 222, 128, 0.7); }
+        .seg.partial { background: #f0d08a; }
+        .seg.down { background: #e2564a; }
+        .pct { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); flex: 0 0 auto; min-width: 46px; text-align: right; }
+
+        .legend { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 10.5px; color: var(--muted); margin-top: 10px; }
+        .legend span { display: inline-flex; align-items: center; gap: 5px; }
+        .legend i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+        .legend .spacer { margin-left: auto; }
         .s-ok { color: var(--ok); }
         .s-warn { color: var(--warn); }
         .s-bad { color: var(--bad); }
@@ -128,9 +143,15 @@
             </div>
         </section>
 
-        <h3 class="section">Services</h3>
+        <h3 class="section">Services &middot; last 30 days</h3>
         <div class="services" id="services">
-            <div class="service"><div><div class="name">Workspace</div><div class="desc">The shell, navigation and sidebar</div></div><span class="state s-ok">checking</span></div>
+            <div class="service"><div class="service-head"><div><div class="name">Workspace</div><div class="desc">The shell, navigation and sidebar</div></div><span class="state s-ok">checking</span></div></div>
+        </div>
+        <div class="legend">
+            <span><i style="background:rgba(74,222,128,.7)"></i>Operational</span>
+            <span><i style="background:#f0d08a"></i>Partial</span>
+            <span><i style="background:#e2564a"></i>Outage</span>
+            <span class="spacer">Each block is one day</span>
         </div>
 
         <h3 class="section">Recent changes</h3>
@@ -180,14 +201,79 @@
             return "ok";
         }
 
-        function paintServices(mode) {
+        let liveState = {};
+        let historyData = {};
+
+        const DAYS = 30;
+        const DAY_MS = 86400000;
+
+        // Rebuild what each of the last 30 days looked like from the change log.
+        function buildDays() {
+            const events = Object.values(historyData || {})
+                .filter(e => e && e.mode && Number(e.at || 0) > 0)
+                .map(e => ({ at: Number(e.at), mode: e.mode }))
+                .sort((a, b) => a.at - b.at);
+
+            const current = MODES[liveState.status] ? liveState.status
+                : (liveState.maintenance ? "maintenance" : "operational");
+
+            const days = [];
+            const now = Date.now();
+            for (let i = DAYS - 1; i >= 0; i--) {
+                const end = now - i * DAY_MS;
+                const start = end - DAY_MS;
+
+                // Carry the state forward from before this window, then collect
+                // every mode the site passed through inside it.
+                let mode = "operational";
+                events.forEach(e => { if (e.at <= start) mode = e.mode; });
+
+                const seen = new Set([mode]);
+                events.forEach(e => { if (e.at > start && e.at <= end) seen.add(e.mode); });
+                if (i === 0) seen.add(current);
+
+                days.push({ start, end, modes: seen });
+            }
+            return days;
+        }
+
+        function stateFor(modes, serviceKey) {
+            const list = [...modes];
+            if (list.some(m => BLOCKING.includes(m))) return "down";
+            if (list.includes("degraded") && (serviceKey === "chat" || serviceKey === "files")) return "degraded";
+            return "ok";
+        }
+
+        function paintServices() {
+            const days = buildDays();
+            const current = MODES[liveState.status] ? liveState.status
+                : (liveState.maintenance ? "maintenance" : "operational");
+
             document.getElementById("services").innerHTML = SERVICES.map(service => {
-                const state = serviceState(mode, service.key);
-                const label = state === "down" ? "Unavailable" : state === "degraded" ? "Degraded" : "Operational";
-                const cls = state === "down" ? "s-bad" : state === "degraded" ? "s-warn" : "s-ok";
+                const now = serviceState(current, service.key);
+                const label = now === "down" ? "Unavailable" : now === "degraded" ? "Degraded" : "Operational";
+                const cls = now === "down" ? "s-bad" : now === "degraded" ? "s-warn" : "s-ok";
+
+                let credit = 0;
+                const segs = days.map(day => {
+                    const st = stateFor(day.modes, service.key);
+                    credit += st === "ok" ? 1 : st === "degraded" ? 0.9 : 0.5;
+                    const when = new Date(day.end).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+                    const wording = st === "ok" ? "no issues" : st === "degraded" ? "degraded" : "outage";
+                    const klass = st === "ok" ? "ok" : st === "degraded" ? "partial" : "down";
+                    return `<span class="seg ${klass}" title="${when}: ${wording}" aria-label="${when}: ${wording}"></span>`;
+                }).join("");
+
+                const pct = (credit / days.length * 100).toFixed(credit === days.length ? 0 : 1);
                 return `<div class="service">
-                    <div><div class="name">${service.name}</div><div class="desc">${service.desc}</div></div>
-                    <span class="state ${cls}">${label}</span>
+                    <div class="service-head">
+                        <div><div class="name">${service.name}</div><div class="desc">${service.desc}</div></div>
+                        <span class="state ${cls}">${label}</span>
+                    </div>
+                    <div class="uptime">
+                        <div class="segs">${segs}</div>
+                        <span class="pct">${pct}%</span>
+                    </div>
                 </div>`;
             }).join("");
         }
@@ -213,7 +299,8 @@
             live.classList.add("on");
             document.getElementById("live-text").textContent = "live";
 
-            paintServices(mode);
+            liveState = state;
+            paintServices();
         }
 
         function paintHistory(history) {
@@ -248,7 +335,11 @@
             document.getElementById("live-text").textContent = error?.code || "read failed";
         });
 
-        onValue(ref(db, "system/history"), (snap) => paintHistory(snap.val()), () => {
+        onValue(ref(db, "system/history"), (snap) => {
+            historyData = snap.val() || {};
+            paintHistory(historyData);
+            paintServices();
+        }, () => {
             document.getElementById("history").innerHTML = `<div class="empty">Change history is not readable right now.</div>`;
         });
     </script>
