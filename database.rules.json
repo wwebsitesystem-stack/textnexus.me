@@ -14,6 +14,24 @@
       ".write": "auth != null && auth.token.email_verified === true && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
       "theme": {
         ".validate": "newData.isString() && newData.val().length <= 200"
+      },
+      "status": {
+        ".validate": "newData.isString() && (newData.val() === 'operational' || newData.val() === 'degraded' || newData.val() === 'maintenance' || newData.val() === 'offline')"
+      },
+      "maintenance": {
+        ".validate": "newData.isBoolean()"
+      },
+      "message": {
+        ".validate": "newData.isString() && newData.val().length <= 500"
+      },
+      "updatedAt": {
+        ".validate": "newData.isNumber()"
+      },
+      "updatedBy": {
+        ".validate": "newData.isString() && newData.val().length <= 254"
+      },
+      "banner": {
+        ".validate": "newData.hasChildren(['enabled', 'message']) && newData.child('enabled').isBoolean() && newData.child('message').isString() && newData.child('message').val().length <= 300 && (!newData.child('tone').exists() || newData.child('tone').val() === 'info' || newData.child('tone').val() === 'warning' || newData.child('tone').val() === 'danger')"
       }
     },
     "workspace_updates": {

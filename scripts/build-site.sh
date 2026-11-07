@@ -15,6 +15,7 @@ FILES=(
     updates.html
     ad.html
     christmas-preview.html
+    system-console.html
     games.html
     thanksgiving.html
     ghostlink.html
@@ -38,6 +39,7 @@ FILES=(
     thanksgiving.css
     christmas.css
     season.js
+    system.js
     logo.svg
     og-image.png
     sw.js

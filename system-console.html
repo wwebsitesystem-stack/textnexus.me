@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>System Control | TextNexus</title>
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        background: '#0a0a0a', surface: '#121212', surfaceHover: '#1c1c1c',
+                        border: '#262626', textMain: '#ededed', textMuted: '#a1a1aa'
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body { background: #0a0a0a; color: #ededed; font-family: Inter, sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #262626; border-radius: 6px; }
+        .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+        .seg button {
+            border: 1px solid #262626; background: #121212; color: #a1a1aa;
+            padding: 7px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 600;
+            display: inline-flex; align-items: center; gap: 6px; transition: all .15s ease;
+        }
+        .seg button:hover { border-color: #3a3a3a; color: #ededed; }
+        .seg button[aria-pressed="true"] { border-color: #ededed; color: #0a0a0a; background: #ededed; }
+        .switch { position: relative; width: 42px; height: 24px; flex: 0 0 auto; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .switch span {
+            position: absolute; inset: 0; cursor: pointer; background: #262626;
+            border-radius: 999px; transition: background .18s ease;
+        }
+        .switch span::before {
+            content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px;
+            background: #a1a1aa; border-radius: 999px; transition: transform .18s ease, background .18s ease;
+        }
+        .switch input:checked + span { background: #ededed; }
+        .switch input:checked + span::before { transform: translateX(18px); background: #0a0a0a; }
+        .switch input:focus-visible + span { outline: 2px solid #ededed; outline-offset: 2px; }
+        textarea, input[type="text"], select {
+            width: 100%; background: #0a0a0a; border: 1px solid #262626; color: #ededed;
+            border-radius: 9px; padding: 10px 12px; font-size: 12.5px; line-height: 1.6;
+        }
+        textarea:focus, input[type="text"]:focus, select:focus { outline: none; border-color: #4a4a4a; }
+        .pill { font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 1px solid; }
+        .is-hidden { display: none !important; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Sign-in gate -->
+    <div id="gate" class="min-h-screen flex items-center justify-center p-6">
+        <div class="w-full max-w-sm rounded-2xl border border-border bg-surface p-7 text-center">
+            <div class="w-11 h-11 rounded-xl bg-surfaceHover border border-border mx-auto flex items-center justify-center mb-4">
+                <i class="ph ph-shield-check text-lg"></i>
+            </div>
+            <h1 class="text-sm font-bold">System control</h1>
+            <p class="text-[11px] text-textMuted mt-1.5 mb-5">Owner access only. Sign in with the Google account that owns this workspace.</p>
+            <button id="gate-signin" class="w-full rounded-lg bg-[#ededed] text-black text-[12px] font-bold py-2.5 inline-flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+                <i class="ph ph-google-logo"></i> Sign in with Google
+            </button>
+            <p id="gate-msg" class="text-[11px] mt-3 text-textMuted" role="status"></p>
+            <a href="/index.html" class="inline-block mt-5 text-[11px] text-textMuted hover:text-textMain">Back to Nexus</a>
+        </div>
+    </div>
+
+    <!-- Console -->
+    <div id="console" class="is-hidden">
+        <header class="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur px-6 py-3 flex items-center gap-3 flex-wrap">
+            <div class="w-8 h-8 rounded-lg bg-surfaceHover border border-border flex items-center justify-center">
+                <i class="ph ph-sliders-horizontal"></i>
+            </div>
+            <div class="mr-auto">
+                <h1 class="text-sm font-semibold leading-tight">System control</h1>
+                <p class="text-[10.5px] text-textMuted">Live state for <code class="text-textMain">system</code> in the Realtime Database</p>
+            </div>
+            <span id="live-pill" class="pill border-border text-textMuted">connecting</span>
+            <span id="who" class="text-[10.5px] text-textMuted"></span>
+            <a href="/index.html" class="text-[11px] font-semibold text-textMuted hover:text-textMain">Exit</a>
+        </header>
+
+        <main class="max-w-3xl mx-auto p-6 flex flex-col gap-4">
+
+            <!-- Status -->
+            <section class="rounded-xl border border-border bg-surface p-5">
+                <div class="flex items-start justify-between gap-4 mb-3">
+                    <div>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted">Workspace status</h2>
+                        <p class="text-[11px] text-textMuted mt-1">Sets the tone for the whole site. Maintenance also raises a banner.</p>
+                    </div>
+                    <span id="status-preview" class="pill border-border text-textMuted">operational</span>
+                </div>
+                <div class="seg" id="status-group" role="group" aria-label="Workspace status">
+                    <button type="button" data-status="operational" aria-pressed="true"><i class="ph ph-check-circle"></i> Operational</button>
+                    <button type="button" data-status="degraded" aria-pressed="false"><i class="ph ph-warning"></i> Degraded</button>
+                    <button type="button" data-status="maintenance" aria-pressed="false"><i class="ph ph-wrench"></i> Maintenance</button>
+                    <button type="button" data-status="offline" aria-pressed="false"><i class="ph ph-power"></i> Offline</button>
+                </div>
+            </section>
+
+            <!-- Maintenance -->
+            <section class="rounded-xl border border-border bg-surface p-5">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted">Maintenance mode</h2>
+                        <p class="text-[11px] text-textMuted mt-1">Visitors see a red banner explaining the outage.</p>
+                    </div>
+                    <label class="switch">
+                        <input id="maintenance-toggle" type="checkbox" aria-label="Maintenance mode">
+                        <span aria-hidden="true"></span>
+                    </label>
+                </div>
+                <label for="maintenance-message" class="block text-[10.5px] font-semibold uppercase tracking-wider text-textMuted mt-4 mb-1.5">Maintenance message</label>
+                <textarea id="maintenance-message" rows="2" maxlength="500" placeholder="Back shortly — we're patching the chat service."></textarea>
+                <p class="text-[10px] text-textMuted mt-1.5"><span id="maintenance-count">0</span>/500</p>
+            </section>
+
+            <!-- Announcement -->
+            <section class="rounded-xl border border-border bg-surface p-5">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted">Site announcement</h2>
+                        <p class="text-[11px] text-textMuted mt-1">A quieter banner that works even when nothing is broken.</p>
+                    </div>
+                    <label class="switch">
+                        <input id="banner-toggle" type="checkbox" aria-label="Show announcement banner">
+                        <span aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="grid sm:grid-cols-[1fr_140px] gap-3 mt-4">
+                    <div>
+                        <label for="banner-message" class="block text-[10.5px] font-semibold uppercase tracking-wider text-textMuted mb-1.5">Banner text</label>
+                        <input id="banner-message" type="text" maxlength="300" placeholder="The Christmas theme lands on December 1st.">
+                    </div>
+                    <div>
+                        <label for="banner-tone" class="block text-[10.5px] font-semibold uppercase tracking-wider text-textMuted mb-1.5">Tone</label>
+                        <select id="banner-tone">
+                            <option value="info">Info</option>
+                            <option value="warning">Warning</option>
+                            <option value="danger">Important</option>
+                        </select>
+                    </div>
+                </div>
+                <p class="text-[10px] text-textMuted mt-1.5"><span id="banner-count">0</span>/300</p>
+            </section>
+
+            <!-- What visitors see -->
+            <section class="rounded-xl border border-border bg-surface p-5">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted mb-3">What visitors will see</h2>
+                <div id="visitor-preview" class="rounded-lg border border-border overflow-hidden">
+                    <div id="preview-bar" class="px-3.5 py-2.5 text-[11.5px] text-textMuted bg-[#0b1220]">No banner — the site looks normal.</div>
+                </div>
+                <p id="preview-note" class="text-[10.5px] text-textMuted mt-2.5">Publishing writes these values and every open tab updates immediately.</p>
+            </section>
+
+            <!-- Actions -->
+            <div class="flex flex-wrap items-center gap-3 pb-4">
+                <button id="save" class="rounded-lg bg-[#ededed] text-black text-[12px] font-bold px-4 py-2.5 inline-flex items-center gap-2 hover:opacity-90 transition-opacity">
+                    <i class="ph ph-floppy-disk"></i> Publish changes
+                </button>
+                <button id="reset" class="rounded-lg border border-border bg-surface text-textMuted text-[12px] font-semibold px-4 py-2.5 inline-flex items-center gap-2 hover:text-textMain hover:border-[#3a3a3a] transition-colors">
+                    <i class="ph ph-arrow-counter-clockwise"></i> Revert edits
+                </button>
+                <span id="save-msg" class="text-[11px] text-textMuted" role="status" aria-live="polite"></span>
+            </div>
+
+            <section class="rounded-xl border border-border bg-surface p-5 mb-8">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-textMuted mb-2">Last change</h2>
+                <p id="last-change" class="text-[11.5px] text-textMuted">Nothing recorded yet.</p>
+            </section>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref as dbRef, onValue, update, push } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
+            authDomain: "nexus-web-development-official.firebaseapp.com",
+            projectId: "nexus-web-development-official",
+            databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com"
+        };
+
+        const OWNER_EMAILS = ["brodywilliams0226@gmail.com", "imcrabfr@gmail.com"];
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const systemRef = dbRef(db, "system");
+
+        const gate = document.getElementById("gate");
+        const consoleEl = document.getElementById("console");
+        const gateMsg = document.getElementById("gate-msg");
+        const gateBtn = document.getElementById("gate-signin");
+        const livePill = document.getElementById("live-pill");
+        const whoEl = document.getElementById("who");
+        const saveBtn = document.getElementById("save");
+        const saveMsg = document.getElementById("save-msg");
+        const statusGroup = document.getElementById("status-group");
+        const maintenanceToggle = document.getElementById("maintenance-toggle");
+        const maintenanceMessage = document.getElementById("maintenance-message");
+        const bannerToggle = document.getElementById("banner-toggle");
+        const bannerMessage = document.getElementById("banner-message");
+        const bannerTone = document.getElementById("banner-tone");
+
+        let user = null;
+        let live = {};
+        let dirty = false;
+
+        const TONES = {
+            info:    { bg: "rgba(127,168,201,.14)", border: "rgba(127,168,201,.45)", dot: "#7fa8c9" },
+            warning: { bg: "rgba(240,208,138,.14)", border: "rgba(240,208,138,.48)", dot: "#f0d08a" },
+            danger:  { bg: "rgba(200,69,58,.16)",   border: "rgba(200,69,58,.5)",    dot: "#e2564a" }
+        };
+
+        function setDirty(value) {
+            dirty = value;
+            saveBtn.classList.toggle("opacity-60", !dirty);
+        }
+
+        function fillForm(state) {
+            const status = state.status || (state.maintenance ? "maintenance" : "operational");
+            [...statusGroup.querySelectorAll("button")].forEach(btn => {
+                btn.setAttribute("aria-pressed", String(btn.dataset.status === status));
+            });
+            maintenanceToggle.checked = state.maintenance === true;
+            maintenanceMessage.value = state.message || "";
+            bannerToggle.checked = state.banner?.enabled === true;
+            bannerMessage.value = state.banner?.message || "";
+            bannerTone.value = state.banner?.tone || "info";
+            updateCounts();
+            renderPreview();
+            document.getElementById("status-preview").textContent = status;
+            document.getElementById("last-change").textContent = state.updatedAt
+                ? `${new Date(state.updatedAt).toLocaleString()} by ${state.updatedBy || "unknown"}`
+                : "Nothing recorded yet.";
+        }
+
+        function updateCounts() {
+            document.getElementById("maintenance-count").textContent = maintenanceMessage.value.length;
+            document.getElementById("banner-count").textContent = bannerMessage.value.length;
+        }
+
+        function currentForm() {
+            const pressed = statusGroup.querySelector('button[aria-pressed="true"]');
+            return {
+                status: pressed ? pressed.dataset.status : "operational",
+                maintenance: maintenanceToggle.checked,
+                message: maintenanceMessage.value.trim(),
+                banner: {
+                    enabled: bannerToggle.checked,
+                    message: bannerMessage.value.trim(),
+                    tone: bannerTone.value
+                }
+            };
+        }
+
+        function renderPreview() {
+            const form = currentForm();
+            const bar = document.getElementById("preview-bar");
+            const down = form.maintenance || form.status === "maintenance" || form.status === "offline";
+            const show = down || form.banner.enabled;
+            const tone = TONES[down ? "danger" : form.banner.tone] || TONES.info;
+
+            if (!show) {
+                bar.textContent = "No banner — the site looks normal.";
+                bar.style.background = "#0b1220";
+                bar.style.color = "#a1a1aa";
+                bar.style.borderBottom = "1px solid transparent";
+                return;
+            }
+            bar.textContent = (down ? form.message : form.banner.message) ||
+                (down ? "Nexus is in maintenance right now." : "Heads up from the Nexus team.");
+            bar.style.background = tone.bg;
+            bar.style.color = "#eef4ff";
+            bar.style.borderBottom = `1px solid ${tone.border}`;
+        }
+
+        gateBtn.addEventListener("click", async () => {
+            gateBtn.disabled = true;
+            gateMsg.textContent = "Opening Google...";
+            try {
+                await signInWithPopup(auth, new GoogleAuthProvider());
+            } catch (error) {
+                gateMsg.textContent = error?.code === "auth/popup-closed-by-user"
+                    ? "Sign-in cancelled."
+                    : `Sign-in failed: ${error?.code || error?.message}`;
+            } finally {
+                gateBtn.disabled = false;
+            }
+        });
+
+        onAuthStateChanged(auth, (nextUser) => {
+            user = nextUser;
+            const allowed = !!user && OWNER_EMAILS.includes(user.email);
+            gate.classList.toggle("is-hidden", allowed);
+            consoleEl.classList.toggle("is-hidden", !allowed);
+
+            if (user && !allowed) {
+                gateMsg.textContent = `${user.email} is not an owner account.`;
+            }
+            if (allowed) {
+                whoEl.textContent = user.email;
+                livePill.textContent = "live";
+                livePill.className = "pill border-emerald-500/40 text-emerald-400";
+                fillForm(live);
+            }
+        });
+
+        onValue(systemRef, (snap) => {
+            live = snap.val() || {};
+            if (!dirty) fillForm(live);
+            if (user && OWNER_EMAILS.includes(user.email)) {
+                livePill.textContent = "live";
+                livePill.className = "pill border-emerald-500/40 text-emerald-400";
+            }
+        }, (error) => {
+            livePill.textContent = "read failed";
+            livePill.className = "pill border-red-500/40 text-red-400";
+            console.error("system read failed:", error);
+        });
+
+        statusGroup.addEventListener("click", (event) => {
+            const btn = event.target.closest("button[data-status]");
+            if (!btn) return;
+            [...statusGroup.querySelectorAll("button")].forEach(b =>
+                b.setAttribute("aria-pressed", String(b === btn)));
+            document.getElementById("status-preview").textContent = btn.dataset.status;
+            setDirty(true);
+            renderPreview();
+        });
+
+        [maintenanceToggle, bannerToggle, bannerTone].forEach(el =>
+            el.addEventListener("change", () => { setDirty(true); renderPreview(); }));
+
+        [maintenanceMessage, bannerMessage].forEach(el =>
+            el.addEventListener("input", () => { updateCounts(); setDirty(true); renderPreview(); }));
+
+        document.getElementById("reset").addEventListener("click", () => {
+            fillForm(live);
+            setDirty(false);
+            saveMsg.textContent = "Reverted to the live values.";
+        });
+
+        saveBtn.addEventListener("click", async () => {
+            if (!user) return;
+            const form = currentForm();
+            saveBtn.disabled = true;
+            saveMsg.textContent = "Publishing...";
+            try {
+                await update(systemRef, {
+                    ...form,
+                    updatedAt: Date.now(),
+                    updatedBy: user.email || ""
+                });
+                await push(dbRef(db, "nexus/audit_logs"), {
+                    action: "SYSTEM_UPDATE",
+                    adminEmail: user.email || "",
+                    timestamp: Date.now(),
+                    details: `status=${form.status} maintenance=${form.maintenance} banner=${form.banner.enabled}`
+                }).catch(() => {});
+                setDirty(false);
+                saveMsg.textContent = "Published. Open tabs will update now.";
+            } catch (error) {
+                saveMsg.textContent = `Could not publish: ${error?.code || error?.message}`;
+            } finally {
+                saveBtn.disabled = false;
+            }
+        });
+
+        // Expose for quick console pokes.
+        window.nexusSystemConsole = { ref: systemRef, auth };
+    </script>
+</body>
+</html>

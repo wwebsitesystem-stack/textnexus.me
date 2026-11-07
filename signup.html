@@ -82,7 +82,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, signInWithPopup, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
     const firebaseConfig = {
@@ -141,9 +141,15 @@
       googleBtn.disabled = true;
       msg("Redirecting to Google...");
       try {
-        // Redirect keeps Google sign-in in the first-party context, avoiding
-        // the blank popup that appears when a browser blocks third-party storage.
-        await signInWithRedirect(auth, provider);
+        // Popup first: the redirect round-trip silently returns signed out when
+        // the browser partitions storage between this origin and the auth domain.
+        try {
+          await signInWithPopup(auth, provider);
+        } catch (error) {
+          const code = error?.code || "";
+          if (!code.includes("popup-blocked") && !code.includes("operation-not-supported-in-this-environment")) throw error;
+          await signInWithRedirect(auth, provider);
+        }
       } catch (error) {
         msg(friendly(error), "err");
         googleBtn.disabled = false;
