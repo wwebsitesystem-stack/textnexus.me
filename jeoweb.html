@@ -6,6 +6,7 @@
 	<title>Jeo Unblocked Games — Play 500+ Free Games, No Downloads</title>
 	<meta name="description" content="Jeo is a free unblocked games site with 500+ browser, Flash, and retro games. No downloads, no sign-ups — just play instantly at school or anywhere." />
 	<link rel="canonical" href="https://textnexus.me/jeoweb.html" />
+	<meta name="robots" content="noindex, nofollow" />
 	<meta name="theme-color" content="#0c0b14" />
 
 	<!-- Optional serverless backend (see backend/README.md). Leave these
@@ -944,35 +945,6 @@
 				}
 			})();
 
-			// Register the service worker for offline support + PWA installability.
-			// Wrapped so a registration failure never trips the global error overlay.
-			if ('serviceWorker' in navigator) {
-				window.addEventListener('load', function(){
-					navigator.serviceWorker.register('sw.js').then(function(reg){
-						// When a new version installs while an old one controls the
-						// page, offer a one-tap refresh instead of silently going stale.
-						reg.addEventListener('updatefound', function(){
-							var nw = reg.installing;
-							if (!nw) return;
-							nw.addEventListener('statechange', function(){
-								if (nw.state === 'installed' && navigator.serviceWorker.controller && window.JeoToast) {
-									window.JeoToast.info('A new version of Jeoweb is ready.', {
-										ttl: 0,
-										action: { label: 'Refresh', onClick: function(){
-											navigator.serviceWorker.addEventListener('controllerchange', function(){
-												window.location.reload();
-											});
-											nw.postMessage({ type: 'SKIP_WAITING' });
-										} }
-									});
-								}
-							});
-						});
-					}).catch(function(err){
-						console.warn('Service worker registration failed', err);
-					});
-				});
-			}
 
 			document.addEventListener('keydown', function(e){
 				if (e.key === 'Escape'){

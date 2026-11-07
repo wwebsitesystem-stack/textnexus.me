@@ -9,16 +9,24 @@
     <meta name="author" content="GhostLink">
     
     <!-- Open Graph Tags for Social Media & Discord Embeds -->
+    <link rel="canonical" href="https://textnexus.me/ghostlink.html">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta property="og:site_name" content="TextNexus">
     <meta property="og:title" content="GhostLink - Free Proxy Browser">
     <meta property="og:description" content="Access any website anonymously with GhostLink.">
-    <meta property="og:url" content="https://immcrab.github.io/urban-octo-winner">
+    <meta property="og:url" content="https://textnexus.me/ghostlink.html">
     <meta property="og:type" content="website">
+    <meta property="og:image" content="https://textnexus.me/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="TextNexus — private chat, file sharing and AI with Lofin.dev">
     
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="GhostLink - Free Proxy Browser">
     <meta name="twitter:description" content="Access any website anonymously with GhostLink.">
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/immcrab/urban-octo-winner/main/og-image.png">
+    <meta name="twitter:image" content="https://textnexus.me/og-image.png">
     <script defer src="https://cloud.umami.is/script.js" data-website-id="cd4687b2-c160-4e0c-8b26-5df67d4ea39a"></script>
     <!--- Supabase for total visits --->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
@@ -2273,10 +2281,10 @@
 
     <div class="social-hud" id="social-hud">
         <div class="social-container">
-            <a href="https://github.com/immcrab/urban-octo-winner" target="_blank" class="social-icon" title="GitHub">
+            <a href="https://github.com/immcrab/urban-octo-winner" target="_blank" rel="noopener" class="social-icon" title="GitHub">
                 <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
             </a>
-            <a href="https://www.youtube.com/@imcrab.online" target="_blank" class="dev-avatar" style="background-image: url('https://avatars.githubusercontent.com/u/233476218?v=4');" title="YouTube"></a></div>
+            <a href="https://www.youtube.com/@imcrab.online" target="_blank" rel="noopener" class="dev-avatar" style="background-image: url('https://avatars.githubusercontent.com/u/233476218?v=4');" title="YouTube"></a></div>
         </div>
     </div>
 
@@ -2338,7 +2346,7 @@
                 <h2>App Registry</h2>
                 <p style="color:var(--text-dim)">
                     Discover and install community-driven tools and games, 
-                    <a href="https://github.com/virtuan4-max/ghostlink-apps" target="_blank" style="color:var(--accent); text-decoration:underline;">or upload your apps to the marketplace</a>.
+                    <a href="https://github.com/virtuan4-max/ghostlink-apps" target="_blank" rel="noopener" style="color:var(--accent); text-decoration:underline;">or upload your apps to the marketplace</a>.
                 </p>
             </div>
 
@@ -2769,7 +2777,7 @@
                             <button class="proxy-settings-tab" onclick="switchProxySettingsTab('shortcuts')">Shortcuts</button>
                             <button class="proxy-settings-tab" onclick="switchProxySettingsTab('general')">General</button>
                         </div>
-                        <button class="close-btn" id="close-wisp-modal"><i class="fa-solid fa-xmark"></i></button>
+                        <button class="close-btn" id="close-wisp-modal" aria-label="Close server settings"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                 </div>
 
@@ -2830,7 +2838,7 @@
             <div class="server-select-card">
                 <div class="server-select-header">
                     <h3><i class="fa-solid fa-server" style="margin-right:8px;"></i>Select Wisp Server</h3>
-                    <button class="close-btn" onclick="closeServerSelectModal()"><i class="fa-solid fa-xmark"></i></button>
+                    <button class="close-btn" onclick="closeServerSelectModal()" aria-label="Close server picker"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="server-select-body" id="server-list"></div>
                 <div class="server-select-footer">
@@ -2839,7 +2847,7 @@
                         <input type="text" id="custom-wisp-name" placeholder="Name (optional)" spellcheck="false" style="padding:9px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:var(--font);font-size:0.8rem;outline:none;transition:0.2s;color-scheme:dark;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
                         <div style="display:flex;gap:8px;">
                             <input type="text" id="custom-wisp-input" placeholder="wss://your-server.com/wisp/" spellcheck="false" style="flex:1;padding:9px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:var(--font);font-size:0.8rem;outline:none;transition:0.2s;color-scheme:dark;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-                            <button id="save-custom-wisp" style="padding:9px 16px;background:var(--accent);border:none;border-radius:8px;color:var(--bg);cursor:pointer;font-family:var(--font);font-size:0.72rem;font-weight:bold;letter-spacing:1px;text-transform:uppercase;transition:0.2s;white-space:nowrap;" onmouseover="this.style.boxShadow='0 0 10px var(--accent-glow)'" onmouseout="this.style.boxShadow='none'"><i class="fa-solid fa-plus"></i></button>
+                            <button id="save-custom-wisp" aria-label="Add server" style="padding:9px 16px;background:var(--accent);border:none;border-radius:8px;color:var(--bg);cursor:pointer;font-family:var(--font);font-size:0.72rem;font-weight:bold;letter-spacing:1px;text-transform:uppercase;transition:0.2s;white-space:nowrap;" onmouseover="this.style.boxShadow='0 0 10px var(--accent-glow)'" onmouseout="this.style.boxShadow='none'"><i class="fa-solid fa-plus"></i></button>
                         </div>
                     </div>
                     <div style="font-size:0.62rem;color:var(--text-dim);opacity:0.6;margin-top:4px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:4px;margin-bottom:1px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Lower ping = faster browsing</div>
@@ -2852,7 +2860,7 @@
             <div style="background:var(--card-bg);border:1px solid var(--accent);border-radius:16px;width:90%;max-width:380px;padding:24px;box-shadow:0 0 40px var(--accent-glow);backdrop-filter:blur(10px);">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);">
                     <h3 style="font-family:var(--font);font-size:0.85rem;font-weight:bold;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin:0;text-shadow:0 0 8px var(--accent-glow);">Edit Bookmark</h3>
-                    <button class="close-btn" onclick="closeBmEditModal()"><i class="fa-solid fa-xmark"></i></button>
+                    <button class="close-btn" onclick="closeBmEditModal()" aria-label="Close transport settings"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div style="margin-bottom:14px;">
                     <label style="display:block;font-family:var(--font);font-size:0.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Label</label>
@@ -3270,7 +3278,7 @@
     <div class="modal">
       <div class="modal-header">
         <h2>Add Shortcut</h2>
-        <button class="modal-close" id="cancelAdd"><i class="fa-solid fa-xmark"></i></button>
+        <button class="modal-close" id="cancelAdd" aria-label="Close shortcut dialog"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <label>Label</label>
       <input type="text" id="newLabel" placeholder="YouTube" spellcheck="false">
@@ -3367,10 +3375,10 @@
         const el = document.createElement('div');
         el.className = 'shortcut';
         el.style.animationDelay = (i * 0.04 + 0.04) + 's';
-        // Use inline SVG if available (default shortcuts), else fall back to <img> for user-added favicons
+        // Use inline SVG if available (default shortcuts), else fall back to <img alt=""> for user-added favicons
         const iconHtml = s.svg
           ? `<svg viewBox="${s.viewBox || '0 0 24 24'}" fill="currentColor" stroke="none" class="shortcut-svg">${s.svg}</svg>`
-          : `<img src="${s.icon}" onerror="this.style.display='none'">`;
+          : `<img alt="" src="${s.icon}" onerror="this.style.display='none'">`;
         el.innerHTML = `
           <div class="shortcut-icon">${iconHtml}</div>
           <span class="shortcut-label">${s.label}</span>`;
@@ -6198,7 +6206,7 @@
                 const iconHtml = tab.loading
                     ? `<div class="tab-spinner"></div>`
                     : tab.favicon
-                        ? `<img src="${tab.favicon}" class="tab-favicon" onerror="this.style.display='none'">`
+                        ? `<img alt="" src="${tab.favicon}" class="tab-favicon" onerror="this.style.display='none'">`
                         : '';
 
                 el.innerHTML = `${iconHtml}<span class="tab-title">${tab.title}</span><span class="tab-close">&times;</span>`;
@@ -6380,7 +6388,7 @@
                 const rawLabel = host ? host.replace(/^www\./, '').split('.')[0] : (def?.label || '');
                 const label = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
                 const icon = host ? `https://www.google.com/s2/favicons?domain=${host}&sz=64` : '';
-                // No svg — NT template falls back to <img> favicon, which is correct
+                // No svg — NT template falls back to <img alt=""> favicon, which is correct
                 list.push({ label, url, icon });
             });
             localStorage.setItem('gl_shortcuts', JSON.stringify(list));
@@ -6542,7 +6550,7 @@
 
                 const customBtns = isCustom
                     ? `<button class="edit-wisp-btn" onclick="event.stopPropagation(); editCustomWispName('${server.url}')" title="Rename"><i class="fa-solid fa-pencil"></i></button>
-                       <button class="delete-wisp-btn" onclick="event.stopPropagation(); deleteCustomWisp('${server.url}')"><i class="fa-solid fa-trash"></i></button>`
+                       <button class="delete-wisp-btn" aria-label="Remove server" onclick="event.stopPropagation(); deleteCustomWisp('${server.url}')"><i class="fa-solid fa-trash"></i></button>`
                     : '';
 
                 item.innerHTML = `

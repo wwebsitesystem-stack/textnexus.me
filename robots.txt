@@ -10,6 +10,8 @@ Disallow: /email-manager.html
 Disallow: /system_analytics_health.html
 Disallow: /nexus_admin_control_center.html
 Disallow: /notifications.html
+Disallow: /jeoweb.html
+Disallow: /nexus_maintenance.html
 
 Disallow: /signup.html
 Sitemap: https://textnexus.me/sitemap.xml

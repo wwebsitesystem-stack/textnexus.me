@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications - Nexus</title>
     <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -173,7 +174,7 @@
                 
                 notifDiv.innerHTML = `
                     <div class="relative shrink-0">
-                        <img src="${msg.photoURL || 'https://placehold.co/100'}" class="w-10 h-10 rounded-full object-cover border border-border">
+                        <img alt="" src="${msg.photoURL || 'https://placehold.co/100'}" class="w-10 h-10 rounded-full object-cover border border-border">
                         <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-background rounded-full flex items-center justify-center">
                             <div class="w-3 h-3 bg-[var(--brand-color)] rounded-full"></div>
                         </div>

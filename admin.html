@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus Admin</title>
     <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -970,7 +971,7 @@
             const bodyEl = root.querySelector('.drawer-body'); if (bodyEl) bodyEl.scrollTop = scroll;
         }
 
-        const notFound = (what) => `<div class="backdrop" data-close><div class="drawer"><div class="drawer-head"><span class="grow">${what} not found</span><button class="btn btn-icon" data-close><i class="ph ph-x"></i></button></div></div></div>`;
+        const notFound = (what) => `<div class="backdrop" data-close><div class="drawer"><div class="drawer-head"><span class="grow">${what} not found</span><button class="btn btn-icon" data-close aria-label="Close"><i class="ph ph-x"></i></button></div></div></div>`;
 
         function userDrawer(uid) {
             const u = usersById.get(uid);
@@ -979,7 +980,7 @@
             const userMsgs = messages.filter(m => m.uid === uid).slice(0, 40);
             const rawPaths = { textnexus: P.tnUsers, nexus: P.legacyUsers, textylabs: P.tlUsers };
             return `<div class="backdrop" data-close><div class="drawer">
-                <div class="drawer-head">${avatar(u, 'lg')}<div class="grow"><div class="row" style="gap:8px;flex-wrap:wrap"><span style="font-size:16px;font-weight:600">${esc(u.name || 'Unknown')}</span>${roleBadge(u.role)}${u.isBanned ? '<span class="badge bad">Banned</span>' : ''}</div><div class="mono t2" style="font-size:11px;margin-top:2px">${esc(u.email || 'no email')}</div></div><button class="btn btn-icon" data-close><i class="ph ph-x"></i></button></div>
+                <div class="drawer-head">${avatar(u, 'lg')}<div class="grow"><div class="row" style="gap:8px;flex-wrap:wrap"><span style="font-size:16px;font-weight:600">${esc(u.name || 'Unknown')}</span>${roleBadge(u.role)}${u.isBanned ? '<span class="badge bad">Banned</span>' : ''}</div><div class="mono t2" style="font-size:11px;margin-top:2px">${esc(u.email || 'no email')}</div></div><button class="btn btn-icon" data-close aria-label="Close"><i class="ph ph-x"></i></button></div>
                 <div class="drawer-body">
                     <div class="drawer-section">
                         <span class="panel-title">Credits</span>
@@ -1036,7 +1037,7 @@
             if (!c) return notFound('Chat');
             const creator = usersById.get(c.createdBy);
             return `<div class="backdrop" data-close><div class="drawer">
-                <div class="drawer-head"><span class="avatar lg" style="background:rgba(255,255,255,.08);color:#fff"><i class="ph ph-${id === 'global' ? 'globe' : 'users-three'}"></i></span><div class="grow"><div class="row" style="gap:8px"><span style="font-size:16px;font-weight:600">${esc(c.name)}</span>${c.disabled ? '<span class="badge bad">Disabled</span>' : '<span class="badge ok">Active</span>'}</div><div class="mono t2" style="font-size:11px;margin-top:2px">${c.code ? `code ${esc(c.code)} · ` : ''}${fmt(c.msgs.length)} messages</div></div><button class="btn btn-icon" data-close><i class="ph ph-x"></i></button></div>
+                <div class="drawer-head"><span class="avatar lg" style="background:rgba(255,255,255,.08);color:#fff"><i class="ph ph-${id === 'global' ? 'globe' : 'users-three'}"></i></span><div class="grow"><div class="row" style="gap:8px"><span style="font-size:16px;font-weight:600">${esc(c.name)}</span>${c.disabled ? '<span class="badge bad">Disabled</span>' : '<span class="badge ok">Active</span>'}</div><div class="mono t2" style="font-size:11px;margin-top:2px">${c.code ? `code ${esc(c.code)} · ` : ''}${fmt(c.msgs.length)} messages</div></div><button class="btn btn-icon" data-close aria-label="Close"><i class="ph ph-x"></i></button></div>
                 <div class="drawer-body">
                     <div class="drawer-section">
                         <div class="row" style="flex-wrap:wrap">

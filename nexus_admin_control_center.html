@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus Admin Control Center</title>
     <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -658,7 +659,7 @@
                 row.className = 'hover:bg-surfaceHover/50 transition-colors';
                 row.innerHTML = `
                     <td class="py-4 px-6 flex items-center gap-3">
-                        <img src="${u.photoURL || 'https://placehold.co/100'}" class="w-9 h-9 rounded-full object-cover border border-border" onerror="this.src='https://placehold.co/100'">
+                        <img alt="" src="${u.photoURL || 'https://placehold.co/100'}" class="w-9 h-9 rounded-full object-cover border border-border" onerror="this.src='https://placehold.co/100'">
                         <div class="flex flex-col">
                             <span class="font-medium text-textMain text-sm">${u.name}</span>
                             <span class="text-xs font-mono text-textMuted">${u.email}</span>
@@ -752,7 +753,7 @@
                         <td class="py-4 px-6 text-xs text-textMuted max-w-xs truncate">${s.prompt}</td>
                         <td class="py-4 px-6 text-xs text-textMuted">${new Date(s.createdAt).toLocaleDateString()}</td>
                         <td class="py-4 px-6 text-right">
-                            <button onclick="window.deleteAiSite('${s.id}')" ${!isOwner ? 'disabled' : ''} class="p-1.5 rounded bg-surfaceHover text-textMuted hover:text-red-400 disabled:opacity-30 transition-colors">
+                            <button aria-label="Delete AI site" onclick="window.deleteAiSite('${s.id}')" ${!isOwner ? 'disabled' : ''} class="p-1.5 rounded bg-surfaceHover text-textMuted hover:text-red-400 disabled:opacity-30 transition-colors">
                                 <i class="ph ph-trash text-sm"></i>
                             </button>
                         </td>
@@ -812,7 +813,7 @@
                             <button onclick="window.toggleChatState('${c.id}', ${!!c.isDisabled})" ${!isOwner ? 'disabled' : ''} class="px-2.5 py-1 rounded bg-surfaceHover border border-border text-xs text-textMuted hover:text-textMain disabled:opacity-30 transition-colors">
                                 ${c.isDisabled ? 'Enable' : 'Disable'}
                             </button>
-                            <button onclick="window.deleteChat('${c.id}')" ${!isOwner ? 'disabled' : ''} class="p-1.5 rounded bg-surfaceHover text-textMuted hover:text-red-400 disabled:opacity-30 transition-colors">
+                            <button aria-label="Delete chat" onclick="window.deleteChat('${c.id}')" ${!isOwner ? 'disabled' : ''} class="p-1.5 rounded bg-surfaceHover text-textMuted hover:text-red-400 disabled:opacity-30 transition-colors">
                                 <i class="ph ph-trash text-sm"></i>
                             </button>
                         </td>
@@ -919,7 +920,7 @@
                             <p class="text-xs text-textMuted leading-relaxed">${u.content}</p>
                             <span class="text-[10px] text-textMuted font-mono mt-1">Posted by ${u.author || 'Owner'}</span>
                         </div>
-                        <button onclick="window.deleteUpdate('${u.id}')" ${!isOwner ? 'disabled' : ''} class="p-1.5 rounded bg-surfaceHover text-textMuted hover:text-red-400 disabled:opacity-30 transition-colors shrink-0">
+                        <button aria-label="Delete update" onclick="window.deleteUpdate('${u.id}')" ${!isOwner ? 'disabled' : ''} class="p-1.5 rounded bg-surfaceHover text-textMuted hover:text-red-400 disabled:opacity-30 transition-colors shrink-0">
                             <i class="ph ph-trash text-sm"></i>
                         </button>
                     `;

@@ -6,6 +6,8 @@
     <title>Group Chat | TextNexus</title>
     <meta name="description" content="Real-time group chat with invite codes, file sharing and themes, built into the TextNexus workspace.">
     <link rel="canonical" href="https://textnexus.me/TextNexus.html">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0a0a0a">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="TextNexus">
     <meta property="og:title" content="Group Chat | TextNexus">
@@ -103,7 +105,7 @@
                     <i class="ph ph-phone text-lg"></i>
                 </button>
                 <!-- Chat Settings (For Chat Owner) -->
-                <button id="chat-settings-btn" onclick="openModal('settings-chat-modal')" class="hidden w-8 h-8 rounded-lg hover:bg-surfaceHover flex items-center justify-center text-textMuted transition-colors">
+                <button id="chat-settings-btn" aria-label="Chat settings" onclick="openModal('settings-chat-modal')" class="hidden w-8 h-8 rounded-lg hover:bg-surfaceHover flex items-center justify-center text-textMuted transition-colors">
                     <i class="ph ph-dots-three text-xl"></i>
                 </button>
             </div>
@@ -128,7 +130,7 @@
                         <i class="ph ph-file text-lg text-textMain"></i>
                         <span id="preview-file-name" class="max-w-[150px] truncate font-medium text-textMain"></span>
                     </div>
-                    <button onclick="clearAttachment()" class="ml-2 text-textMuted hover:text-red-400 transition-colors">
+                    <button onclick="clearAttachment()" aria-label="Remove attachment" class="ml-2 text-textMuted hover:text-red-400 transition-colors">
                         <i class="ph ph-x text-sm"></i>
                     </button>
                 </div>
@@ -136,11 +138,11 @@
                 <!-- Input Row -->
                 <div class="relative flex items-center">
                     <input type="file" id="file-input" class="hidden" accept="image/*,application/pdf,.txt,.doc,.docx,.zip,.rar,.csv,.json,.xml,.mp3,.mp4">
-                    <button id="attach-btn" type="button" class="absolute left-2 w-8 h-8 flex items-center justify-center text-textMuted hover:text-textMain transition-colors z-10">
+                    <button id="attach-btn" type="button" aria-label="Attach a file" class="absolute left-2 w-8 h-8 flex items-center justify-center text-textMuted hover:text-textMain transition-colors z-10">
                         <i class="ph ph-paperclip text-lg"></i>
                     </button>
                     <input type="text" id="message-input" placeholder="Type a message..." disabled class="w-full bg-surface border border-border rounded-xl py-3 pl-11 pr-12 outline-none text-sm text-textMain focus:border-textMuted transition-colors disabled:opacity-50">
-                    <button id="send-btn" disabled class="absolute right-2 w-8 h-8 bg-textMain text-background rounded-lg flex items-center justify-center disabled:opacity-50 hover:opacity-90 transition-opacity">
+                    <button id="send-btn" aria-label="Send message" disabled class="absolute right-2 w-8 h-8 bg-textMain text-background rounded-lg flex items-center justify-center disabled:opacity-50 hover:opacity-90 transition-opacity">
                         <i class="ph ph-paper-plane-right text-sm"></i>
                     </button>
                 </div>
@@ -426,7 +428,7 @@
                         const bubbleRadius = isMe ? 'rounded-2xl rounded-tr-sm' : 'rounded-2xl rounded-tl-sm';
 
                         msgDiv.innerHTML = `
-                            <img src="${msg.photoURL || 'https://placehold.co/100'}" class="w-8 h-8 rounded-full object-cover shrink-0 border border-border">
+                            <img alt="" src="${msg.photoURL || 'https://placehold.co/100'}" class="w-8 h-8 rounded-full object-cover shrink-0 border border-border">
                             <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
                                 <div class="flex items-center gap-2 mb-1">
                                     <span class="text-xs font-medium text-textMain">${msg.name}</span>
