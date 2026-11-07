@@ -301,44 +301,69 @@
             listenToUserChats();
         });
 
+        // Membership list + public chat metadata. The chat nodes themselves are
+        // only readable by their members, so the sidebar never downloads other
+        // people's messages, and a chat you were never added to cannot be opened.
+        let userChatIds = {};
+        let indexCache = {};
+        let unsubscribeUserChats = null;
+        let unsubscribeIndex = null;
+
+        function renderChatList() {
+            const globalBtn = document.getElementById('btn-global');
+            chatList.innerHTML = '';
+            chatList.appendChild(globalBtn);
+
+            Object.keys(userChatIds).forEach(chatId => {
+                if (chatId === 'global') return;
+                const chat = indexCache[chatId];
+                if (!chat) return;
+
+                const btn = document.createElement('button');
+                btn.onclick = () => loadChat(chatId, chat.name);
+                btn.className = `w-full text-left p-3 rounded-xl border border-transparent flex items-center gap-3 transition-colors ${activeChatId === chatId ? 'chat-active' : 'hover:bg-surfaceHover'}`;
+                btn.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-border flex items-center justify-center shrink-0 text-textMuted">
+                        <i class="ph ph-users text-sm"></i>
+                    </div>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-sm font-medium text-textMain truncate">${escapeHtml(chat.name || 'Group chat')}</p>
+                        <p class="text-[11px] text-textMuted truncate">Code: ${escapeHtml(chat.code || '------')}</p>
+                    </div>
+                `;
+                chatList.appendChild(btn);
+            });
+        }
+
         // Listen for joined/created group chats
         function listenToUserChats() {
-            const chatsRef = dbRef(db, 'textnexus/chats');
-            onValue(chatsRef, (snapshot) => {
-                const data = snapshot.val();
-                
-                // Clear extra chats (preserve Global)
-                const globalBtn = document.getElementById('btn-global');
-                chatList.innerHTML = '';
-                chatList.appendChild(globalBtn);
+            if (unsubscribeUserChats) { unsubscribeUserChats(); unsubscribeUserChats = null; }
+            if (unsubscribeIndex) { unsubscribeIndex(); unsubscribeIndex = null; }
 
-                if (!data) return;
+            userChatIds = {};
+            indexCache = {};
+            renderChatList();
 
-                Object.keys(data).forEach(chatId => {
-                    if (chatId === 'global') return;
-                    const chat = data[chatId];
-                    
-                    // Show if user is owner or member
-                    const isOwner = currentUser && (chat.createdBy === currentUser.uid || currentUser.email === 'brodywilliams0226@gmail.com');
-                    const isMember = currentUser && chat.members && chat.members[currentUser.uid];
-
-                    if (isOwner || isMember) {
-                        const btn = document.createElement('button');
-                        btn.onclick = () => loadChat(chatId, chat.name);
-                        btn.className = `w-full text-left p-3 rounded-xl border border-transparent flex items-center gap-3 transition-colors ${activeChatId === chatId ? 'chat-active' : 'hover:bg-surfaceHover'}`;
-                        btn.innerHTML = `
-                            <div class="w-8 h-8 rounded-full bg-border flex items-center justify-center shrink-0 text-textMuted">
-                                <i class="ph ph-users text-sm"></i>
-                            </div>
-                            <div class="flex-1 overflow-hidden">
-                                <p class="text-sm font-medium text-textMain truncate">${chat.name}</p>
-                                <p class="text-[11px] text-textMuted truncate">Code: ${chat.code}</p>
-                            </div>
-                        `;
-                        chatList.appendChild(btn);
-                    }
-                });
+            // Public metadata: names and invite codes only, no message content.
+            unsubscribeIndex = onValue(dbRef(db, 'textnexus/index'), (snapshot) => {
+                indexCache = snapshot.val() || {};
+                renderChatList();
             });
+
+            if (!currentUser) return;
+
+            unsubscribeUserChats = onValue(dbRef(db, `textnexus/userChats/${currentUser.uid}`), (snapshot) => {
+                userChatIds = snapshot.val() || {};
+                renderChatList();
+            });
+        }
+
+        // Record membership in both the chat and the user's own index.
+        async function joinChat(chatId) {
+            await update(dbRef(db, `textnexus/chats/${chatId}/members`), {
+                [currentUser.uid]: true
+            });
+            await set(dbRef(db, `textnexus/userChats/${currentUser.uid}/${chatId}`), true);
         }
 
         // Load Active Chat
@@ -561,6 +586,14 @@
                 }
             });
 
+            await set(dbRef(db, `textnexus/index/${newChatRef.key}`), {
+                name: name,
+                code: inviteCode,
+                createdBy: currentUser.uid,
+                disabled: false
+            });
+            await set(dbRef(db, `textnexus/userChats/${currentUser.uid}/${newChatRef.key}`), true);
+
             document.getElementById('new-group-name').value = '';
             closeModal('create-modal');
             loadChat(newChatRef.key, name);
@@ -571,26 +604,23 @@
             const codeInput = document.getElementById('join-code-input').value.trim().toUpperCase();
             if (!codeInput || !currentUser) return;
 
-            const chatsRef = dbRef(db, 'textnexus/chats');
-            const snapshot = await get(chatsRef);
-            const chats = snapshot.val();
+            // Resolve the code against the public index instead of downloading
+            // every chat in the database.
+            const snapshot = await get(dbRef(db, 'textnexus/index'));
+            const index = snapshot.val() || {};
 
             let foundChatId = null;
             let foundChatName = '';
 
-            if (chats) {
-                Object.keys(chats).forEach(id => {
-                    if (chats[id].code === codeInput) {
-                        foundChatId = id;
-                        foundChatName = chats[id].name;
-                    }
-                });
-            }
+            Object.keys(index).forEach(id => {
+                if (String(index[id].code || '').toUpperCase() === codeInput) {
+                    foundChatId = id;
+                    foundChatName = index[id].name;
+                }
+            });
 
             if (foundChatId) {
-                await update(dbRef(db, `textnexus/chats/${foundChatId}/members`), {
-                    [currentUser.uid]: true
-                });
+                await joinChat(foundChatId);
                 document.getElementById('join-code-input').value = '';
                 closeModal('join-modal');
                 loadChat(foundChatId, foundChatName);
@@ -604,6 +634,7 @@
             if (!activeChatId || activeChatId === 'global') return;
             const newStatus = !currentChatData.disabled;
             await update(dbRef(db, `textnexus/chats/${activeChatId}`), { disabled: newStatus });
+            await update(dbRef(db, `textnexus/index/${activeChatId}`), { disabled: newStatus });
             closeModal('settings-chat-modal');
         });
 
@@ -612,6 +643,10 @@
             if (!activeChatId || activeChatId === 'global') return;
             if (confirm('Are you sure you want to delete this chat? This cannot be undone.')) {
                 await remove(dbRef(db, `textnexus/chats/${activeChatId}`));
+                await remove(dbRef(db, `textnexus/index/${activeChatId}`));
+                if (currentUser) {
+                    await remove(dbRef(db, `textnexus/userChats/${currentUser.uid}/${activeChatId}`));
+                }
                 closeModal('settings-chat-modal');
                 loadChat('global', 'Global Chat');
             }

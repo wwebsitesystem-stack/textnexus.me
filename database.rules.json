@@ -145,9 +145,10 @@
         }
       },
       "chats": {
-        ".read": "auth != null",
+        ".read": "auth != null && (auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
         "$chatId": {
-          ".write": "auth != null && ((!data.exists() && newData.child('createdBy').val() === auth.uid && newData.child('name').isString() && newData.child('name').val().length <= 100) || (!newData.exists() && data.child('createdBy').val() === auth.uid))",
+          ".read": "auth != null && ($chatId === 'global' || data.child('createdBy').val() === auth.uid || data.child('members').child(auth.uid).val() === true || auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
+          ".write": "auth != null && ((!data.exists() && newData.child('createdBy').val() === auth.uid && newData.child('name').isString() && newData.child('name').val().length <= 100) || (!newData.exists() && data.child('createdBy').val() === auth.uid) || auth.token.email === 'brodywilliams0226@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
           "name": {
             ".write": "auth != null && root.child('textnexus/chats').child($chatId).child('createdBy').val() === auth.uid",
             ".validate": "newData.isString() && newData.val().length <= 100"
@@ -171,6 +172,25 @@
               ".write": "auth != null && root.child('textnexus/users').child(auth.uid).child('isBanned').val() !== true && ($chatId === 'global' || root.child('textnexus/chats').child($chatId).child('members').child(auth.uid).val() === true)",
               ".validate": "newData.hasChildren(['uid', 'email', 'name', 'timestamp']) && newData.child('uid').val() === auth.uid && newData.child('timestamp').isNumber() && newData.child('name').isString() && newData.child('name').val().length <= 80 && (!newData.child('text').exists() || (newData.child('text').isString() && newData.child('text').val().length <= 10000)) && (!newData.child('fileName').exists() || newData.child('fileName').isString())"
             }
+          }
+        }
+      },
+      "index": {
+        ".read": "auth != null",
+        "$chatId": {
+          ".write": "auth != null && ((!data.exists() && newData.child('createdBy').val() === auth.uid) || data.child('createdBy').val() === auth.uid || root.child('chats').child($chatId).child('members').child(auth.uid).val() === true || auth.token.email === 'brodywilliams0226@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
+          ".validate": "newData.hasChildren(['name', 'code', 'createdBy']) && newData.child('name').isString() && newData.child('name').val().length <= 100 && newData.child('code').isString() && newData.child('code').val().length === 6 && newData.child('createdBy').isString()",
+          "disabled": {
+            ".validate": "newData.isBoolean()"
+          }
+        }
+      },
+      "userChats": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && (auth.uid === $uid || auth.token.email === 'brodywilliams0226@gmail.com' || auth.token.email === 'imcrabfr@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
+          "$chatId": {
+            ".validate": "newData.isBoolean()"
           }
         }
       }

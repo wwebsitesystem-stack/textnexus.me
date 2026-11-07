@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Chat index migration | TextNexus</title>
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <style>
+        :root { color-scheme: dark; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 40px 24px; background: #0a0a0a; color: #ededed;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+        .wrap { max-width: 720px; margin: 0 auto; }
+        h1 { font-size: 21px; font-weight: 600; margin: 0 0 8px; letter-spacing: -.01em; }
+        .lede { font-size: 13px; line-height: 1.65; color: #a1a1aa; margin: 0 0 24px; }
+        .card { background: #121212; border: 1px solid #262626; border-radius: 12px; padding: 20px; }
+        .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+        .pill { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em;
+                border: 1px solid #262626; border-radius: 999px; padding: 4px 9px; color: #a1a1aa; }
+        .pill.ok { color: #34d399; border-color: rgba(52,211,153,.3); }
+        .pill.bad { color: #f87171; border-color: rgba(248,113,113,.3); }
+        button {
+            border: 0; border-radius: 8px; padding: 10px 16px; font-size: 12px; font-weight: 700;
+            background: #ededed; color: #000; cursor: pointer;
+        }
+        button:disabled { opacity: .45; cursor: default; }
+        pre {
+            margin: 0; padding: 14px; background: #0a0a0a; border: 1px solid #262626; border-radius: 9px;
+            font-size: 11.5px; line-height: 1.7; color: #a1a1aa; max-height: 340px; overflow: auto;
+            white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+        .warn { font-size: 11.5px; line-height: 1.6; color: #f0d08a; margin-top: 14px; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>Chat index migration</h1>
+    <p class="lede">
+        One-time backfill. Copies each existing group chat's name and invite code into
+        <code>textnexus/index</code>, and records every member in <code>textnexus/userChats</code>,
+        so chat lists keep working once chat nodes become readable by members only.
+        Safe to run more than once.
+    </p>
+
+    <div class="card">
+        <div class="row">
+            <span class="pill" id="auth-pill">checking sign-in…</span>
+            <button id="run-btn" disabled>Run migration</button>
+        </div>
+        <pre id="log">Waiting…</pre>
+        <p class="warn">
+            Run this <strong>before</strong> you deploy the hardened rules. If a chat has no
+            six-character invite code it is skipped and listed below rather than guessed at.
+        </p>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getDatabase, ref as dbRef, get, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAO_ffupJOIMPE9m4ARtaqSzC1vGDkIAco",
+        authDomain: "nexus-web-development-official.firebaseapp.com",
+        projectId: "nexus-web-development-official",
+        databaseURL: "https://nexus-web-development-official-default-rtdb.firebaseio.com",
+        storageBucket: "nexus-web-development-official.appspot.com"
+    };
+
+    const OWNERS = ["brodywilliams0226@gmail.com", "imcrabfr@gmail.com"];
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const pill = document.getElementById("auth-pill");
+    const btn = document.getElementById("run-btn");
+    const logEl = document.getElementById("log");
+
+    const lines = [];
+    const log = (msg) => {
+        lines.push(msg);
+        logEl.textContent = lines.join("\n");
+        logEl.scrollTop = logEl.scrollHeight;
+    };
+
+    let authorisedUser = null;
+
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            pill.textContent = "not signed in — signing in…";
+            pill.className = "pill bad";
+            signInWithPopup(auth, new GoogleAuthProvider()).catch((err) => {
+                pill.textContent = "sign-in failed: " + err.code;
+                log("Could not sign in: " + err.message);
+            });
+            return;
+        }
+        if (!OWNERS.includes(user.email)) {
+            pill.textContent = "signed in as " + user.email + " (not an owner)";
+            pill.className = "pill bad";
+            log("This page only runs for an owner account.");
+            return;
+        }
+        authorisedUser = user;
+        pill.textContent = "owner: " + user.email;
+        pill.className = "pill ok";
+        btn.disabled = false;
+    });
+
+    btn.addEventListener("click", async () => {
+        if (!authorisedUser) return;
+        btn.disabled = true;
+        lines.length = 0;
+        log("Reading existing chats…");
+
+        let chats;
+        try {
+            const snap = await get(dbRef(db, "textnexus/chats"));
+            chats = snap.val() || {};
+        } catch (err) {
+            log("Could not read chats: " + err.message);
+            log("If the hardened rules are already deployed, restore the old rules, run this page, then deploy again.");
+            btn.disabled = false;
+            return;
+        }
+
+        const ids = Object.keys(chats).filter((id) => id !== "global");
+        log("Found " + ids.length + " group chat(s).");
+
+        let indexed = 0;
+        let membersWritten = 0;
+        const skipped = [];
+
+        for (const chatId of ids) {
+            const chat = chats[chatId] || {};
+            const code = String(chat.code || "").toUpperCase();
+
+            if (code.length !== 6) {
+                skipped.push(chatId + " (no valid invite code)");
+                continue;
+            }
+
+            try {
+                await set(dbRef(db, `textnexus/index/${chatId}`), {
+                    name: String(chat.name || "Group chat").slice(0, 100),
+                    code: code,
+                    createdBy: chat.createdBy || authorisedUser.uid,
+                    disabled: chat.disabled === true
+                });
+                indexed += 1;
+            } catch (err) {
+                log("index write failed for " + chatId + ": " + err.message);
+                skipped.push(chatId + " (index write denied)");
+                continue;
+            }
+
+            const members = chat.members || {};
+            for (const uid of Object.keys(members)) {
+                if (members[uid] !== true) continue;
+                try {
+                    await set(dbRef(db, `textnexus/userChats/${uid}/${chatId}`), true);
+                    membersWritten += 1;
+                } catch (err) {
+                    log("userChats write failed for " + uid + ": " + err.message);
+                }
+            }
+            log("  " + (chat.name || chatId) + " → indexed, " + Object.keys(members).length + " member(s)");
+        }
+
+        log("");
+        log("Done. Indexed " + indexed + " chat(s), wrote " + membersWritten + " membership record(s).");
+        if (skipped.length) {
+            log("Skipped:");
+            skipped.forEach((s) => log("  - " + s));
+        }
+        log("Next: deploy the hardened rules, then push the updated chat page.");
+        btn.disabled = false;
+    });
+</script>
+</body>
+</html>
