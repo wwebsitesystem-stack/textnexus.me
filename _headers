@@ -19,6 +19,10 @@
 /*.png
   Cache-Control: public, max-age=86400
 
+/*.mp4
+  Cache-Control: public, max-age=604800
+  Accept-Ranges: bytes
+
 /signup.html
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-cache
