@@ -179,10 +179,14 @@
         ".read": "auth != null",
         "$chatId": {
           ".write": "auth != null && ((!data.exists() && newData.child('createdBy').val() === auth.uid) || data.child('createdBy').val() === auth.uid || root.child('chats').child($chatId).child('members').child(auth.uid).val() === true || auth.token.email === 'brodywilliams0226@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
-          ".validate": "newData.hasChildren(['name', 'code', 'createdBy']) && newData.child('name').isString() && newData.child('name').val().length <= 100 && newData.child('code').isString() && newData.child('code').val().length === 6 && newData.child('createdBy').isString()",
-          "disabled": {
-            ".validate": "newData.isBoolean()"
-          }
+          ".validate": "newData.hasChildren(['name', 'createdBy']) && newData.child('name').isString() && newData.child('name').val().length <= 100 && newData.child('createdBy').isString() && (!newData.child('disabled').exists() || newData.child('disabled').isBoolean())"
+        }
+      },
+      "invites": {
+        "$code": {
+          ".read": "auth != null",
+          ".write": "auth != null && ((!data.exists() && newData.child('chatId').isString() && root.child('textnexus/chats').child(newData.child('chatId').val()).child('createdBy').val() === auth.uid) || (!newData.exists() && root.child('textnexus/chats').child(data.child('chatId').val()).child('createdBy').val() === auth.uid) || auth.token.email === 'brodywilliams0226@gmail.com' || root.child('nexus/users').child(auth.uid).child('role').val() === 'owner')",
+          ".validate": "newData.hasChildren(['chatId']) && newData.child('chatId').isString()"
         }
       },
       "userChats": {

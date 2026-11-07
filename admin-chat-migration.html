@@ -147,10 +147,10 @@
             try {
                 await set(dbRef(db, `textnexus/index/${chatId}`), {
                     name: String(chat.name || "Group chat").slice(0, 100),
-                    code: code,
                     createdBy: chat.createdBy || authorisedUser.uid,
                     disabled: chat.disabled === true
                 });
+                await set(dbRef(db, `textnexus/invites/${code}`), { chatId: chatId });
                 indexed += 1;
             } catch (err) {
                 log("index write failed for " + chatId + ": " + err.message);
