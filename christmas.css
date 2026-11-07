@@ -1,0 +1,1290 @@
+/* =========================================================
+   TEXTNEXUS — CHRISTMAS / WINTER EDITION
+   Scoped to html[data-season="christmas"]. Generated from
+   thanksgiving.css by artifacts/christmas-theme/gen.py so both seasons
+   keep the same component coverage.
+   ========================================================= */
+
+html[data-season="christmas"] {
+  --tg-ink: #070c17;
+  --tg-ink-2: #0d1524;
+  --tg-ink-3: #131e30;
+  --tg-cream: #eef4ff;
+  --tg-cream-2: #d3e0f4;
+  --tg-muted: #9fb3cf;
+  --tg-faint: #74889f;
+  --tg-pumpkin: #c8453a;
+  --tg-pumpkin-bright: #e2564a;
+  --tg-amber: #f0d08a;
+  --tg-cranberry: #2f7a5f;
+  --tg-sage: #7fa8c9;
+  --tg-line: rgba(214, 231, 255, 0.16);
+  --tg-line-strong: rgba(214, 231, 255, 0.30);
+  --font-season: Georgia, "Times New Roman", serif;
+
+  /* Shell tokens */
+  --bg-base: #070c17;
+  --bg-surface: #0d1524;
+  --glass-panel: rgba(13, 21, 36, 0.82);
+  --glass-border: rgba(214, 231, 255, 0.14);
+  --glass-hover: rgba(232, 177, 92, 0.1);
+  --text-primary: #eef4ff;
+  --text-secondary: #9fb3cf;
+  --text-tertiary: #74889f;
+  --accent-primary: #eef4ff;
+  --accent-gold: #f0d08a;
+
+  /* Overview tokens */
+  --bg: #070c17;
+  --surface: #0d1524;
+  --border: #20324c;
+  --text: #eef4ff;
+  --muted: #9fb3cf;
+  --ok: #7fa8c9;
+
+  /* Updates tokens */
+  --brand-color: #f0d08a;
+
+  color-scheme: dark;
+}
+
+html[data-season="christmas"] ::selection {
+  background: var(--tg-amber);
+  color: var(--tg-ink);
+}
+
+html[data-season="christmas"] :focus-visible {
+  outline-color: var(--tg-amber);
+}
+
+html[data-season="christmas"] body {
+  background-color: var(--tg-ink) !important;
+  background-image:
+    radial-gradient(ellipse at 10% -10%, rgba(200, 69, 58, 0.12), transparent 42%),
+    radial-gradient(ellipse at 90% 105%, rgba(47, 122, 95, 0.10), transparent 46%);
+  background-attachment: fixed;
+  color: var(--tg-cream);
+}
+
+/* =========================================================
+   NEXUS SHELL
+   ========================================================= */
+
+html[data-season="christmas"] .ambient-mesh {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(214, 231, 255, 0.14), transparent 34%),
+    radial-gradient(circle at 84% 100%, rgba(47, 122, 95, 0.11), transparent 38%),
+    radial-gradient(circle at 50% 50%, rgba(200, 69, 58, 0.05), transparent 58%);
+}
+
+html[data-season="christmas"] aside.sidebar {
+  background: linear-gradient(180deg, rgba(13, 21, 36, 0.92), rgba(18, 10, 6, 0.94));
+  border-color: var(--tg-line);
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html[data-season="christmas"] .brand-icon {
+  background: linear-gradient(145deg, #f7dcac, #c8453a);
+  box-shadow: 0 0 20px rgba(214, 231, 255, 0.20);
+}
+
+html[data-season="christmas"] .brand-icon svg {
+  fill: #2a1409;
+}
+
+html[data-season="christmas"] .brand-text h1 {
+  color: var(--tg-cream);
+}
+
+html[data-season="christmas"] .brand-text span {
+  color: var(--tg-faint);
+}
+
+html[data-season="christmas"] .nav-label {
+  color: var(--tg-faint);
+}
+
+html[data-season="christmas"] .nav-item {
+  color: var(--tg-muted);
+}
+
+html[data-season="christmas"] .nav-item:hover {
+  color: var(--tg-cream);
+  background: var(--glass-hover);
+}
+
+html[data-season="christmas"] .nav-item.active {
+  color: var(--tg-cream);
+  background: linear-gradient(90deg, rgba(217, 122, 63, 0.2), rgba(232, 177, 92, 0.06));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+html[data-season="christmas"] .nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--tg-pumpkin-bright);
+  box-shadow: 0 0 12px rgba(240, 154, 88, 0.45);
+}
+
+html[data-season="christmas"] .top-hud {
+  background: linear-gradient(100deg, rgba(38, 21, 12, 0.9), rgba(7, 12, 23, 0.78));
+  border-color: var(--tg-line);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html[data-season="christmas"] .cmd-button {
+  background: rgba(5, 9, 18, 0.55);
+  border-color: var(--tg-line);
+  color: var(--tg-muted);
+}
+
+html[data-season="christmas"] .cmd-button:hover {
+  background: rgba(214, 231, 255, 0.08);
+  border-color: var(--tg-line-strong);
+  color: var(--tg-cream);
+}
+
+html[data-season="christmas"] .cmd-kbd {
+  background: rgba(214, 231, 255, 0.10);
+  color: var(--tg-amber);
+}
+
+html[data-season="christmas"] .system-time {
+  color: var(--tg-muted);
+}
+
+html[data-season="christmas"] .pulse-dot {
+  background: var(--tg-amber);
+  box-shadow: 0 0 10px rgba(214, 231, 255, 0.65);
+}
+
+html[data-season="christmas"] .iframe-wrapper {
+  background: #070c17;
+  border-color: var(--tg-line);
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+html[data-season="christmas"] .tg-season-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border: 1px solid var(--tg-line);
+  border-radius: 999px;
+  background: rgba(200, 69, 58, 0.07);
+  color: var(--tg-amber);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+html[data-season="christmas"] .tg-season-pill svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+html[data-season="christmas"] .tg-shell-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px;
+  border: 1px solid var(--tg-line);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(217, 122, 63, 0.1), rgba(214, 231, 255, 0.04));
+}
+
+html[data-season="christmas"] .tg-shell-note svg {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  stroke: var(--tg-amber);
+  fill: rgba(200, 69, 58, 0.10);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+html[data-season="christmas"] .tg-shell-note strong {
+  display: block;
+  color: var(--tg-cream);
+  font-family: var(--font-season);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+html[data-season="christmas"] .tg-shell-note span {
+  display: block;
+  margin-top: 3px;
+  color: var(--tg-faint);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+/* =========================================================
+   SHARED SEASONAL UI
+   ========================================================= */
+
+html[data-season="christmas"] .tg-kicker {
+  display: block;
+  color: var(--tg-amber);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+html[data-season="christmas"] .tg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 9px 15px;
+  border: 1px solid var(--tg-pumpkin-bright);
+  border-radius: 10px;
+  background: var(--tg-pumpkin);
+  color: #08101d;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+html[data-season="christmas"] .tg-btn:hover {
+  background: var(--tg-pumpkin-bright);
+  border-color: #ffe8bd;
+  color: #08101d;
+  transform: translateY(-1px);
+}
+
+html[data-season="christmas"] .tg-btn-ghost {
+  background: transparent;
+  border-color: var(--tg-line-strong);
+  color: var(--tg-cream);
+}
+
+html[data-season="christmas"] .tg-btn-ghost:hover {
+  background: rgba(232, 177, 92, 0.1);
+  border-color: var(--tg-amber);
+  color: var(--tg-cream);
+}
+
+/* =========================================================
+   OVERVIEW / HOME
+   ========================================================= */
+
+html[data-season="christmas"] .page {
+  max-width: 980px;
+}
+
+html[data-season="christmas"] .page > h1 {
+  color: var(--tg-cream);
+  font-family: var(--font-season);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+html[data-season="christmas"] .lede {
+  color: var(--tg-muted);
+  font-size: 13.5px;
+}
+
+html[data-season="christmas"] .card {
+  background: linear-gradient(160deg, rgba(13, 21, 36, 0.92), rgba(7, 12, 23, 0.96));
+  border-color: var(--tg-line);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+html[data-season="christmas"] .card h2 {
+  color: var(--tg-cream);
+  font-family: var(--font-season);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+html[data-season="christmas"] .card p {
+  color: var(--tg-muted);
+}
+
+html[data-season="christmas"] .link {
+  background: rgba(13, 7, 4, 0.58);
+  border-color: var(--tg-line);
+  color: var(--tg-cream-2);
+}
+
+html[data-season="christmas"] .link:hover {
+  background: rgba(217, 122, 63, 0.09);
+  border-color: var(--tg-line-strong);
+  color: var(--tg-cream);
+}
+
+html[data-season="christmas"] .link.static:hover {
+  background: rgba(13, 7, 4, 0.58);
+  border-color: var(--tg-line);
+  color: var(--tg-cream-2);
+}
+
+html[data-season="christmas"] .dot {
+  background: var(--tg-sage);
+  box-shadow: 0 0 9px rgba(139, 154, 107, 0.45);
+}
+
+html[data-season="christmas"] .tg-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(230px, 0.7fr);
+  align-items: center;
+  gap: 18px;
+  min-height: 292px;
+  margin-bottom: 16px;
+  padding: 32px;
+  overflow: hidden;
+  border: 1px solid var(--tg-line);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 84% 48%, rgba(217, 122, 63, 0.24), transparent 34%),
+    radial-gradient(circle at 8% 0%, rgba(232, 177, 92, 0.1), transparent 42%),
+    linear-gradient(135deg, #101c30 0%, #211109 54%, #180d08 100%);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html[data-season="christmas"] .tg-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.035) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.05) 0 1px, transparent 1.5px);
+  background-size: 34px 34px, 46px 46px;
+  opacity: 0.6;
+}
+
+html[data-season="christmas"] .tg-hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+html[data-season="christmas"] .tg-hero h2 {
+  max-width: 17ch;
+  margin: 10px 0 12px;
+  color: #f2f7ff;
+  font-family: var(--font-season);
+  font-size: clamp(30px, 4vw, 43px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+}
+
+html[data-season="christmas"] .tg-hero h2 em {
+  color: var(--tg-amber);
+  font-weight: 400;
+}
+
+html[data-season="christmas"] .tg-hero p {
+  max-width: 52ch;
+  margin: 0;
+  color: #d6bda5;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+html[data-season="christmas"] .tg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+html[data-season="christmas"] .tg-hero-art {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-height: 230px;
+}
+
+html[data-season="christmas"] .tg-hero-art::before {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(214, 231, 255, 0.14), rgba(217, 122, 63, 0.04) 58%, transparent 70%);
+  filter: blur(4px);
+}
+
+html[data-season="christmas"] .tg-turkey {
+  position: relative;
+  z-index: 1;
+  width: min(242px, 92%);
+  height: auto;
+  filter: drop-shadow(0 16px 20px rgba(0, 0, 0, 0.3));
+  animation: tg-float 7s ease-in-out infinite;
+}
+
+html[data-season="christmas"] .tg-hero-stamp {
+  position: absolute;
+  right: 2px;
+  bottom: 5px;
+  z-index: 2;
+  color: rgba(238, 244, 255, 0.6);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transform: rotate(-7deg);
+}
+
+@keyframes tg-float {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-7px) rotate(1deg); }
+}
+
+html[data-season="christmas"] .tg-gratitude {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 16px;
+  padding: 24px 26px;
+  border: 1px solid var(--tg-line);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(200, 69, 58, 0.10), transparent 38%),
+    linear-gradient(120deg, rgba(38, 21, 12, 0.86), rgba(7, 12, 23, 0.94));
+}
+
+html[data-season="christmas"] .tg-gratitude h2 {
+  margin: 7px 0 6px;
+  color: var(--tg-cream);
+  font-family: var(--font-season);
+  font-size: 23px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+html[data-season="christmas"] .tg-gratitude p {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--tg-muted);
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+
+html[data-season="christmas"] .tg-gratitude .tg-btn {
+  flex: 0 0 auto;
+}
+
+/* =========================================================
+   UPDATES
+   ========================================================= */
+
+html[data-season="christmas"] body > header {
+  background: linear-gradient(100deg, rgba(13, 21, 36, 0.96), rgba(7, 12, 23, 0.92)) !important;
+  border-color: var(--tg-line) !important;
+}
+
+html[data-season="christmas"] body > header h2 {
+  color: var(--tg-cream);
+}
+
+html[data-season="christmas"] body > header p {
+  color: var(--tg-muted) !important;
+}
+
+html[data-season="christmas"] .text-textMain {
+  color: var(--tg-cream) !important;
+}
+
+html[data-season="christmas"] .text-textMuted {
+  color: var(--tg-muted) !important;
+}
+
+html[data-season="christmas"] .bg-surface {
+  background-color: var(--tg-ink-2) !important;
+}
+
+html[data-season="christmas"] .bg-surfaceHover {
+  background-color: var(--tg-ink-3) !important;
+}
+
+html[data-season="christmas"] .border-border {
+  border-color: var(--tg-line) !important;
+}
+
+html[data-season="christmas"] .tg-update-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 22px;
+  overflow: hidden;
+  border: 1px solid var(--tg-line);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 88% 20%, rgba(200, 69, 58, 0.16), transparent 38%),
+    linear-gradient(125deg, #101c30, #0d1524 72%);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+html[data-season="christmas"] .tg-update-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--tg-line-strong);
+  border-radius: 12px;
+  background: rgba(200, 69, 58, 0.10);
+}
+
+html[data-season="christmas"] .tg-update-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--tg-amber);
+  fill: rgba(200, 69, 58, 0.12);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+html[data-season="christmas"] .tg-update-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+html[data-season="christmas"] .tg-update-banner h1 {
+  margin: 4px 0 4px;
+  color: var(--tg-cream);
+  font-family: var(--font-season);
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+html[data-season="christmas"] .tg-update-banner p {
+  margin: 0;
+  color: var(--tg-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+html[data-season="christmas"] .tg-update-banner .tg-btn {
+  flex: 0 0 auto;
+}
+
+html[data-season="christmas"] .update-card {
+  background: linear-gradient(160deg, rgba(13, 21, 36, 0.92), rgba(7, 12, 23, 0.96)) !important;
+  border-color: var(--tg-line) !important;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.22) !important;
+}
+
+html[data-season="christmas"] .update-card h3 {
+  color: var(--tg-cream);
+}
+
+html[data-season="christmas"] .update-card .border-l-2 {
+  border-color: var(--tg-line) !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 820px) {
+  html[data-season="christmas"] .app-layout {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  html[data-season="christmas"] aside.sidebar {
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
+    padding: 10px 12px;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  html[data-season="christmas"] aside.sidebar > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  html[data-season="christmas"] .brand {
+    flex: 0 0 auto;
+    padding: 0;
+  }
+
+  html[data-season="christmas"] .brand-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  html[data-season="christmas"] .brand-text h1 {
+    font-size: 13px;
+  }
+
+  html[data-season="christmas"] .brand-text span {
+    display: none;
+  }
+
+  html[data-season="christmas"] .nav-group {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 2px;
+    min-width: 0;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  html[data-season="christmas"] .nav-group::-webkit-scrollbar {
+    display: none;
+  }
+
+  html[data-season="christmas"] .nav-label {
+    display: none;
+  }
+
+  html[data-season="christmas"] .nav-item {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 7px 9px;
+    border-radius: 9px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  html[data-season="christmas"] .nav-item svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  html[data-season="christmas"] .tg-shell-note {
+    display: none;
+  }
+
+  html[data-season="christmas"] .main-area {
+    flex: 1;
+    gap: 8px;
+    min-height: 0;
+  }
+
+  html[data-season="christmas"] .top-hud {
+    height: 48px;
+    padding: 0 12px;
+    border-radius: 14px;
+  }
+
+  html[data-season="christmas"] .cmd-button {
+    gap: 8px;
+    padding: 6px 9px;
+  }
+
+  html[data-season="christmas"] .cmd-button > span:first-child {
+    max-width: 112px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  html[data-season="christmas"] .tg-season-pill {
+    display: none;
+  }
+
+  html[data-season="christmas"] .iframe-wrapper {
+    flex: 1;
+    min-height: 0;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 760px) {
+  html[data-season="christmas"] .tg-hero {
+    grid-template-columns: 1fr;
+    padding: 26px 22px;
+  }
+
+  html[data-season="christmas"] .tg-hero h2 {
+    max-width: 20ch;
+  }
+
+  html[data-season="christmas"] .tg-hero-art {
+    min-height: 178px;
+    margin-top: -4px;
+  }
+
+  html[data-season="christmas"] .tg-turkey {
+    width: min(196px, 72%);
+  }
+
+  html[data-season="christmas"] .tg-gratitude {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    padding: 22px;
+  }
+
+  html[data-season="christmas"] .tg-update-banner {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  html[data-season="christmas"] .tg-update-banner .tg-btn {
+    margin-left: 60px;
+  }
+}
+
+@media (max-width: 520px) {
+  html[data-season="christmas"] .tg-season-pill {
+    display: none;
+  }
+
+  html[data-season="christmas"] aside.sidebar > div:first-child {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  html[data-season="christmas"] .brand {
+    width: 100%;
+  }
+
+  html[data-season="christmas"] .nav-group {
+    flex: 1 0 100%;
+    gap: 3px;
+  }
+
+  html[data-season="christmas"] .nav-item {
+    flex: 1 1 0;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+    padding: 6px 4px;
+    font-size: 10px;
+  }
+
+  html[data-season="christmas"] .nav-item svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  html[data-season="christmas"] .tg-update-banner {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+    padding: 18px;
+  }
+
+  html[data-season="christmas"] .tg-update-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  html[data-season="christmas"] .tg-update-banner h1 {
+    font-size: 22px;
+  }
+
+  html[data-season="christmas"] .tg-update-banner p {
+    font-size: 11.5px;
+  }
+
+  html[data-season="christmas"] .tg-update-banner .tg-btn {
+    grid-column: 2;
+    justify-self: start;
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-season="christmas"] .tg-turkey {
+    animation: none;
+  }
+
+  html[data-season="christmas"] .tg-btn {
+    transition: none;
+  }
+}
+
+/* =========================================================
+   THANKSGIVING BOOT + TURNSTILE GATE
+   ========================================================= */
+
+html[data-season="christmas"] #boot-screen {
+  background:
+    radial-gradient(ellipse at 18% 8%, rgba(214, 231, 255, 0.16), transparent 36%),
+    radial-gradient(ellipse at 88% 94%, rgba(166, 64, 60, 0.2), transparent 42%),
+    linear-gradient(155deg, #1b0f09 0%, #070c17 52%, #28150c 100%);
+}
+
+html[data-season="christmas"] #boot-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(214, 231, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(214, 231, 255, 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at center, #000 10%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 10%, transparent 72%);
+}
+
+html[data-season="christmas"] #boot-screen::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -32%;
+  width: 70vw;
+  max-width: 880px;
+  aspect-ratio: 1;
+  border: 1px solid rgba(214, 231, 255, 0.10);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 54px rgba(232, 177, 92, 0.025), 0 0 90px rgba(200, 69, 58, 0.07);
+  pointer-events: none;
+  z-index: 0;
+}
+
+html[data-season="christmas"] #boot-screen .boot-orb {
+  filter: blur(70px);
+}
+
+html[data-season="christmas"] #boot-screen .orb-1 {
+  background: rgba(232, 177, 92, 0.2);
+}
+
+html[data-season="christmas"] #boot-screen .orb-2 {
+  background: rgba(166, 64, 60, 0.2);
+}
+
+html[data-season="christmas"] #boot-screen .boot-content {
+  position: relative;
+  z-index: 10;
+  padding: 0 28px;
+}
+
+html[data-season="christmas"] #boot-screen .boot-logo-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: -26px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 177, 92, 0.2), transparent 66%);
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+html[data-season="christmas"] #boot-screen .boot-logo-svg {
+  filter: drop-shadow(0 0 24px rgba(232, 177, 92, 0.28));
+}
+
+html[data-season="christmas"] #boot-screen #logoGrad stop:first-child {
+  stop-color: #eef4ff;
+}
+
+html[data-season="christmas"] #boot-screen #logoGrad stop:last-child {
+  stop-color: rgba(232, 177, 92, 0.38);
+}
+
+html[data-season="christmas"] #boot-screen .path-pulse {
+  stroke: rgba(232, 177, 92, 0.35);
+}
+
+html[data-season="christmas"] #boot-screen .boot-kicker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  color: var(--tg-amber);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeUp 0.9s var(--ease-out-expo) 0.2s forwards;
+}
+
+html[data-season="christmas"] #boot-screen .boot-kicker::before,
+html[data-season="christmas"] #boot-screen .boot-kicker::after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--tg-line-strong), transparent);
+}
+
+html[data-season="christmas"] #boot-screen .boot-title {
+  font-family: var(--font-season);
+  font-size: 27px;
+  letter-spacing: 8px;
+  background: linear-gradient(90deg, #a56b3f 0%, #eef4ff 48%, #f0d08a 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+html[data-season="christmas"] #boot-screen .boot-subtitle {
+  color: var(--tg-amber);
+  letter-spacing: 3px;
+}
+
+html[data-season="christmas"] #boot-screen .boot-loader-container {
+  width: 280px;
+  max-width: 100%;
+}
+
+html[data-season="christmas"] #boot-screen .boot-status-row {
+  color: var(--tg-muted);
+}
+
+html[data-season="christmas"] #boot-screen #boot-percent {
+  color: var(--tg-amber);
+}
+
+html[data-season="christmas"] #boot-screen .progress-track {
+  height: 3px;
+  background: rgba(214, 231, 255, 0.10);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+html[data-season="christmas"] #boot-screen .progress-fill {
+  background: linear-gradient(90deg, var(--tg-pumpkin), var(--tg-amber));
+  box-shadow: 0 0 12px rgba(232, 177, 92, 0.55);
+}
+
+html[data-season="christmas"] #turnstile-gate {
+  padding: 16px;
+  background:
+    radial-gradient(ellipse at 20% 4%, rgba(214, 231, 255, 0.14), transparent 38%),
+    radial-gradient(ellipse at 86% 104%, rgba(166, 64, 60, 0.18), transparent 42%),
+    linear-gradient(160deg, #1a0e08, #070c17 58%, #25130b);
+}
+
+html[data-season="christmas"] #turnstile-gate::before {
+  content: "";
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  width: min(720px, 92vw);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border: 1px solid rgba(232, 177, 92, 0.1);
+  border-radius: 50%;
+  box-shadow: 0 0 0 48px rgba(232, 177, 92, 0.02);
+  pointer-events: none;
+}
+
+html[data-season="christmas"] #turnstile-gate .gate-panel {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, rgba(50, 28, 16, 0.96), rgba(24, 13, 8, 0.98));
+  border-color: var(--tg-line-strong);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+html[data-season="christmas"] #turnstile-gate .gate-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 22%;
+  right: 22%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--tg-amber), transparent);
+}
+
+html[data-season="christmas"] #turnstile-gate .gate-icon {
+  background: linear-gradient(145deg, #f7dcac, #c8453a);
+  box-shadow: 0 0 24px rgba(214, 231, 255, 0.22);
+}
+
+html[data-season="christmas"] #turnstile-gate .gate-icon svg {
+  stroke: #101a2c;
+}
+
+html[data-season="christmas"] #turnstile-gate .gate-season {
+  color: var(--tg-amber);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+html[data-season="christmas"] #turnstile-gate .gate-title {
+  color: var(--tg-cream);
+  font-family: var(--font-season);
+  font-size: 19px;
+  letter-spacing: 1.5px;
+}
+
+html[data-season="christmas"] #turnstile-gate .gate-subtitle {
+  color: var(--tg-muted);
+}
+
+html[data-season="christmas"] #turnstile-gate .gate-status {
+  color: var(--tg-amber);
+}
+
+html[data-season="christmas"] #turnstile-gate .gate-status.gate-status-error {
+  color: #ff9d8c;
+}
+
+html[data-season="christmas"] #turnstile-gate .gate-retry-btn {
+  background: rgba(214, 231, 255, 0.08);
+  border-color: var(--tg-line-strong);
+  color: var(--tg-cream);
+}
+
+html[data-season="christmas"] #turnstile-gate .gate-retry-btn:hover {
+  background: rgba(214, 231, 255, 0.14);
+}
+
+@media (max-width: 520px) {
+  html[data-season="christmas"] #boot-screen .boot-title {
+    font-size: 21px;
+    letter-spacing: 5px;
+  }
+
+  html[data-season="christmas"] #boot-screen .boot-kicker {
+    font-size: 8px;
+    letter-spacing: 1.4px;
+  }
+
+  html[data-season="christmas"] #boot-screen .boot-loader-container {
+    width: 240px;
+  }
+
+  html[data-season="christmas"] #turnstile-gate .gate-panel {
+    padding: 32px 22px;
+  }
+
+  html[data-season="christmas"] #turnstile-gate .gate-title {
+    font-size: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-season="christmas"] #boot-screen .boot-orb,
+  html[data-season="christmas"] #boot-screen .path-pulse {
+    animation: none;
+  }
+}
+
+/* Drifting harvest leaves — purely decorative, layered behind the boot copy. */
+html[data-season="christmas"] #boot-screen .boot-harvest-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+html[data-season="christmas"] #boot-screen .boot-leaf {
+  position: absolute;
+  top: 0;
+  left: var(--leaf-x, 50%);
+  width: var(--leaf-size, 12px);
+  height: calc(var(--leaf-size, 12px) * 0.62);
+  border-radius: 0 68% 0 68%;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.55), transparent 52%),
+    var(--leaf-color, var(--tg-amber));
+  box-shadow: inset -2px -2px 3px rgba(0, 0, 0, 0.12);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18));
+  opacity: 0;
+  animation: tg-leaf-fall var(--leaf-duration, 13s) linear var(--leaf-delay, 0s) infinite;
+  will-change: transform, opacity;
+}
+
+html[data-season="christmas"] #boot-screen .boot-leaf:nth-child(1) {
+  --leaf-x: 7%;
+  --leaf-size: 10px;
+  --leaf-color: #f0d08a;
+  --leaf-duration: 13s;
+  --leaf-delay: -2s;
+  --leaf-drift: 46px;
+  --leaf-spin: 1;
+  --leaf-opacity: 0.4;
+}
+
+html[data-season="christmas"] #boot-screen .boot-leaf:nth-child(2) {
+  --leaf-x: 21%;
+  --leaf-size: 8px;
+  --leaf-color: #c8453a;
+  --leaf-duration: 16s;
+  --leaf-delay: -7s;
+  --leaf-drift: -34px;
+  --leaf-spin: -1;
+  --leaf-opacity: 0.34;
+}
+
+html[data-season="christmas"] #boot-screen .boot-leaf:nth-child(3) {
+  --leaf-x: 34%;
+  --leaf-size: 13px;
+  --leaf-color: #2f7a5f;
+  --leaf-duration: 14s;
+  --leaf-delay: -11s;
+  --leaf-drift: 60px;
+  --leaf-spin: 1;
+  --leaf-opacity: 0.3;
+}
+
+html[data-season="christmas"] #boot-screen .boot-leaf:nth-child(4) {
+  --leaf-x: 48%;
+  --leaf-size: 9px;
+  --leaf-color: #7fa8c9;
+  --leaf-duration: 17s;
+  --leaf-delay: -4s;
+  --leaf-drift: -52px;
+  --leaf-spin: -1;
+  --leaf-opacity: 0.3;
+}
+
+html[data-season="christmas"] #boot-screen .boot-leaf:nth-child(5) {
+  --leaf-x: 62%;
+  --leaf-size: 12px;
+  --leaf-color: #e2564a;
+  --leaf-duration: 12s;
+  --leaf-delay: -9s;
+  --leaf-drift: 42px;
+  --leaf-spin: 1;
+  --leaf-opacity: 0.38;
+}
+
+html[data-season="christmas"] #boot-screen .boot-leaf:nth-child(6) {
+  --leaf-x: 74%;
+  --leaf-size: 8px;
+  --leaf-color: #d3e0f4;
+  --leaf-duration: 15s;
+  --leaf-delay: -1s;
+  --leaf-drift: -46px;
+  --leaf-spin: -1;
+  --leaf-opacity: 0.32;
+}
+
+html[data-season="christmas"] #boot-screen .boot-leaf:nth-child(7) {
+  --leaf-x: 86%;
+  --leaf-size: 11px;
+  --leaf-color: #f0d08a;
+  --leaf-duration: 14s;
+  --leaf-delay: -12s;
+  --leaf-drift: 36px;
+  --leaf-spin: 1;
+  --leaf-opacity: 0.36;
+}
+
+html[data-season="christmas"] #boot-screen .boot-leaf:nth-child(8) {
+  --leaf-x: 94%;
+  --leaf-size: 7px;
+  --leaf-color: #9fb3cf;
+  --leaf-duration: 18s;
+  --leaf-delay: -5s;
+  --leaf-drift: -28px;
+  --leaf-spin: -1;
+  --leaf-opacity: 0.28;
+}
+
+@keyframes tg-leaf-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -8vh, 0) rotate(0deg);
+  }
+  8%, 88% {
+    opacity: var(--leaf-opacity, 0.4);
+  }
+  50% {
+    transform: translate3d(var(--leaf-drift, 40px), 52vh, 0) rotate(calc(150deg * var(--leaf-spin, 1)));
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--leaf-drift, 40px) * -0.4), 112vh, 0) rotate(calc(300deg * var(--leaf-spin, 1)));
+  }
+}
+
+@media (max-width: 520px) {
+  html[data-season="christmas"] #boot-screen .boot-leaf:nth-child(3),
+  html[data-season="christmas"] #boot-screen .boot-leaf:nth-child(6) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-season="christmas"] #boot-screen .boot-harvest-layer {
+    display: none;
+  }
+}
+
+/* =========================================================
+   CHRISTMAS EXTRAS
+   The boot layer keeps its geometry and timing; only the
+   particles change from leaves to snow.
+   ========================================================= */
+
+html[data-season="christmas"] #boot-screen .boot-leaf {
+  width: var(--leaf-size, 9px);
+  height: var(--leaf-size, 9px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #ffffff, #dbe9ff 52%, #9fc0e8);
+  box-shadow: 0 0 12px rgba(214, 232, 255, 0.55);
+  filter: none;
+}
+
+html[data-season="christmas"] #boot-screen .boot-leaf:nth-child(odd) {
+  background: radial-gradient(circle at 34% 30%, #ffffff, #eaf2ff 55%, #b9d2ee);
+}
+
+html[data-season="christmas"] .tg-season-pill,
+html[data-season="christmas"] .tg-kicker {
+  color: var(--tg-amber);
+}
+
+/* A quiet red-and-pine ribbon on the overview hero. */
+html[data-season="christmas"] .tg-hero::after {
+  content: "";
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 46px;
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #c8453a 0 46%, #f0d08a 46% 54%, #2f7a5f 54% 100%);
+  opacity: 0.75;
+  pointer-events: none;
+}

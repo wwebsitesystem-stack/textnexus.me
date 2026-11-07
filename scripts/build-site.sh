@@ -34,6 +34,8 @@ FILES=(
     404.html
     Style.css
     thanksgiving.css
+    christmas.css
+    season.js
     logo.svg
     og-image.png
     sw.js

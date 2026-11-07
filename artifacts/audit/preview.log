@@ -1,0 +1,11 @@
+127.0.0.1 - - [07/Nov/2026 04:52:04] "GET /updates.html HTTP/1.1" 200 -
+80a9ca94292e/artifacts/audit/preview_server.py", line 29, in <module>
+    main()
+  File "/workspace/chats/1bafe019727f80a9ca94292e/artifacts/audit/preview_server.py", line 24, in main
+    with Server(("0.0.0.0", port), Handler) as httpd:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "/usr/lib/python3.12/socketserver.py", line 473, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 98] Address already in use

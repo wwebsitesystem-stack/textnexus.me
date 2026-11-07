@@ -1,0 +1,1 @@
+{"@context":"https://schema.org","@type":"WebSite","name":"TextNexus","url":"https://textnexus.me/","description":"Real-time group chat, secure file sharing and AI through Lofin.dev in one private workspace."}
