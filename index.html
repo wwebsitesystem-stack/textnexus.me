@@ -878,7 +878,7 @@
                         <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         <span class="nav-text">TextNexus</span>
                     </a>
-                    <a class="nav-item" href="creator.html" data-label="Nexus AI" aria-label="Nexus AI with Lofin.dev" onclick="return loadRoute('creator.html', this)">
+                    <a class="nav-item" href="https://lofin.dev/" target="_blank" rel="noopener noreferrer" data-label="Nexus AI" aria-label="Open Lofin.dev in a new tab">
                         <svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg>
                         <span class="nav-text">Nexus AI</span>
                     </a>
@@ -1344,6 +1344,7 @@
             let auth = null;
             let googleProvider = null;
             let signInWithGoogle = null;
+            let getGoogleRedirectResult = null;
             let signOutUser = null;
 
             function setStatus(message, kind = '') {
@@ -1387,6 +1388,8 @@
                 const code = error?.code || '';
                 if (code.includes('popup-closed') || code.includes('cancelled-popup-request')) return 'Google sign-in was closed.';
                 if (code.includes('popup-blocked')) return 'Allow pop-ups, then try Google sign-in again.';
+                if (code.includes('redirect-cancelled')) return 'Google sign-in was cancelled.';
+                if (code.includes('web-storage-unsupported')) return 'Your browser is blocking the storage needed for sign-in. Allow cookies and try again.';
                 if (code.includes('unauthorized-domain')) return 'This domain is not authorized for Google sign-in in Firebase.';
                 if (code.includes('operation-not-allowed')) return 'Google sign-in is not enabled in Firebase.';
                 if (code.includes('network-request-failed')) return 'Network error. Try Google sign-in again.';
@@ -1402,11 +1405,16 @@
                 auth = authModule.getAuth(app);
                 googleProvider = new authModule.GoogleAuthProvider();
                 googleProvider.setCustomParameters({ prompt: 'select_account' });
-                signInWithGoogle = authModule.signInWithPopup;
+                signInWithGoogle = authModule.signInWithRedirect;
+                getGoogleRedirectResult = authModule.getRedirectResult;
                 signOutUser = authModule.signOut;
                 authModule.onAuthStateChanged(auth, (user) => {
                     if (user) showSignedIn(user);
                     else showSignedOut();
+                });
+                getGoogleRedirectResult(auth).catch((error) => {
+                    console.error('Google redirect sign-in failed:', error);
+                    setStatus(friendlyAuthError(error), 'error');
                 });
             })().catch((error) => {
                 console.error('Google account could not initialise:', error);
@@ -1419,9 +1427,8 @@
                 try {
                     if (!auth) await authReady;
                     if (!auth) throw new Error('Google sign-in could not load. Refresh and try again.');
-                    setStatus('Opening Google...');
+                    setStatus('Redirecting to Google...');
                     await signInWithGoogle(auth, googleProvider);
-                    setStatus('');
                 } catch (error) {
                     setStatus(friendlyAuthError(error), 'error');
                 } finally {

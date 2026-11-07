@@ -93,13 +93,15 @@ Also make sure, in the Firebase Console:
 - Authentication -> Sign-in method: Google is enabled.
 - Authentication -> Settings -> Authorized domains: add the hostname you serve
   this site from (for example `localhost` during testing, or your domain).
+- If the Google OAuth consent screen is in Testing, add test accounts under
+  Audience -> Test users, or publish the app.
 
 ## AI with Lofin.dev
 
 AI is provided through our partnership with [Lofin.dev](https://lofin.dev/). The
-`creator.html` page is a static partner page that explains what Lofin.dev offers
-and links out to it; nginx only needs to serve the page. There is no AI service,
-API key or additional container to run for this integration.
+Nexus AI item in the sidebar links directly to Lofin.dev, and `creator.html` is a
+bare redirect for old links. There is no AI service, API key or additional
+container to run for this integration.
 
 `worker.js` is a legacy Cloudflare Worker experiment and is not used by the
 published site.

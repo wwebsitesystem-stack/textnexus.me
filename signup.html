@@ -75,13 +75,13 @@
       <div id="msg" role="status" aria-live="polite"></div>
     </div>
     <p class="foot">
-      <a href="/home.html">Back to TextNexus</a>
+      <a href="/index.html">Back to TextNexus</a>
     </p>
   </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
     const firebaseConfig = {
@@ -106,6 +106,8 @@
       const code = error?.code || "";
       if (code.includes("popup-closed") || code.includes("cancelled-popup-request")) return "Google sign-in was closed.";
       if (code.includes("popup-blocked")) return "Allow pop-ups, then try Google sign-in again.";
+      if (code.includes("redirect-cancelled")) return "Google sign-in was cancelled.";
+      if (code.includes("web-storage-unsupported")) return "Your browser is blocking the storage needed for sign-in. Allow cookies and try again.";
       if (code.includes("unauthorized-domain")) return "This domain is not authorized for Google sign-in in Firebase.";
       if (code.includes("operation-not-allowed")) return "Google sign-in is not enabled in the Firebase console.";
       if (code.includes("network-request-failed")) return "Network error. Try Google sign-in again.";
@@ -131,16 +133,16 @@
       redirecting = true;
       const name = user.displayName || user.email || "your Google account";
       msg(`Signed in as ${name}. Opening TextNexus...`, "ok");
-      setTimeout(() => location.assign("/home.html"), 700);
+      setTimeout(() => location.assign("/index.html"), 700);
     }
 
     googleBtn.addEventListener("click", async () => {
       googleBtn.disabled = true;
-      msg("Opening Google...");
+      msg("Redirecting to Google...");
       try {
-        const cred = await signInWithPopup(auth, provider);
-        await saveProfile(cred.user);
-        enterNexus(cred.user);
+        // Redirect keeps Google sign-in in the first-party context, avoiding
+        // the blank popup that appears when a browser blocks third-party storage.
+        await signInWithRedirect(auth, provider);
       } catch (error) {
         msg(friendly(error), "err");
         googleBtn.disabled = false;
@@ -155,6 +157,19 @@
         googleBtn.disabled = false;
       }
     });
+
+    // Firebase processes the redirect on this page load. Surface any OAuth or
+    // authorized-domain error instead of silently returning to a signed-out page.
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (!result?.user) return;
+        await saveProfile(result.user);
+        enterNexus(result.user);
+      })
+      .catch((error) => {
+        msg(friendly(error), "err");
+        googleBtn.disabled = false;
+      });
   </script>
 </body>
 </html>

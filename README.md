@@ -35,8 +35,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Accounts and email
 
 Account creation and sign-in live at `/signup.html` and use Google through Firebase Auth
-only; the page no longer offers email/password. On sign-in, the profile is saved to its own
-`users/<uid>` node (the only database path a signed-in user may write, per
+only; the page no longer offers email/password. Sign-in uses Firebase's redirect flow so it
+still works when browsers block third-party storage or pop-ups. On return, the profile is
+saved to its own `users/<uid>` node (the only database path a signed-in user may write, per
 `database.rules.json`). The branded welcome email endpoint remains at
 `functions/api/welcome.js`, which calls Brevo server-side so the API key never reaches the
 browser.
@@ -52,10 +53,12 @@ browser.
    Pages (or another host that runs `/api/*`); GitHub Pages serves the pages but not the
    function. On Pages, add encrypted `BREVO_API_KEY` and `BREVO_SENDER` (optional:
    `BREVO_SENDER_NAME`, `BREVO_REPLY_TO`, `APP_ORIGIN`, `FIREBASE_API_KEY`).
-4. In Firebase Authentication, enable the Google provider and add `textnexus.me` to
-   Authorized domains. The app does not use Email/Password; disable that provider in the
-   Firebase console if you want provider-level enforcement as well.
-5. Create a DNS record for `www` (CNAME to `textnexus.me`, proxied).
+4. In Firebase Authentication, enable the Google provider and add both `textnexus.me` and
+   `www.textnexus.me` to Authorized domains. The app does not use Email/Password; disable
+   that provider in the Firebase console if you want provider-level enforcement as well.
+5. If the Google OAuth consent screen is still in Testing, add each friend who needs to
+   sign in under **Audience → Test users**, or publish the app.
+6. Create a DNS record for `www` (CNAME to `textnexus.me`, proxied).
 
 ### Performance and analytics
 
@@ -70,10 +73,9 @@ added, and nothing analytics-related is committed.
 
 ### AI and Lofin.dev
 
-AI is provided through our partnership with [Lofin.dev](https://lofin.dev/). The public
-`creator.html` page introduces the partnership and sends visitors to Lofin.dev for chat,
-model comparisons, image generation, speech and live web search. It does not call a Nexus
-AI backend.
+AI is provided through our partnership with [Lofin.dev](https://lofin.dev/). The Nexus AI
+item in the sidebar opens Lofin.dev directly, and `creator.html` is a bare redirect for old
+links. Neither path calls a Nexus AI backend or requires a Nexus account.
 
 `worker.js` is retained as a legacy Cloudflare Worker experiment and is not used by the
 published site. If it is ever revived, treat it as a separate service and configure its
