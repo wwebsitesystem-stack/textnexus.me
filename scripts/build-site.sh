@@ -14,6 +14,7 @@ FILES=(
     home.html
     updates.html
     games.html
+    thanksgiving.html
     ghostlink.html
     TextNexus.html
     feedback.html
